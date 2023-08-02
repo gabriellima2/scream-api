@@ -1,4 +1,4 @@
-import { HttpClient } from "@/domain/gateways/http-client";
+import { HttpClient } from "@/domain/gateways";
 
 export class HttpClientImpl implements HttpClient {
 	async getHtmlPage(url: string): Promise<string> {

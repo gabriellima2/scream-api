@@ -1,19 +1,21 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { MovieCrawlerProtocols } from "@/domain/protocols/movie-crawler-protocols";
-import { MovieCrawlerAdapter } from "@/domain/adapters/movie-crawler-adapter";
-import { MovieOverview } from "@/domain/entities/movie";
+import { MovieScrappingProtocols } from "@/domain/protocols";
+import { MovieScrappingAdapter } from "@/domain/adapters";
+import { MovieOverview } from "@/domain/entities";
 
-import { formatOverviewContent } from "../helpers/crawler/format-overview-content";
-import { formatCharacterName } from "../helpers/crawler/format-character-name";
-import { formatOverviewTitle } from "../helpers/crawler/format-overview-title";
-import { formatMovieName } from "../helpers/crawler/format-movie-name";
-import { formatSynopsis } from "../helpers/crawler/format-synopsis";
+import {
+	formatSynopsis,
+	formatMovieName,
+	formatOverviewTitle,
+	formatCharacterName,
+	formatOverviewContent,
+} from "../helpers/scrapping";
 import { createApiUrl } from "../helpers/create-api-url";
 import { createObject } from "../helpers/create-object";
 
-export class MovieCrawlerAdapterImpl implements MovieCrawlerAdapter {
-	execute(html: string): MovieCrawlerProtocols.Response {
+export class MovieScrappingAdapterImpl implements MovieScrappingAdapter {
+	execute(html: string): MovieScrappingProtocols.Response {
 		const $ = load(html);
 		return {
 			name: this.getName($),
