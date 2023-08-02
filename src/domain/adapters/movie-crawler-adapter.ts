@@ -1,5 +1,5 @@
-import { Movie } from "../entities/movie";
+import { MovieCrawlerProtocols } from "../protocols/movie-crawler-protocols";
 
 export interface MovieCrawlerAdapter {
-	execute(html: string): Movie;
+	execute(html: string): MovieCrawlerProtocols.Response;
 }

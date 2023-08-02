@@ -1,24 +1,26 @@
 import { CheerioAPI, load } from "cheerio";
 
+import { MovieCrawlerProtocols } from "@/domain/protocols/movie-crawler-protocols";
 import { MovieCrawlerAdapter } from "@/domain/adapters/movie-crawler-adapter";
-import { Movie, MovieOverview } from "@/domain/entities/movie";
+import { MovieOverview } from "@/domain/entities/movie";
 
 import { formatOverviewContent } from "../helpers/crawler/format-overview-content";
 import { formatOverviewTitle } from "../helpers/crawler/format-overview-title";
 import { createObject } from "../helpers/create-object";
 
+// Remove later
+import { screamOne } from "@/constants/scream-one";
+
 export class MovieCrawlerAdapterImpl implements MovieCrawlerAdapter {
-	execute(html: string): Movie {
-		const $ = load(html);
-		const data: Movie = {
-			id: "1",
+	execute(html: string): MovieCrawlerProtocols.Response {
+		const $ = load(screamOne);
+		return {
 			name: this.getName($),
 			banner: this.getBanner($),
 			synopsis: this.getSynopsis($),
 			overview: this.getOverview($),
 			characters: this.getCharacters($),
 		};
-		return data;
 	}
 
 	private getBanner($: CheerioAPI): string {

@@ -1,7 +1,7 @@
+import { MovieCrawlerProtocols } from "@/domain/protocols/movie-crawler-protocols";
 import { MovieCrawlerAdapter } from "@/domain/adapters/movie-crawler-adapter";
 import { MovieCrawlerService } from "@/domain/services/movie-crawler-service";
 import { HttpClient } from "@/domain/gateways/http-client";
-import { Movie } from "@/domain/entities/movie";
 
 export class MovieCrawlerServiceImpl implements MovieCrawlerService {
 	constructor(
@@ -9,7 +9,7 @@ export class MovieCrawlerServiceImpl implements MovieCrawlerService {
 		private readonly crawler: MovieCrawlerAdapter
 	) {}
 
-	async execute(url: string): Promise<Movie> {
+	async execute(url: string): Promise<MovieCrawlerProtocols.Response> {
 		const html = await this.http.getHtmlPage(url);
 		const data = this.crawler.execute(html);
 		return data;

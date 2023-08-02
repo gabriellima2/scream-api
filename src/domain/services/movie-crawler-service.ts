@@ -1,5 +1,5 @@
-import { Movie } from "../entities/movie";
+import { MovieCrawlerProtocols } from "../protocols/movie-crawler-protocols";
 
 export interface MovieCrawlerService {
-	execute(url: string): Promise<Movie>;
+	execute(url: string): Promise<MovieCrawlerProtocols.Response>;
 }
