@@ -1,3 +1,3 @@
-export function createObject(key: string, values: string[]) {
-	return { [key]: values };
+export function createObject(key: string, value: unknown) {
+	return { [key]: value };
 }

@@ -1,8 +1,8 @@
 export interface MovieOverview {
-	directors: string[];
-	writers: string[];
+	directors: string[] | string;
+	writers: string[] | string;
 	producers: string[];
-	composers: string[];
+	composers: string;
 	realease_date: string;
 	running_time: string;
 	box_office: string;

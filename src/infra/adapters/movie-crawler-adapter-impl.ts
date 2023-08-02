@@ -5,15 +5,16 @@ import { MovieCrawlerAdapter } from "@/domain/adapters/movie-crawler-adapter";
 import { MovieOverview } from "@/domain/entities/movie";
 
 import { formatOverviewContent } from "../helpers/crawler/format-overview-content";
+import { formatCharacterName } from "../helpers/crawler/format-character-name";
 import { formatOverviewTitle } from "../helpers/crawler/format-overview-title";
+import { formatMovieName } from "../helpers/crawler/format-movie-name";
+import { formatSynopsis } from "../helpers/crawler/format-synopsis";
+import { createApiUrl } from "../helpers/create-api-url";
 import { createObject } from "../helpers/create-object";
-
-// Remove later
-import { screamOne } from "@/constants/scream-one";
 
 export class MovieCrawlerAdapterImpl implements MovieCrawlerAdapter {
 	execute(html: string): MovieCrawlerProtocols.Response {
-		const $ = load(screamOne);
+		const $ = load(html);
 		return {
 			name: this.getName($),
 			banner: this.getBanner($),
@@ -28,40 +29,36 @@ export class MovieCrawlerAdapterImpl implements MovieCrawlerAdapter {
 	}
 
 	private getName($: CheerioAPI): string {
-		return $("figure > a > img").attr("src");
+		return formatMovieName(
+			$("#firstHeading > i").add($("#firstHeading")).first().text()
+		);
 	}
 
 	private getSynopsis($: CheerioAPI): string {
-		return $("#Synopsis").parent().next("p").text();
+		return formatSynopsis($("#Synopsis").parent().next("p").text());
 	}
 
 	private getCharacters($: CheerioAPI): string[] {
+		const characters: string[] = [];
 		const container = $("#Main_Characters")
 			.parent()
 			.nextUntil("h2")
 			.add($("#Main_characters").parent().nextUntil("h2"));
-		const characters: string[] = [];
-
 		container.each((_, el) => {
-			const character = $("ul > li > a", el).eq(1).text();
-			const characterFormatted = character
-				.replace(/[" .]/g, "")
-				.replace(/\s/g, "-")
-				.toLowerCase()
-				.split("-");
-			characters.push(
-				`${characterFormatted[0]}_${
-					characterFormatted[characterFormatted.length - 1]
-				}`
+			const characterName = $("ul > li > a", el).eq(1).text();
+			if (!characterName) return;
+			const characterApiUrl = createApiUrl(
+				"characters",
+				formatCharacterName(characterName)
 			);
+			characters.push(characterApiUrl);
 		});
 		return characters;
 	}
 
 	private getOverview($: CheerioAPI): MovieOverview {
-		const container = $(".pi-data");
 		let overview: MovieOverview = {} as MovieOverview;
-
+		const container = $(".pi-data");
 		container.each((i, el) => {
 			const title = $(".pi-data-label", el).text();
 			if (title === "Starring") return;

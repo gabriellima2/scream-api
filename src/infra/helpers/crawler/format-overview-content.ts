@@ -1,12 +1,13 @@
-export function formatOverviewContent(content: string): string[] {
-	const contentInArray = content.split(" ");
-	const contentFormatted: string[] = [];
-	for (let i = 0; i < contentInArray.length; i++) {
-		const currentValue = contentInArray[i];
-		const nextValue = contentInArray[i + 1];
-		if (currentValue && nextValue) {
-			contentFormatted.push(`${currentValue} ${nextValue}`);
-		}
-	}
-	return contentFormatted;
+import { DOUBLE_BLANK_SPACES, TEXT_TOGETHER } from "@/infra/constants/regex";
+
+const DOLLAR_ABBR = " USD";
+
+export function formatOverviewContent(content: string): string[] | string {
+	const contentFormatted = content
+		.replace(DOLLAR_ABBR, "")
+		.replace(TEXT_TOGETHER, "$1  $2");
+	if (!contentFormatted.match(DOUBLE_BLANK_SPACES)) return contentFormatted;
+	return contentFormatted.split(DOUBLE_BLANK_SPACES);
 }
+
+// $1 and $2 gets splited text, example: HelloWorld: $1 === Hello and $2 === World.
