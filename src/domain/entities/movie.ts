@@ -6,7 +6,6 @@ export interface MovieOverview {
 	realease_date: string;
 	running_time: string;
 	box_office: string;
-	characters: string[];
 }
 
 export interface Movie {
@@ -15,4 +14,5 @@ export interface Movie {
 	banner: string;
 	synopsis: string;
 	overview: MovieOverview;
+	characters: string[];
 }
