@@ -6,12 +6,12 @@ import { HttpClient } from "@/domain/gateways";
 export class MovieScrappingServiceImpl implements MovieScrappingService {
 	constructor(
 		private readonly http: HttpClient,
-		private readonly srapping: MovieScrappingAdapter
+		private readonly scrapping: MovieScrappingAdapter
 	) {}
 
 	async execute(url: string): Promise<MovieScrappingProtocols.Response> {
 		const html = await this.http.getHtmlPage(url);
-		const data = this.srapping.execute(html);
+		const data = this.scrapping.execute(html);
 		return data;
 	}
 }

@@ -11,7 +11,7 @@ export interface MovieOverview {
 export interface Movie {
 	id: string;
 	name: string;
-	banner: string;
+	image: string;
 	synopsis: string;
 	overview: MovieOverview;
 	characters: string[];

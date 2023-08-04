@@ -19,14 +19,14 @@ export class MovieScrappingAdapterImpl implements MovieScrappingAdapter {
 		const $ = load(html);
 		return {
 			name: this.getName($),
-			banner: this.getBanner($),
+			image: this.getImage($),
 			synopsis: this.getSynopsis($),
 			overview: this.getOverview($),
 			characters: this.getCharacters($),
 		};
 	}
 
-	private getBanner($: CheerioAPI): string {
+	private getImage($: CheerioAPI): string {
 		return $("figure > a > img").attr("src");
 	}
 
