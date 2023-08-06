@@ -8,7 +8,7 @@ const onlyOverview =
 	"<div class='pi-data'><h3 class='pi-data-label'>any_title</h3><div class='pi-data-value pi-font'><p>any_content</p></div></div>";
 
 export const movieHtml = {
-	all: "",
+	all: `${onlyName}${onlyImage}${onlySynopsis}${onlyCharacters}${onlyOverview}`,
 	onlyName,
 	onlyImage,
 	onlySynopsis,
