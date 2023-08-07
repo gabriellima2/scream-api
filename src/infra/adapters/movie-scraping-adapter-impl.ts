@@ -1,7 +1,7 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { MovieScrappingProtocols } from "@/domain/protocols";
-import { MovieScrappingAdapter } from "@/domain/adapters";
+import { MovieScrapingProtocols } from "@/domain/protocols";
+import { MovieScrapingAdapter } from "@/domain/adapters";
 import { MovieOverview } from "@/domain/entities";
 
 import {
@@ -10,12 +10,12 @@ import {
 	formatOverviewTitle,
 	formatCharacterName,
 	formatOverviewContent,
-} from "../helpers/scrapping";
+} from "../helpers/scraping";
 import { createApiUrl } from "../helpers/create-api-url";
 import { createObject } from "../helpers/create-object";
 
-export class MovieScrappingAdapterImpl implements MovieScrappingAdapter {
-	execute(html: string): MovieScrappingProtocols.Response {
+export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
+	execute(html: string): MovieScrapingProtocols.Response {
 		const $ = load(html);
 		return {
 			name: this.getName($),

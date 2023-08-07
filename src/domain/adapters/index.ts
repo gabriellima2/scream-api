@@ -1,1 +1,1 @@
-export * from "./movie-scrapping-adapter";
+export * from "./movie-scraping-adapter";

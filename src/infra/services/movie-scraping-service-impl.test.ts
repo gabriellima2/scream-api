@@ -1,5 +1,5 @@
 import { movieHtml } from "@/__mocks__/movie-html";
-import { MovieScrappingServiceImpl } from "./movie-scrapping-service-impl";
+import { MovieScrapingServiceImpl } from "./movie-scraping-service-impl";
 
 const expectedScrapedData = {
 	name: "any_name",
@@ -9,17 +9,14 @@ const dependencies = {
 	httpClient: {
 		getHtmlPage: jest.fn().mockResolvedValueOnce(movieHtml.onlyName),
 	},
-	scrapping: {
+	scraper: {
 		execute: jest.fn().mockReturnValue(expectedScrapedData),
 	},
 };
 const makeSut = () =>
-	new MovieScrappingServiceImpl(
-		dependencies.httpClient,
-		dependencies.scrapping
-	);
+	new MovieScrapingServiceImpl(dependencies.httpClient, dependencies.scraper);
 
-describe("MovieScrappingServiceImpl", () => {
+describe("MovieScrapingServiceImpl", () => {
 	describe("Methods", () => {
 		describe("Execute", () => {
 			describe("Success", () => {
@@ -28,13 +25,13 @@ describe("MovieScrappingServiceImpl", () => {
 					const sut = makeSut();
 
 					const result = await sut.execute(url);
-					const { httpClient, scrapping } = dependencies;
+					const { httpClient, scraper } = dependencies;
 
 					expect(result).toMatchObject(expectedScrapedData);
 					expect(httpClient.getHtmlPage).toHaveBeenCalledWith(url);
 					expect(httpClient.getHtmlPage).toHaveBeenCalledTimes(1);
-					expect(scrapping.execute).toHaveBeenCalledWith(movieHtml.onlyName);
-					expect(scrapping.execute).toHaveBeenCalledTimes(1);
+					expect(scraper.execute).toHaveBeenCalledWith(movieHtml.onlyName);
+					expect(scraper.execute).toHaveBeenCalledTimes(1);
 				});
 			});
 		});

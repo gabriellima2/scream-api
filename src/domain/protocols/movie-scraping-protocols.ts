@@ -1,5 +1,5 @@
 import { Movie } from "../entities";
 
-export namespace MovieScrappingProtocols {
+export namespace MovieScrapingProtocols {
 	export type Response = Omit<Movie, "id">;
 }

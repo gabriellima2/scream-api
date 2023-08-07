@@ -1,1 +1,1 @@
-export * from "./movie-scrapping-protocols";
+export * from "./movie-scraping-protocols";
