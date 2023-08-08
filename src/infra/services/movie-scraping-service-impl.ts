@@ -1,8 +1,11 @@
+import { Injectable } from "@nestjs/common";
+
 import { MovieScrapingProtocols } from "@/domain/protocols";
 import { MovieScrapingAdapter } from "@/domain/adapters";
 import { MovieScrapingService } from "@/domain/services";
 import { HttpClient } from "@/domain/gateways";
 
+@Injectable()
 export class MovieScrapingServiceImpl implements MovieScrapingService {
 	constructor(
 		private readonly http: HttpClient,
