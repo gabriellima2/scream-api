@@ -1,5 +1,5 @@
 import { MovieScrapingProtocols } from "../protocols";
 
-export interface MovieScrappingAdapter {
+export interface MovieScrapingAdapter {
 	execute(html: string): MovieScrapingProtocols.Response;
 }
