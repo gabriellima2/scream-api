@@ -62,6 +62,39 @@ describe("MovieScrapingServiceImpl", () => {
 					expect(scraper.execute).toHaveBeenCalledTimes(1);
 				});
 			});
+			describe("Errors", () => {
+				it("should throw an error when getHtmlPage return invalid value", async () => {
+					try {
+						const expectedScrapedData = {
+							name: "any_name",
+						};
+						const { httpClient, scraper } = MockDependenciesReturnValue({
+							httpClient: undefined,
+							scraper: expectedScrapedData,
+						});
+						const url = "any_url";
+						const sut = await makeSut({ httpClient, scraper });
+
+						await sut.execute(url);
+					} catch (err) {
+						expect(err).toBeInstanceOf(Error);
+					}
+				});
+				it("should throw an error when scraper return invalid value", async () => {
+					try {
+						const { httpClient, scraper } = MockDependenciesReturnValue({
+							httpClient: movieHtml.onlyName,
+							scraper: { name: undefined },
+						});
+						const url = "any_url";
+						const sut = await makeSut({ httpClient, scraper });
+
+						await sut.execute(url);
+					} catch (err) {
+						expect(err).toBeInstanceOf(Error);
+					}
+				});
+			});
 		});
 	});
 });
