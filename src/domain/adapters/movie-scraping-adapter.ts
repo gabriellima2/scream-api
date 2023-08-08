@@ -1,5 +1,5 @@
-import { MovieScrapingProtocols } from "../protocols";
+import { Movie } from "../entities";
 
 export interface MovieScrapingAdapter {
-	execute(html: string): MovieScrapingProtocols.Response;
+	execute(html: string): Partial<Omit<Movie, "id">>;
 }
