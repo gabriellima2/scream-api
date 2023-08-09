@@ -1,9 +1,11 @@
 import { Test } from "@nestjs/testing";
 
 import { MovieScrapingServiceImpl } from "./movie-scraping-service-impl";
+import { EmptyDataError } from "@/domain/errors";
+
 import type { MovieScrapingService } from "@/domain/services";
-import { MovieScrapingAdapter } from "@/domain/adapters";
-import { HttpClient } from "@/domain/gateways";
+import type { MovieScrapingAdapter } from "@/domain/adapters";
+import type { HttpClient } from "@/domain/gateways";
 
 import { movieHtml } from "@/__mocks__/movie-html";
 
@@ -91,7 +93,7 @@ describe("MovieScrapingServiceImpl", () => {
 
 						await sut.execute(url);
 					} catch (err) {
-						expect(err).toBeInstanceOf(Error);
+						expect(err).toBeInstanceOf(EmptyDataError);
 					}
 				});
 			});
