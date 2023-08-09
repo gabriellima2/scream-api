@@ -11,6 +11,11 @@ import { movieHtml } from "@/__mocks__/movie-html";
 
 type Dependencies = { httpClient: HttpClient; scraper: MovieScrapingAdapter };
 
+const BASE_URL = "any_url";
+const EXPECTED_SCRAPED_DATA = {
+	name: "any_name",
+};
+
 const makeSut = async (dependencies: Dependencies) => {
 	const app = await Test.createTestingModule({
 		providers: [MovieScrapingServiceImpl],
@@ -45,20 +50,16 @@ describe("MovieScrapingServiceImpl", () => {
 		describe("Execute", () => {
 			describe("Success", () => {
 				it("should return data correctly from scraped page", async () => {
-					const expectedScrapedData = {
-						name: "any_name",
-					};
 					const { httpClient, scraper } = MockDependenciesReturnValue({
 						httpClient: movieHtml.onlyName,
-						scraper: expectedScrapedData,
+						scraper: EXPECTED_SCRAPED_DATA,
 					});
-					const url = "any_url";
 					const sut = await makeSut({ httpClient, scraper });
 
-					const result = await sut.execute(url);
+					const result = await sut.execute(BASE_URL);
 
-					expect(result).toMatchObject(expectedScrapedData);
-					expect(httpClient.getHtmlPage).toHaveBeenCalledWith(url);
+					expect(result).toMatchObject(EXPECTED_SCRAPED_DATA);
+					expect(httpClient.getHtmlPage).toHaveBeenCalledWith(BASE_URL);
 					expect(httpClient.getHtmlPage).toHaveBeenCalledTimes(1);
 					expect(scraper.execute).toHaveBeenCalledWith(movieHtml.onlyName);
 					expect(scraper.execute).toHaveBeenCalledTimes(1);
@@ -67,17 +68,13 @@ describe("MovieScrapingServiceImpl", () => {
 			describe("Errors", () => {
 				it("should throw an error when getHtmlPage return invalid value", async () => {
 					try {
-						const expectedScrapedData = {
-							name: "any_name",
-						};
 						const { httpClient, scraper } = MockDependenciesReturnValue({
 							httpClient: undefined,
-							scraper: expectedScrapedData,
+							scraper: EXPECTED_SCRAPED_DATA,
 						});
-						const url = "any_url";
 						const sut = await makeSut({ httpClient, scraper });
 
-						await sut.execute(url);
+						await sut.execute(BASE_URL);
 					} catch (err) {
 						expect(err).toBeInstanceOf(Error);
 					}
@@ -88,10 +85,9 @@ describe("MovieScrapingServiceImpl", () => {
 							httpClient: movieHtml.onlyName,
 							scraper: { name: undefined },
 						});
-						const url = "any_url";
 						const sut = await makeSut({ httpClient, scraper });
 
-						await sut.execute(url);
+						await sut.execute(BASE_URL);
 					} catch (err) {
 						expect(err).toBeInstanceOf(EmptyDataError);
 					}
