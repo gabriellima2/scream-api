@@ -1,35 +1,26 @@
-import { Test } from "@nestjs/testing";
-
-import { MovieScrapingServiceImpl } from "./movie-scraping-service-impl";
+import { GenericScrapingGateway, type HttpClient } from "@/domain/gateways";
+import type { GenericScrapingAdapter } from "@/domain/adapters";
 import { EmptyDataError } from "@/domain/errors";
 
-import type { MovieScrapingService } from "@/domain/services";
-import type { MovieScrapingAdapter } from "@/domain/adapters";
-import type { HttpClient } from "@/domain/gateways";
+import { characterHtml } from "@/__mocks__/character-html";
 
-import { movieHtml } from "@/__mocks__/movie-html";
+type ExpectedScrapedData = { name: string };
 
-type Dependencies = { httpClient: HttpClient; scraper: MovieScrapingAdapter };
+type Dependencies = {
+	httpClient: HttpClient;
+	scraper: GenericScrapingAdapter<ExpectedScrapedData>;
+};
 
 const BASE_URL = "any_url";
-const EXPECTED_SCRAPED_DATA = {
+const EXPECTED_SCRAPED_DATA: ExpectedScrapedData = {
 	name: "any_name",
 };
 
-const makeSut = async (dependencies: Dependencies) => {
-	const app = await Test.createTestingModule({
-		providers: [MovieScrapingServiceImpl],
-	})
-		.overrideProvider(MovieScrapingServiceImpl)
-		.useValue(
-			new MovieScrapingServiceImpl(
-				dependencies.httpClient,
-				dependencies.scraper
-			)
-		)
-		.compile();
-
-	return app.get<MovieScrapingService>(MovieScrapingServiceImpl);
+const makeSut = (dependencies: Dependencies) => {
+	return new GenericScrapingGateway(
+		dependencies.httpClient,
+		dependencies.scraper
+	);
 };
 
 const MockDependenciesReturnValue = (
@@ -45,23 +36,23 @@ const MockDependenciesReturnValue = (
 	};
 };
 
-describe("MovieScrapingServiceImpl", () => {
+describe("GenericScrapingGateway", () => {
 	describe("Methods", () => {
 		describe("Execute", () => {
 			describe("Success", () => {
-				it("should return data correctly from scraped page", async () => {
+				it("should return the correct data from the scraped page", async () => {
 					const { httpClient, scraper } = MockDependenciesReturnValue({
-						httpClient: movieHtml.onlyName,
+						httpClient: characterHtml.onlyName,
 						scraper: EXPECTED_SCRAPED_DATA,
 					});
-					const sut = await makeSut({ httpClient, scraper });
+					const sut = makeSut({ httpClient, scraper });
 
 					const result = await sut.execute(BASE_URL);
 
 					expect(result).toMatchObject(EXPECTED_SCRAPED_DATA);
 					expect(httpClient.getHtmlPage).toHaveBeenCalledWith(BASE_URL);
 					expect(httpClient.getHtmlPage).toHaveBeenCalledTimes(1);
-					expect(scraper.execute).toHaveBeenCalledWith(movieHtml.onlyName);
+					expect(scraper.execute).toHaveBeenCalledWith(characterHtml.onlyName);
 					expect(scraper.execute).toHaveBeenCalledTimes(1);
 				});
 			});
@@ -72,7 +63,7 @@ describe("MovieScrapingServiceImpl", () => {
 							httpClient: undefined,
 							scraper: EXPECTED_SCRAPED_DATA,
 						});
-						const sut = await makeSut({ httpClient, scraper });
+						const sut = makeSut({ httpClient, scraper });
 
 						await sut.execute(BASE_URL);
 					} catch (err) {
@@ -82,10 +73,10 @@ describe("MovieScrapingServiceImpl", () => {
 				it("should throw an error when scraper return invalid value", async () => {
 					try {
 						const { httpClient, scraper } = MockDependenciesReturnValue({
-							httpClient: movieHtml.onlyName,
+							httpClient: characterHtml.onlyName,
 							scraper: { name: undefined },
 						});
-						const sut = await makeSut({ httpClient, scraper });
+						const sut = makeSut({ httpClient, scraper });
 
 						await sut.execute(BASE_URL);
 					} catch (err) {
