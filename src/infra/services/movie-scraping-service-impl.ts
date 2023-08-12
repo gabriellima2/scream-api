@@ -7,6 +7,8 @@ import { EmptyDataError } from "@/domain/errors";
 import { HttpClient } from "@/domain/gateways";
 import { Movie } from "@/domain/entities";
 
+import { ObjectIsEmpty } from "@/domain/helpers/object-is-empty";
+
 @Injectable()
 export class MovieScrapingServiceImpl implements MovieScrapingService {
 	constructor(
@@ -18,7 +20,7 @@ export class MovieScrapingServiceImpl implements MovieScrapingService {
 		const html = await this.http.getHtmlPage(url);
 		if (!html) throw new EmptyDataError();
 		const data = this.scraper.execute(html);
-		if (Object.values(data).some((value) => !value)) throw new EmptyDataError();
+		if (ObjectIsEmpty(data)) throw new EmptyDataError();
 		return { id: "1", ...data } as Movie;
 	}
 }
