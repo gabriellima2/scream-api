@@ -1,5 +1,5 @@
-import { Character } from "../entities";
+import { GenericScrapingAdapter } from "./generic-scraping-adapter";
+import { CharacterScrapingProtocols } from "../protocols";
 
-export interface CharacterScrapingAdapter {
-	execute(html: string): Partial<Omit<Character, "id">>;
-}
+export interface CharacterScrapingAdapter
+	extends GenericScrapingAdapter<CharacterScrapingProtocols.Response> {}

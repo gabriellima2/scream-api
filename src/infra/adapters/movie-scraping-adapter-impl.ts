@@ -1,7 +1,8 @@
 import { CheerioAPI, load } from "cheerio";
 
+import { MovieScrapingProtocols } from "@/domain/protocols";
 import { MovieScrapingAdapter } from "@/domain/adapters";
-import { Movie, MovieOverview } from "@/domain/entities";
+import { MovieOverview } from "@/domain/entities";
 
 import {
 	formatSynopsis,
@@ -14,7 +15,7 @@ import { createApiUrl } from "../helpers/create-api-url";
 import { createObject } from "../helpers/create-object";
 
 export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
-	execute(html: string): Partial<Omit<Movie, "id">> {
+	execute(html: string): MovieScrapingProtocols.Response {
 		const $ = load(html);
 		return {
 			name: this.getName($),
