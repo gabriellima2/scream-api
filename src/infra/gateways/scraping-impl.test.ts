@@ -3,7 +3,7 @@ import { type HttpClient } from "@/domain/gateways";
 import { EmptyDataError } from "@/domain/errors";
 
 import { characterHtml } from "@/__mocks__/character-html";
-import { GenericScrapingGatewayImpl } from "./generic-scraping-gateway-impl";
+import { ScrapingImpl } from "./scraping-impl";
 
 type ExpectedScrapedData = { name: string };
 
@@ -18,10 +18,7 @@ const EXPECTED_SCRAPED_DATA: ExpectedScrapedData = {
 };
 
 const makeSut = (dependencies: Dependencies) => {
-	return new GenericScrapingGatewayImpl(
-		dependencies.httpClient,
-		dependencies.scraper
-	);
+	return new ScrapingImpl(dependencies.httpClient, dependencies.scraper);
 };
 
 const MockDependenciesReturnValue = (
@@ -37,7 +34,7 @@ const MockDependenciesReturnValue = (
 	};
 };
 
-describe("GenericScrapingGatewayImpl", () => {
+describe("ScrapingImpl", () => {
 	describe("Methods", () => {
 		describe("Execute", () => {
 			describe("Success", () => {
