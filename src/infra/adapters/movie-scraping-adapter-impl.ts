@@ -5,12 +5,12 @@ import { MovieScrapingAdapter } from "@/domain/adapters";
 import { MovieOverview } from "@/domain/entities";
 
 import {
-	formatSynopsis,
-	formatMovieName,
 	formatOverviewTitle,
-	formatCharacterName,
 	formatOverviewContent,
 } from "../helpers/scraping";
+import { removeInvalidChars } from "../helpers/remove-invalid-chars";
+import { removeBreakLine } from "../helpers/remove-break-line";
+import { createApiParam } from "../helpers/create-api-param";
 import { createApiUrl } from "../helpers/create-api-url";
 import { createObject } from "../helpers/create-object";
 
@@ -33,13 +33,13 @@ export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
 	private getName($: CheerioAPI): string | undefined {
 		const name = $("#firstHeading > i").add($("#firstHeading")).first().text();
 		if (!name) return undefined;
-		return formatMovieName(name);
+		return removeInvalidChars(name);
 	}
 
 	private getSynopsis($: CheerioAPI): string | undefined {
 		const synopsis = $("#Synopsis").parent().next("p").text();
 		if (!synopsis) return undefined;
-		return formatSynopsis(synopsis);
+		return removeBreakLine(synopsis);
 	}
 
 	private getCharacters($: CheerioAPI): string[] | undefined {
@@ -54,7 +54,7 @@ export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
 			if (!characterName) return;
 			const characterApiUrl = createApiUrl(
 				"characters",
-				formatCharacterName(characterName)
+				createApiParam(characterName)
 			);
 			characters.push(characterApiUrl);
 		});
