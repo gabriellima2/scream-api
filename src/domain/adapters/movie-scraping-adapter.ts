@@ -1,5 +1,5 @@
 import { GenericScrapingAdapter } from "./generic-scraping-adapter";
-import { CharacterScrapingProtocols } from "../protocols";
+import { MovieScrapingProtocols } from "../protocols";
 
 export interface MovieScrapingAdapter
-	extends GenericScrapingAdapter<CharacterScrapingProtocols.Response> {}
+	extends GenericScrapingAdapter<MovieScrapingProtocols.Response> {}
