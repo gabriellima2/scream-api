@@ -2,15 +2,16 @@ import { CharacterScrapingAdapterImpl } from "./character-scraping-adapter-impl"
 
 import { invalidHtml } from "@/__mocks__/invalid-html";
 import { characterHtml } from "@/__mocks__/character-html";
+import { createApiUrl } from "../helpers/create-api-url";
 
 const makeSut = () => new CharacterScrapingAdapterImpl();
 
 describe("CharacterScrapingAdapterImpl", () => {
 	const NAME = "any_name";
 	const IMAGE = "any_src";
-	const DESCRIPTION = "any_synopsis";
+	const DESCRIPTION = "any_description";
 	const OVERVIEW = { any_title: "any_content" };
-	const APPEARANCES = ["any_movie"];
+	const APPEARANCES = [createApiUrl("movies", "any_movie")];
 
 	describe("Public Methods", () => {
 		it("should return correctly with all character data", () => {

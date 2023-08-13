@@ -4,6 +4,10 @@ import { CharacterScrapingProtocols } from "@/domain/protocols";
 import { CharacterScrapingAdapter } from "@/domain/adapters";
 import { CharacterOverview } from "@/domain/entities";
 
+import { removeInvalidChars } from "../helpers/remove-invalid-chars";
+import { createApiParam } from "../helpers/create-api-param";
+import { createApiUrl } from "../helpers/create-api-url";
+
 export class CharacterScrapingAdapterImpl implements CharacterScrapingAdapter {
 	execute(html: string): CharacterScrapingProtocols.Response {
 		const $ = load(html);
@@ -17,15 +21,23 @@ export class CharacterScrapingAdapterImpl implements CharacterScrapingAdapter {
 	}
 
 	private getImage($: CheerioAPI): string | undefined {
-		return "image";
+		return $("figure > a > img").attr("src");
 	}
 
 	private getName($: CheerioAPI): string | undefined {
-		return "name";
+		const name = $("#firstHeading > i").add($("#firstHeading")).first().text();
+		if (!name) return undefined;
+		return removeInvalidChars(name);
 	}
 
 	private getDescription($: CheerioAPI): string | undefined {
-		return "description";
+		const paragraphs = $(".mw-parser-output > p");
+		const description = paragraphs
+			.filter((_, el) => $(el).text().trim().length > 0)
+			.first()
+			.text();
+		if (!description) return undefined;
+		return removeInvalidChars(description);
 	}
 
 	private getOverview($: CheerioAPI): CharacterOverview | undefined {
@@ -33,6 +45,16 @@ export class CharacterScrapingAdapterImpl implements CharacterScrapingAdapter {
 	}
 
 	private getAppearances($: CheerioAPI): string[] | undefined {
-		return [""];
+		const appearances = [];
+		const container = $("#Appearances").parent().next("ul");
+		if (!container) return undefined;
+		$("li", container).each((_, el) => {
+			const appearance = $("li > i > a", el).text();
+			if (!appearance) return;
+			const appearanceApiUrl = createApiUrl("movies", createApiParam(appearance));
+			appearances.push(appearanceApiUrl);
+		});
+		if (appearances.length <= 0) return undefined;
+		return appearances;
 	}
 }
