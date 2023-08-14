@@ -2,7 +2,6 @@ export type CharacterStatus = "alive" | "dead" | "unknown";
 
 export interface CharacterOverview {
 	born: string;
-	age: number;
 	personality: string[];
 	status: CharacterStatus;
 	portrayed_by: string;

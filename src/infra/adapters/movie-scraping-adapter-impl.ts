@@ -4,12 +4,10 @@ import { MovieScrapingProtocols } from "@/domain/protocols";
 import { MovieScrapingAdapter } from "@/domain/adapters";
 import { MovieOverview } from "@/domain/entities";
 
-import {
-	formatOverviewTitle,
-	formatOverviewContent,
-} from "../helpers/scraping";
+import { formatOverviewContent } from "../helpers/scraping";
 import { removeInvalidChars } from "../helpers/remove-invalid-chars";
 import { removeBreakLine } from "../helpers/remove-break-line";
+import { formatObjectKey } from "../helpers/format-object-key";
 import { createApiParam } from "../helpers/create-api-param";
 import { createApiUrl } from "../helpers/create-api-url";
 import { createObject } from "../helpers/create-object";
@@ -70,7 +68,7 @@ export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
 			const title = $(".pi-data-label", el).text();
 			if (title.toLowerCase() === "starring") return;
 			const content = $(".pi-data-value.pi-font", el).text();
-			const titleFormatted = formatOverviewTitle(title);
+			const titleFormatted = formatObjectKey(title);
 			const values = formatOverviewContent(content);
 			overview = { ...overview, ...createObject(titleFormatted, values) };
 		});
