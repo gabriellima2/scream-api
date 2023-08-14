@@ -1,3 +1,3 @@
 export function ObjectIsEmpty(data: object) {
-	return Object.values(data).some((value) => !value);
+	return Object.keys(data).length <= 0;
 }

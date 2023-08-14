@@ -1,8 +1,14 @@
-import { DOUBLE_BLANK_SPACES, TEXT_TOGETHER } from "@/infra/constants/regex";
+import {
+	DATE_FORMAT,
+	DOUBLE_BLANK_SPACES,
+	TEXT_TOGETHER,
+} from "@/infra/constants/regex";
 
 const DOLLAR_ABBR = " USD";
 
 export function formatOverviewContent(content: string): string[] | string {
+	const dateMatch = content.match(DATE_FORMAT);
+	if (dateMatch) return dateMatch[0];
 	const contentFormatted = content
 		.replace(DOLLAR_ABBR, "")
 		.replace(TEXT_TOGETHER, "$1  $2");

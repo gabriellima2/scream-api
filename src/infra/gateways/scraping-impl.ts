@@ -14,6 +14,7 @@ export class ScrapingImpl<T extends object> {
 		const html = await this.http.getHtmlPage(url);
 		if (!html) throw new EmptyDataError();
 		const data = this.scrapingAdapter.execute(html);
+		console.log(data);
 		if (ObjectIsEmpty(data)) throw new EmptyDataError();
 		return data;
 	}
