@@ -1,5 +1,8 @@
-import { Movie } from "@/domain/entities";
+import { Test } from "@nestjs/testing";
+
 import { GetMoviesServiceImpl } from "./get-movies-service-impl";
+import type { GetMoviesService } from "@/domain/services";
+import type { Movie } from "@/domain/entities";
 
 const BASE_URL = "any_url";
 const MOVIE_NAMES = ["any_name"];
@@ -10,8 +13,17 @@ const dependecies = {
 	scraping: { execute: jest.fn() },
 };
 
-const makeSut = () =>
-	new GetMoviesServiceImpl(dependecies.repository, dependecies.scraping);
+const makeSut = async () => {
+	const app = await Test.createTestingModule({
+		providers: [GetMoviesServiceImpl],
+	})
+		.overrideProvider(GetMoviesServiceImpl)
+		.useValue(
+			new GetMoviesServiceImpl(dependecies.repository, dependecies.scraping)
+		)
+		.compile();
+	return app.get<GetMoviesService>(GetMoviesServiceImpl);
+};
 
 describe("GetMoviesServiceImpl", () => {
 	beforeEach(() => {
@@ -25,7 +37,7 @@ describe("GetMoviesServiceImpl", () => {
 
 		it("should return the movies that are saved in the database", async () => {
 			dependecies.repository.findByName.mockReturnValue(movie);
-			const sut = makeSut();
+			const sut = await makeSut();
 
 			const movies = await sut.execute(BASE_URL, MOVIE_NAMES);
 
@@ -41,7 +53,7 @@ describe("GetMoviesServiceImpl", () => {
 			const movieWithoutId = { name: movie.name };
 			dependecies.scraping.execute.mockReturnValue(movieWithoutId);
 			dependecies.repository.insert.mockReturnValue(movie);
-			const sut = makeSut();
+			const sut = await makeSut();
 
 			const movies = await sut.execute(BASE_URL, MOVIE_NAMES);
 			const endpoint = `${BASE_URL}/${MOVIE_NAMES[0]}`;
@@ -57,7 +69,7 @@ describe("GetMoviesServiceImpl", () => {
 		});
 		it("should remove duplicate movies", async () => {
 			dependecies.repository.findByName.mockReturnValue(movie);
-			const sut = makeSut();
+			const sut = await makeSut();
 
 			const movies = await sut.execute(BASE_URL, [
 				MOVIE_NAMES[0],
