@@ -1,8 +1,4 @@
-import {
-	DATE_FORMAT,
-	DOUBLE_BLANK_SPACES,
-	TEXT_TOGETHER,
-} from "@/infra/constants/regex";
+import { DATE_FORMAT, DOUBLE_BLANK_SPACES, TEXT_TOGETHER } from "../regex";
 
 const DOLLAR_ABBR = " USD";
 

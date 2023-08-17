@@ -1,4 +1,4 @@
-import { BLANK_SPACES, PARENTHESES } from "@/infra/constants/regex";
+import { BLANK_SPACES, PARENTHESES } from "./regex";
 
 export function formatObjectKey(title: string) {
 	return title

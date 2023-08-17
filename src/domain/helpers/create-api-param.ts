@@ -1,4 +1,4 @@
-import { BLANK_SPACES, INVALID_CHARS } from "@/infra/constants/regex";
+import { BLANK_SPACES, INVALID_CHARS } from "./regex";
 
 export function createApiParam(param: string) {
 	const paramFormatted = param

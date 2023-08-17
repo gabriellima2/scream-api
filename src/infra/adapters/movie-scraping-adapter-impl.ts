@@ -4,13 +4,14 @@ import { MovieScrapingProtocols } from "@/domain/protocols";
 import { MovieScrapingAdapter } from "@/domain/adapters";
 import { MovieOverview } from "@/domain/entities";
 
-import { formatOverviewContent } from "../helpers/scraping";
-import { removeInvalidChars } from "../helpers/remove-invalid-chars";
-import { removeBreakLine } from "../helpers/remove-break-line";
-import { formatObjectKey } from "../helpers/format-object-key";
-import { createApiParam } from "../helpers/create-api-param";
-import { createApiUrl } from "../helpers/create-api-url";
-import { createObject } from "../helpers/create-object";
+import { removeInvalidChars } from "@/domain/helpers/remove-invalid-chars";
+import { removeBreakLine } from "@/domain/helpers/remove-break-line";
+import { formatObjectKey } from "@/domain/helpers/format-object-key";
+import { createApiParam } from "@/domain/helpers/create-api-param";
+import { formatOverviewContent } from "@/domain/helpers/scraping";
+import { ObjectIsEmpty } from "@/domain/helpers/object-is-empty";
+import { createApiUrl } from "@/domain/helpers/create-api-url";
+import { createObject } from "@/domain/helpers/create-object";
 
 export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
 	execute(html: string): MovieScrapingProtocols.Response {
@@ -72,7 +73,7 @@ export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
 			const values = formatOverviewContent(content);
 			overview = { ...overview, ...createObject(titleFormatted, values) };
 		});
-		if (Object.keys(overview).length <= 0) return undefined;
+		if (ObjectIsEmpty(overview)) return undefined;
 		return overview;
 	}
 }

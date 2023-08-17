@@ -4,14 +4,14 @@ import { CharacterScrapingProtocols } from "@/domain/protocols";
 import { CharacterScrapingAdapter } from "@/domain/adapters";
 import { CharacterOverview } from "@/domain/entities";
 
-import { removeInvalidChars } from "../helpers/remove-invalid-chars";
+import { removeInvalidChars } from "../../domain/helpers/remove-invalid-chars";
+import { formatObjectKey } from "@/domain/helpers/format-object-key";
+import { createApiParam } from "@/domain/helpers/create-api-param";
+import { hasInformation } from "@/domain/helpers/has-information";
+import { formatOverviewContent } from "@/domain/helpers/scraping";
 import { ObjectIsEmpty } from "@/domain/helpers/object-is-empty";
-import { formatObjectKey } from "../helpers/format-object-key";
-import { createApiParam } from "../helpers/create-api-param";
-import { formatOverviewContent } from "../helpers/scraping";
-import { hasInformation } from "../helpers/has-information";
-import { createApiUrl } from "../helpers/create-api-url";
-import { createObject } from "../helpers/create-object";
+import { createApiUrl } from "@/domain/helpers/create-api-url";
+import { createObject } from "@/domain/helpers/create-object";
 
 const OVERVIEW_INFOS = ["born", "actors/actress", "status", "personality"];
 

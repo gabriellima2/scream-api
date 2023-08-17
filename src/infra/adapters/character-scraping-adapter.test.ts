@@ -1,8 +1,8 @@
 import { CharacterScrapingAdapterImpl } from "./character-scraping-adapter-impl";
 
-import { invalidHtml } from "@/__mocks__/invalid-html";
+import { createApiUrl } from "@/domain/helpers/create-api-url";
 import { characterHtml } from "@/__mocks__/character-html";
-import { createApiUrl } from "../helpers/create-api-url";
+import { invalidHtml } from "@/__mocks__/invalid-html";
 
 const makeSut = () => new CharacterScrapingAdapterImpl();
 
