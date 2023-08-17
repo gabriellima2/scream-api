@@ -22,7 +22,7 @@ export class GetMoviesServiceImpl implements GetMoviesService {
 	): Promise<MovieServicesProtocols.Response[]> {
 		const promises = movieNames.map(async (movieName) => {
 			if (!movieName) throw new Error();
-			const moviesFromDB = await this.repository.findByName(
+			const moviesFromDB = await this.repository.getByName(
 				movieName.toLowerCase()
 			);
 			if (moviesFromDB) return moviesFromDB;

@@ -9,7 +9,7 @@ const MOVIE_NAMES = ["any_name"];
 
 const movie = { id: 1, name: "any_name" };
 const dependecies = {
-	repository: { findByName: jest.fn(), insert: jest.fn() },
+	repository: { getByName: jest.fn(), insert: jest.fn() },
 	scraping: { execute: jest.fn() },
 };
 
@@ -36,15 +36,15 @@ describe("GetMoviesServiceImpl", () => {
 		}
 
 		it("should return the movies that are saved in the database", async () => {
-			dependecies.repository.findByName.mockReturnValue(movie);
+			dependecies.repository.getByName.mockReturnValue(movie);
 			const sut = await makeSut();
 
 			const movies = await sut.execute(BASE_URL, MOVIE_NAMES);
 
 			expectMoviesCorrectly(movies);
 			expect(dependecies.scraping.execute).not.toHaveBeenCalled();
-			expect(dependecies.repository.findByName).toHaveBeenCalledTimes(1);
-			expect(dependecies.repository.findByName).toHaveBeenCalledWith(
+			expect(dependecies.repository.getByName).toHaveBeenCalledTimes(1);
+			expect(dependecies.repository.getByName).toHaveBeenCalledWith(
 				MOVIE_NAMES[0]
 			);
 			expect(dependecies.repository.insert).not.toHaveBeenCalled();
@@ -61,14 +61,14 @@ describe("GetMoviesServiceImpl", () => {
 			expectMoviesCorrectly(movies);
 			expect(dependecies.scraping.execute).toHaveBeenCalledTimes(1);
 			expect(dependecies.scraping.execute).toHaveBeenCalledWith(endpoint);
-			expect(dependecies.repository.findByName).toHaveBeenCalled();
+			expect(dependecies.repository.getByName).toHaveBeenCalled();
 			expect(dependecies.repository.insert).toHaveBeenCalledTimes(1);
 			expect(dependecies.repository.insert).toHaveBeenCalledWith(
 				movieWithoutId
 			);
 		});
 		it("should remove duplicate movies", async () => {
-			dependecies.repository.findByName.mockReturnValue(movie);
+			dependecies.repository.getByName.mockReturnValue(movie);
 			const sut = await makeSut();
 
 			const movies = await sut.execute(BASE_URL, [
@@ -78,7 +78,7 @@ describe("GetMoviesServiceImpl", () => {
 
 			expectMoviesCorrectly(movies);
 			expect(dependecies.scraping.execute).not.toHaveBeenCalled();
-			expect(dependecies.repository.findByName).toHaveBeenCalled();
+			expect(dependecies.repository.getByName).toHaveBeenCalled();
 		});
 	});
 });
