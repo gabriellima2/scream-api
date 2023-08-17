@@ -1,5 +1,5 @@
-import { MovieServicesProtocols } from "@/domain/protocols/movie-services-protocols";
+import { GenericMovieService } from "./generic-movie-service";
+import { MovieServicesProtocols } from "@/domain/protocols";
 
-export interface GetMoviesService {
-	execute(): Promise<MovieServicesProtocols.Response[]>;
-}
+export interface GetMoviesService
+	extends GenericMovieService<MovieServicesProtocols.Response[]> {}
