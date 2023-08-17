@@ -1,3 +1,3 @@
 export interface Scraping<T extends object> {
-	execute(url: string): T;
+	execute(url: string): Promise<T>;
 }

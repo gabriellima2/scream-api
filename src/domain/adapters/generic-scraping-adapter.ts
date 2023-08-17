@@ -1,3 +1,3 @@
 export interface GenericScrapingAdapter<T> {
-	execute(html: string): T;
+	execute(html: string): Promise<T>;
 }
