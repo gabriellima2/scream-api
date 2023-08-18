@@ -4,7 +4,7 @@ import { CharacterScrapingProtocols } from "@/domain/protocols";
 import { CharacterScrapingAdapter } from "@/domain/adapters";
 import { CharacterOverview } from "@/domain/entities";
 
-import { removeInvalidChars } from "../../domain/helpers/remove-invalid-chars";
+import { removeInvalidChars } from "@/domain/helpers/remove-invalid-chars";
 import { formatObjectKey } from "@/domain/helpers/format-object-key";
 import { createApiParam } from "@/domain/helpers/create-api-param";
 import { hasInformation } from "@/domain/helpers/has-information";
