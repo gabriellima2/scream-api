@@ -4,14 +4,12 @@ import { GetMoviesServiceImpl } from "./get-movies-service-impl";
 import type { GetMoviesService } from "@/domain/services";
 import type { Movie } from "@/domain/entities";
 
+import { dependecies } from "@/__mocks__/service-deps";
+
 const BASE_URL = "any_url";
 const MOVIE_NAMES = ["any_name"];
 
 const movie = { id: 1, name: "any_name" };
-const dependecies = {
-	repository: { getByName: jest.fn(), insert: jest.fn() },
-	scraping: { execute: jest.fn() },
-};
 
 const makeSut = async () => {
 	const app = await Test.createTestingModule({
