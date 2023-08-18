@@ -4,6 +4,7 @@ import {
 	MovieScrapingProtocols,
 	MovieServicesProtocols,
 } from "@/domain/protocols";
+import { EmptyDataError, InvalidParamsError } from "@/domain/errors";
 import { MovieRepository } from "@/domain/repositories";
 import { GetMoviesService } from "@/domain/services";
 import { Scraping } from "@/domain/gateways";
@@ -17,17 +18,18 @@ export class GetMoviesServiceImpl implements GetMoviesService {
 	) {}
 
 	async execute(
-		url: string,
+		baseUrl: string,
 		movieNames: string[]
 	): Promise<MovieServicesProtocols.Response[]> {
 		const promises = movieNames.map(async (movieName) => {
-			if (!movieName) throw new Error();
+			if (!movieName) throw new InvalidParamsError();
 			const moviesFromDB = await this.repository.getByName(
 				movieName.toLowerCase()
 			);
 			if (moviesFromDB) return moviesFromDB;
-			const movie = await this.scraping.execute(`${url}/${movieName}`);
-			if (!movie) throw new Error();
+			const url = encodeURIComponent(`${baseUrl}/${movieName}`);
+			const movie = await this.scraping.execute(url);
+			if (!movie) throw new EmptyDataError();
 			return await this.repository.insert(movie as Omit<Movie, "id">);
 		});
 		const movies = await Promise.all(promises);

@@ -1,4 +1,4 @@
-import { BaseError } from "@/domain/errors";
+import { BaseError } from "./base-error";
 import { HttpStatusCode } from "../helpers/http-status-code";
 
 export class EmptyDataError extends BaseError {

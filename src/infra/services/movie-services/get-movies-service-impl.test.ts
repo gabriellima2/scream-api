@@ -56,11 +56,11 @@ describe("GetMoviesServiceImpl", () => {
 			const sut = await makeSut();
 
 			const movies = await sut.execute(BASE_URL, MOVIE_NAMES);
-			const endpoint = `${BASE_URL}/${MOVIE_NAMES[0]}`;
+			const url = encodeURIComponent(`${BASE_URL}/${MOVIE_NAMES[0]}`);
 
 			expectMoviesCorrectly(movies);
 			expect(dependecies.scraping.execute).toHaveBeenCalledTimes(1);
-			expect(dependecies.scraping.execute).toHaveBeenCalledWith(endpoint);
+			expect(dependecies.scraping.execute).toHaveBeenCalledWith(url);
 			expect(dependecies.repository.getByName).toHaveBeenCalled();
 			expect(dependecies.repository.insert).toHaveBeenCalledTimes(1);
 			expect(dependecies.repository.insert).toHaveBeenCalledWith(
@@ -79,6 +79,25 @@ describe("GetMoviesServiceImpl", () => {
 			expectMoviesCorrectly(movies);
 			expect(dependecies.scraping.execute).not.toHaveBeenCalled();
 			expect(dependecies.repository.getByName).toHaveBeenCalled();
+		});
+	});
+	describe("Errors", () => {
+		it("should throw an error when movie names are empty", async () => {
+			try {
+				const sut = await makeSut();
+				await sut.execute(BASE_URL, []);
+			} catch (err) {
+				expect(err).toBeInstanceOf(Error);
+			}
+		});
+		it("should throw an error when scraping return is empty", async () => {
+			dependecies.scraping.execute.mockReturnValue(undefined);
+			try {
+				const sut = await makeSut();
+				await sut.execute(BASE_URL, MOVIE_NAMES);
+			} catch (err) {
+				expect(err).toBeInstanceOf(Error);
+			}
 		});
 	});
 });
