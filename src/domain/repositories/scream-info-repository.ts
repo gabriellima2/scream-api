@@ -1,4 +1,4 @@
 export interface ScreamInfoRepository<T> {
-	insert(data: T): Promise<T & { id: string }>;
+	insert(data: Omit<T, "id">): Promise<T>;
 	getByName(name: string): Promise<T>;
 }
