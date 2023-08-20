@@ -1,1 +1,1 @@
-export * from "./movie-repository";
+export * from "./scream-info-repository";
