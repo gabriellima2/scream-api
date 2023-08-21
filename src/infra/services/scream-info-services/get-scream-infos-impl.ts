@@ -24,7 +24,7 @@ export class GetScreamInfosImpl<T extends object> implements GetScreamInfos<T> {
 			const url = encodeURIComponent(`${baseUrl}/${name}`);
 			const info = await this.scraping.execute(url);
 			if (!info) throw new EmptyDataError();
-			return await this.repository.insert(info);
+			return await this.repository.insert(info as T);
 		});
 		const infos = await Promise.all(promises);
 		return [...new Set(infos)];
