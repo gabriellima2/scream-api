@@ -750,6 +750,11 @@
     path-to-regexp "3.2.0"
     tslib "2.6.0"
 
+"@nestjs/mongoose@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/mongoose/-/mongoose-10.0.1.tgz#f55f4bf79d08f4a93834fe7fe27d42b5f19fccf3"
+  integrity sha512-woUViG28WKf/kRiv6NFXu4Oc0DvAPeX4+fT4coDVt2OqndnfJZTXwkkys23uVsBpKSIflRyjPvmcVBHQvcunZw==
+
 "@nestjs/platform-express@^10.0.0":
   version "10.1.0"
   resolved "https://registry.npmjs.org/@nestjs/platform-express/-/platform-express-10.1.0.tgz"
