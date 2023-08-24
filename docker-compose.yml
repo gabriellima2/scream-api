@@ -12,7 +12,6 @@ services:
     restart: always
     volumes:
       - scream-db-vol:/data/db
-      - ./db-init.js:/docker-entrypoint-initdb.d/db-init.js:ro
     ports:
       - ${DB_PORT}:27017
   app:
