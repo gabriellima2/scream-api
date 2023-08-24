@@ -5,13 +5,14 @@ services:
     env_file:
       - .env
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${DB_NAME}
     container_name: scream-db
     restart: always
     volumes:
       - scream-db-vol:/data/db
+      - ./db-init.js:/docker-entrypoint-initdb.d/db-init.js:ro
     ports:
       - ${DB_PORT}:27017
   app:
@@ -23,6 +24,8 @@ services:
     ports:
       - 3000:3000
     depends_on:
+      - mongo
+    links:
       - mongo
 volumes:
   scream-db-vol:
