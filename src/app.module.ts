@@ -5,9 +5,6 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 
-import { MovieSchema } from "./infra/schemas";
-import { MovieModel } from "./infra/models";
-
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -25,7 +22,6 @@ import { MovieModel } from "./infra/models";
 				},
 			}),
 		}),
-		MongooseModule.forFeature([{ name: MovieModel.name, schema: MovieSchema }]),
 	],
 	controllers: [AppController],
 	providers: [AppService],

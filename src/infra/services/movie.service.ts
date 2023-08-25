@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
+import { GetMovieProtocols, GetMoviesProtocols } from "@/domain/protocols";
 import { EmptyDataError, InvalidParamsError } from "@/domain/errors";
 import { CreateMovieInputDTO } from "@/domain/dtos/movie-dtos";
 import { MovieRepository } from "@/domain/repositories";
@@ -14,25 +15,25 @@ export class MovieService {
 		private readonly uri: string
 	) {}
 
-	async getMovies(names: string[]): Promise<Movie[]> {
+	async getMovies(names: string[]): GetMoviesProtocols.Response {
 		const promises = names.map(async (name) => {
 			if (!name) throw new InvalidParamsError();
-			const infoFromDB = await this.repository.findByName(name.toLowerCase());
-			if (infoFromDB) return infoFromDB;
-			const url = encodeURIComponent(`${this.uri}/${name}`);
-			const info = await this.scraping.execute(url);
-			if (!info) throw new EmptyDataError();
-			return await this.repository.create(info as CreateMovieInputDTO);
+			const movieFromDB = await this.repository.findByName(name.toLowerCase());
+			if (movieFromDB) return movieFromDB;
+			const url = `${this.uri}/${name}`;
+			const movie = await this.scraping.execute(url);
+			if (!movie) throw new EmptyDataError();
+			return await this.repository.create(movie as CreateMovieInputDTO);
 		});
-		const infos = await Promise.all(promises);
-		return [...new Set(infos)];
+		const movies = await Promise.all(promises);
+		return [...new Set(movies)];
 	}
 
-	async getMovie(name: string): Promise<Movie> {
+	async getMovie(name: string): GetMovieProtocols.Response {
 		if (!name) throw new InvalidParamsError();
 		const movieFromDB = await this.repository.findByName(name.toLowerCase());
 		if (movieFromDB) return movieFromDB;
-		const url = encodeURIComponent(`${this.uri}/${name}`);
+		const url = `${this.uri}/${name}`;
 		const movie = await this.scraping.execute(url);
 		if (!movie) throw new EmptyDataError();
 		return await this.repository.create(movie as CreateMovieInputDTO);
