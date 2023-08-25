@@ -1,5 +1,22 @@
 version: "3.8"
 services:
+  app:
+    build: .
+    container_name: scream-api
+    restart: always
+    environment:
+      DB_ROOT_USERNAME: ${DB_ROOT_USERNAME}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      MONGO_URI: ${MONGO_URI}
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongo
+    links:
+      - mongo
   mongo:
     image: mongo
     env_file:
@@ -14,18 +31,6 @@ services:
       - scream-db-vol:/data/db
     ports:
       - ${DB_PORT}:27017
-  app:
-    build: .
-    container_name: scream-api
-    restart: always
-    volumes:
-      - .:/usr/src/app
-    ports:
-      - 3000:3000
-    depends_on:
-      - mongo
-    links:
-      - mongo
 volumes:
   scream-db-vol:
     external: false

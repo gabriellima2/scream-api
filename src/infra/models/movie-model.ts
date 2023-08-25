@@ -3,7 +3,7 @@ import { Prop, Schema } from "@nestjs/mongoose";
 
 import type { MovieOverview } from "@/domain/entities";
 
-@Schema()
+@Schema({ collection: "movies" })
 export class MovieModel extends Document {
 	@Prop({ type: String, required: true })
 	name: string;

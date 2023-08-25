@@ -18,6 +18,11 @@ import { MovieModel } from "./infra/models";
 			inject: [ConfigService],
 			useFactory: async (config: ConfigService) => ({
 				uri: config.get<string>("MONGO_URI"),
+				dbName: config.get<string>("DB_NAME"),
+				auth: {
+					username: config.get<string>("DB_ROOT_USERNAME"),
+					password: config.get<string>("DB_ROOT_PASSWORD"),
+				},
 			}),
 		}),
 		MongooseModule.forFeature([{ name: MovieModel.name, schema: MovieSchema }]),
