@@ -1,4 +1,5 @@
 import { CheerioAPI, load } from "cheerio";
+import { Injectable } from "@nestjs/common";
 
 import { MovieScrapingProtocols } from "@/domain/protocols";
 import { MovieScrapingAdapter } from "@/domain/adapters";
@@ -13,6 +14,7 @@ import { ObjectIsEmpty } from "@/domain/helpers/object-is-empty";
 import { createApiUrl } from "@/domain/helpers/create-api-url";
 import { createObject } from "@/domain/helpers/create-object";
 
+@Injectable()
 export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
 	execute(html: string): MovieScrapingProtocols.Response {
 		const $ = load(html);
