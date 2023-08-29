@@ -52,11 +52,11 @@ export class MovieModel extends Document {
 				type: [String],
 				required: true,
 			},
-			composers: {
+			composer: {
 				type: String,
 				required: true,
 			},
-			realease_date: {
+			release_date: {
 				type: String,
 				required: true,
 			},
