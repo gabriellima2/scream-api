@@ -17,13 +17,13 @@ import { MovieModel } from "../models";
 export class MovieRepositoryImpl implements MovieRepository {
 	constructor(@InjectModel(MovieModel.name) private model: Model<MovieModel>) {}
 	async create(data: CreateMovieInputDTO): Promise<CreateMovieOutputDTO> {
-		const movie = await this.model.create(data);
+		const movie = await new this.model(data).save();
 		return Object.freeze({ ...movie, id: movie._id } as Movie);
 	}
 	async findByName(
 		name: FindMovieByNameInputDTO
 	): Promise<FindMovieByNameOutputDTO> {
-		const movie = await this.model.findOne({ name }).exec();
-		return Object.freeze(movie as Movie);
+		const movie = await this.model.findOne<FindMovieByNameOutputDTO>({ name });
+		return Object.freeze(movie);
 	}
 }
