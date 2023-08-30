@@ -71,7 +71,7 @@ describe("MovieService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getMovie(NAME_PARAM);
-				const uri = encodeURIComponent(`${URI}/${NAME_PARAM}`);
+				const uri = `${URI}/${NAME_PARAM}`;
 
 				expectHasMovie(data);
 				expectMovieHasBeenScraped(uri);
@@ -114,7 +114,7 @@ describe("MovieService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getMovies(NAME_PARAMS);
-				const uri = encodeURIComponent(`${URI}/${NAME_PARAMS[0]}`);
+				const uri = `${URI}/${NAME_PARAMS[0]}`;
 
 				expectHasMovies(data);
 				expectMovieHasBeenScraped(uri);
