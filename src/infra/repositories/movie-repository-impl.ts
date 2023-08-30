@@ -17,8 +17,6 @@ import { MovieModel } from "../models";
 export class MovieRepositoryImpl implements MovieRepository {
 	constructor(@InjectModel(MovieModel.name) private model: Model<MovieModel>) {}
 	async create(data: CreateMovieInputDTO): Promise<CreateMovieOutputDTO> {
-		const alreadyHaveMovie = await this.findByName(data.name);
-		if (alreadyHaveMovie) throw new Error();
 		const movie = await new this.model(data).save();
 		return Object.freeze<Movie>({
 			id: movie.id,
