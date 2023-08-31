@@ -5,14 +5,14 @@ import { MovieScrapingProtocols } from "@/domain/protocols";
 import { MovieScrapingAdapter } from "@/domain/adapters";
 import { MovieOverview } from "@/domain/entities";
 
-import { removeInvalidChars } from "@/domain/helpers/remove-invalid-chars";
-import { removeBreakLine } from "@/domain/helpers/remove-break-line";
-import { formatObjectKey } from "@/domain/helpers/format-object-key";
-import { createApiParam } from "@/domain/helpers/create-api-param";
+import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
+import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
+import { formatObjectKey } from "@/domain/helpers/functions/format-object-key";
+import { createApiParam } from "@/domain/helpers/functions/create-api-param";
+import { ObjectIsEmpty } from "@/domain/helpers/functions/object-is-empty";
+import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
+import { createObject } from "@/domain/helpers/functions/create-object";
 import { formatOverviewContent } from "@/domain/helpers/scraping";
-import { ObjectIsEmpty } from "@/domain/helpers/object-is-empty";
-import { createApiUrl } from "@/domain/helpers/create-api-url";
-import { createObject } from "@/domain/helpers/create-object";
 
 @Injectable()
 export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {

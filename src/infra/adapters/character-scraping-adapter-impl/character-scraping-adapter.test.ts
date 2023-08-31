@@ -1,6 +1,6 @@
 import { CharacterScrapingAdapterImpl } from "./character-scraping-adapter-impl";
 
-import { createApiUrl } from "@/domain/helpers/create-api-url";
+import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { characterHtml } from "@/__mocks__/character-html";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 

@@ -1,6 +1,6 @@
 import { MovieScrapingAdapterImpl } from ".";
 
-import { createApiUrl } from "@/domain/helpers/create-api-url";
+import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 import { movieHtml } from "@/__mocks__/movie-html";
 

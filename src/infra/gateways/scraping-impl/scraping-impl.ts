@@ -3,7 +3,7 @@ import { EmptyDataError } from "@/domain/errors";
 import { Injectable } from "@nestjs/common";
 
 import { HttpClient } from "@/domain/gateways";
-import { ObjectIsEmpty } from "@/domain/helpers/object-is-empty";
+import { ObjectIsEmpty } from "@/domain/helpers/functions/object-is-empty";
 
 @Injectable()
 export class ScrapingImpl<T extends object> {
