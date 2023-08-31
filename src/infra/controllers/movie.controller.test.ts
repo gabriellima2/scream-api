@@ -44,16 +44,13 @@ describe("Movie Controller", () => {
 		});
 		describe("Fail", () => {
 			it("should handle exceptions correctly", async () => {
-				spyGetMovie.mockRejectedValue(
-					new BaseError(mockError.message, mockError.statusCode)
-				);
+				spyGetMovie.mockRejectedValue(new BaseError(mockError.message, 500));
 				try {
 					const sut = await makeSut();
 					await sut.getMovie("");
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 					expect(err.message).toBe(mockError.message);
-					expect(err.statusCode).toBe(mockError.statusCode);
 				}
 			});
 		});

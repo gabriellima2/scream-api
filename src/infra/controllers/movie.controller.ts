@@ -1,4 +1,10 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import {
+	Controller,
+	Get,
+	HttpCode,
+	HttpException,
+	Param,
+} from "@nestjs/common";
 
 import { GetMoviesProtocols } from "@/domain/protocols";
 import { MovieService } from "../services";
@@ -15,15 +21,18 @@ export class MovieController {
 	}
 
 	@Get("/movies/:name")
+	@HttpCode(200)
 	async getMovie(@Param("name") name: string) {
 		try {
 			const response = await this.service.getMovie(name);
 			return response;
 		} catch (err) {
-			return JSON.stringify({
-				statusCode: err.statusCode || DEFAULT_ERROR.statusCode,
-				message: (err as Error).message || DEFAULT_ERROR.message,
-			});
+			throw new HttpException(
+				{
+					message: (err as Error).message || DEFAULT_ERROR.message,
+				},
+				err.statusCode || DEFAULT_ERROR.statusCode
+			);
 		}
 	}
 }
