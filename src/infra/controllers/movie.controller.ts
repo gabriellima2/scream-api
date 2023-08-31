@@ -1,7 +1,9 @@
 import { Controller, Get, Param } from "@nestjs/common";
 
-import { GetMovieProtocols, GetMoviesProtocols } from "@/domain/protocols";
+import { GetMoviesProtocols } from "@/domain/protocols";
 import { MovieService } from "../services";
+
+import { DEFAULT_ERROR } from "@/domain/helpers/default-error";
 
 @Controller()
 export class MovieController {
@@ -13,7 +15,15 @@ export class MovieController {
 	}
 
 	@Get("/movies/:name")
-	getMovie(@Param("name") name: string): GetMovieProtocols.Response {
-		return this.service.getMovie(name);
+	async getMovie(@Param("name") name: string) {
+		try {
+			const response = await this.service.getMovie(name);
+			return response;
+		} catch (err) {
+			return JSON.stringify({
+				statusCode: err.statusCode || DEFAULT_ERROR.statusCode,
+				message: (err as Error).message || DEFAULT_ERROR.message,
+			});
+		}
 	}
 }
