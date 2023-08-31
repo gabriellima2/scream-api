@@ -23,7 +23,11 @@ export class MovieService {
 			const url = `${this.uri}/${name}`;
 			const movie = await this.scraping.execute(url);
 			if (!movie) throw new EmptyDataError();
-			return await this.repository.create(movie as CreateMovieInputDTO);
+			const createdMovie = await this.repository.create(
+				movie as CreateMovieInputDTO
+			);
+			if (!createdMovie) throw new Error();
+			return createdMovie;
 		});
 		const movies = await Promise.all(promises);
 		return [...new Set(movies)];
@@ -36,6 +40,10 @@ export class MovieService {
 		const url = `${this.uri}/${name}`;
 		const movie = await this.scraping.execute(url);
 		if (!movie) throw new EmptyDataError();
-		return await this.repository.create(movie as CreateMovieInputDTO);
+		const createdMovie = await this.repository.create(
+			movie as CreateMovieInputDTO
+		);
+		if (!createdMovie) throw new Error();
+		return createdMovie;
 	}
 }

@@ -18,8 +18,9 @@ export class MovieRepositoryImpl implements MovieRepository {
 	constructor(@InjectModel(MovieModel.name) private model: Model<MovieModel>) {}
 	async create(data: CreateMovieInputDTO): Promise<CreateMovieOutputDTO> {
 		const movie = await new this.model(data).save();
+		if (!movie) return null;
 		return Object.freeze<Movie>({
-			id: movie.id,
+			id: movie._id,
 			name: movie.name,
 			characters: movie.characters,
 			image: movie.image,
@@ -30,11 +31,12 @@ export class MovieRepositoryImpl implements MovieRepository {
 	async findByName(
 		name: FindMovieByNameInputDTO
 	): Promise<FindMovieByNameOutputDTO> {
-		const movie = await this.model.findOne<FindMovieByNameOutputDTO>({
+		const movie = await this.model.findOne({
 			name: { $regex: new RegExp(name.replace(/_/g, " "), "i") },
 		});
+		if (!movie) return null;
 		return Object.freeze<Movie>({
-			id: movie.id,
+			id: movie._id,
 			name: movie.name,
 			characters: movie.characters,
 			image: movie.image,
