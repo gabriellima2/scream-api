@@ -53,8 +53,18 @@ export class MovieModel extends Document implements Omit<Movie, "id"> {
 				required: true,
 			},
 			composer: {
-				type: String,
+				type: MongooseSchema.Types.Mixed,
 				required: true,
+				validate: {
+					validator: function (v) {
+						return (
+							typeof v === "string" ||
+							(Array.isArray(v) && v.every((item) => typeof item === "string"))
+						);
+					},
+					message: (props) =>
+						`${props.value} is not a valid value for myField!`,
+				},
 			},
 			release_date: {
 				type: String,
