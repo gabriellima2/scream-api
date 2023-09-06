@@ -17,7 +17,7 @@ export class MovieController {
 
 	@Get("/movies")
 	getMovies(): GetMoviesProtocols.Response {
-		return this.service.getMovies(["scream"]);
+		return this.service.getMovies();
 	}
 
 	@Get("/movies/:name")
