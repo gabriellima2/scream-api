@@ -1,4 +1,3 @@
-export const BASE_URL = "https://scream.fandom.com/wiki";
 export const MOVIE_NAMES = [
 	"Scream",
 	"Scream_2",

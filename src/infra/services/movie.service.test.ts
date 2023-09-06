@@ -3,10 +3,10 @@ import { Test } from "@nestjs/testing";
 import { MovieService } from "./movie.service";
 
 import { MockMovie, mockMovie } from "@/__mocks__/mock-movie";
+import { MOVIE_NAMES } from "@/domain/constants/movie-names";
 
 const URI = "any_uri";
-const NAME_PARAMS = ["any_name"];
-const NAME_PARAM = "any_name";
+const NAME_PARAM = MOVIE_NAMES[0];
 const MOVIE_WITHOUT_ID = { name: mockMovie.name };
 
 export const dependencies = {
@@ -38,19 +38,21 @@ describe("MovieService", () => {
 		expect(data.length).toBe(1);
 		expect(data[0]).toMatchObject(mockMovie);
 	}
-	function expectMovieHasBeenScraped(uri: string) {
-		expect(dependencies.scraping.execute).toHaveBeenCalledTimes(1);
+	function expectMoviesHasBeenScraped(uri: string, quantity: number) {
+		expect(dependencies.scraping.execute).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.scraping.execute).toHaveBeenCalledWith(uri);
 		expect(dependencies.repository.findByName).toHaveBeenCalled();
-		expect(dependencies.repository.create).toHaveBeenCalledTimes(1);
+		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.create).toHaveBeenCalledWith(
 			MOVIE_WITHOUT_ID
 		);
 	}
-	function expectMovieHasBeenDB(movieName: string) {
+	function expectMoviesHasBeenDB(movieName: string, quantity: number) {
 		expect(dependencies.scraping.execute).not.toHaveBeenCalled();
-		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(1);
-		expect(dependencies.repository.findByName).toHaveBeenCalledWith(movieName);
+		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(quantity);
+		expect(dependencies.repository.findByName).toHaveBeenCalledWith(
+			movieName.toLowerCase()
+		);
 		expect(dependencies.repository.create).not.toHaveBeenCalled();
 	}
 
@@ -63,7 +65,7 @@ describe("MovieService", () => {
 				const data = await sut.getMovie(NAME_PARAM);
 
 				expectHasMovie(data);
-				expectMovieHasBeenDB(NAME_PARAM);
+				expectMoviesHasBeenDB(NAME_PARAM, 1);
 			});
 			it("should return movie scraped from received web address", async () => {
 				dependencies.scraping.execute.mockReturnValue(MOVIE_WITHOUT_ID);
@@ -74,7 +76,7 @@ describe("MovieService", () => {
 				const uri = `${URI}/${NAME_PARAM}`;
 
 				expectHasMovie(data);
-				expectMovieHasBeenScraped(uri);
+				expectMoviesHasBeenScraped(uri, 1);
 			});
 		});
 		describe("Errors", () => {
@@ -107,32 +109,33 @@ describe("MovieService", () => {
 		});
 	});
 	describe("GetMovies", () => {
+		const MOVIES_QUANTITY = MOVIE_NAMES.length;
 		describe("Success", () => {
 			it("should return the movies that are saved in the database", async () => {
 				dependencies.repository.findByName.mockReturnValue(mockMovie);
 				const sut = await makeSut();
 
-				const data = await sut.getMovies(NAME_PARAMS);
+				const data = await sut.getMovies();
 
 				expectHasMovies(data);
-				expectMovieHasBeenDB(NAME_PARAMS[0]);
+				expectMoviesHasBeenDB(MOVIE_NAMES[0], MOVIES_QUANTITY);
 			});
 			it("should return movies scraped from received web address", async () => {
 				dependencies.scraping.execute.mockReturnValue(MOVIE_WITHOUT_ID);
 				dependencies.repository.create.mockReturnValue(mockMovie);
 				const sut = await makeSut();
 
-				const data = await sut.getMovies(NAME_PARAMS);
-				const uri = `${URI}/${NAME_PARAMS[0]}`;
+				const data = await sut.getMovies();
+				const uri = `${URI}/${MOVIE_NAMES[0]}`;
 
 				expectHasMovies(data);
-				expectMovieHasBeenScraped(uri);
+				expectMoviesHasBeenScraped(uri, MOVIES_QUANTITY);
 			});
 			it("should remove duplicate movies", async () => {
 				dependencies.repository.findByName.mockReturnValue(mockMovie);
 				const sut = await makeSut();
 
-				const data = await sut.getMovies([NAME_PARAMS[0], NAME_PARAMS[0]]);
+				const data = await sut.getMovies();
 
 				expectHasMovies(data);
 				expect(dependencies.scraping.execute).not.toHaveBeenCalled();
@@ -140,19 +143,11 @@ describe("MovieService", () => {
 			});
 		});
 		describe("Errors", () => {
-			it("should throw an error when movies names are empty", async () => {
-				try {
-					const sut = await makeSut();
-					await sut.getMovies([]);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
-			});
 			it("should throw an error when scraping return is empty", async () => {
 				dependencies.scraping.execute.mockReturnValue(undefined);
 				try {
 					const sut = await makeSut();
-					await sut.getMovies(NAME_PARAMS);
+					await sut.getMovies();
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}
@@ -161,7 +156,7 @@ describe("MovieService", () => {
 				dependencies.repository.create.mockReturnValue(null);
 				try {
 					const sut = await makeSut();
-					await sut.getMovies(NAME_PARAMS);
+					await sut.getMovies();
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}
