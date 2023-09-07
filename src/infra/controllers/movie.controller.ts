@@ -17,7 +17,7 @@ export class MovieController {
 
 	@Get("/movies")
 	@HttpCode(200)
-	async getMovies(): Promise<GetMoviesProtocols.Response> {
+	async getMovies(): GetMoviesProtocols.Response {
 		try {
 			const response = await this.service.getMovies();
 			return response;
