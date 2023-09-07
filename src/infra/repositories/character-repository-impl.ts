@@ -7,8 +7,6 @@ import {
 	CreateCharacterOutputDTO,
 	FindCharacterByNameInputDTO,
 	FindCharacterByNameOutputDTO,
-	FindCharacterByIdInputDTO,
-	FindCharacterByIdOutputDTO,
 } from "@/domain/dtos/character-dtos";
 import { CharacterRepository } from "@/domain/repositories";
 import { Character } from "@/domain/entities";
@@ -40,20 +38,6 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 		const character = await this.model.findOne({
 			name: { $regex: new RegExp(name.replace(/_/g, " "), "i") },
 		});
-		if (!character) return null;
-		return Object.freeze<Character>({
-			id: character._id,
-			name: character.name,
-			description: character.description,
-			image: character.image,
-			appearances: character.appearances,
-			overview: character.overview,
-		});
-	}
-	async findById(
-		id: FindCharacterByIdInputDTO
-	): Promise<FindCharacterByIdOutputDTO> {
-		const character = await this.model.findById(id);
 		if (!character) return null;
 		return Object.freeze<Character>({
 			id: character._id,
