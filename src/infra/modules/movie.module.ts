@@ -24,10 +24,10 @@ import type { Movie } from "@/domain/entities";
 			provide: MovieService,
 			useFactory: (
 				repository: MovieRepository,
-				scraping: ScraperGateway<Movie>,
+				scraper: ScraperGateway<Movie>,
 				uri: string
 			) => {
-				return new MovieService(repository, scraping, uri);
+				return new MovieService(repository, scraper, uri);
 			},
 			inject: [MovieRepositoryImpl, ScraperGatewayImpl, "URI"],
 		},
