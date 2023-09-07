@@ -34,6 +34,10 @@ describe("CharacterService", () => {
 	function expectHasCharacter(data: MockCharacter) {
 		expect(data).toMatchObject(mockCharacter);
 	}
+	function expectHasCharacters(data: MockCharacter[]) {
+		expect(data.length).toBe(1);
+		expect(data[0]).toMatchObject(mockCharacter);
+	}
 	function expectCharactersHasBeenScraped(uri: string, quantity: number) {
 		expect(dependencies.scraping.execute).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.scraping.execute).toHaveBeenCalledWith(uri);
@@ -101,6 +105,41 @@ describe("CharacterService", () => {
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}
+			});
+		});
+	});
+	describe("GetCharacters", () => {
+		const CHARACTER_QUANTITY = CHARACTER_NAMES.length;
+		describe("Success", () => {
+			it("should return the characters that are saved in the database", async () => {
+				dependencies.repository.findByName.mockReturnValue(mockCharacter);
+				const sut = await makeSut();
+
+				const data = await sut.getCharacters();
+
+				expectHasCharacters(data);
+				expectCharactersHasBeenDB(CHARACTER_NAMES[0], CHARACTER_QUANTITY);
+			});
+			it("should return characters scraped from received web address", async () => {
+				dependencies.scraping.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
+				dependencies.repository.create.mockReturnValue(mockCharacter);
+				const sut = await makeSut();
+
+				const data = await sut.getCharacters();
+				const uri = `${URI}/${CHARACTER_NAMES[0]}`;
+
+				expectHasCharacters(data);
+				expectCharactersHasBeenScraped(uri, CHARACTER_QUANTITY);
+			});
+			it("should remove duplicate characters", async () => {
+				dependencies.repository.findByName.mockReturnValue(mockCharacter);
+				const sut = await makeSut();
+
+				const data = await sut.getCharacters();
+
+				expectHasCharacters(data);
+				expect(dependencies.scraping.execute).not.toHaveBeenCalled();
+				expect(dependencies.repository.findByName).toHaveBeenCalled();
 			});
 		});
 	});
