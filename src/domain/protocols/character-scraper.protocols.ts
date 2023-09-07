@@ -1,5 +1,5 @@
 import { Character } from "../entities";
 
-export namespace CharacterScrapingProtocols {
+export namespace CharacterScraperProtocols {
 	export type Response = Partial<Omit<Character, "id">>;
 }

@@ -20,11 +20,7 @@ const makeSut = async () => {
 	})
 		.overrideProvider(MovieService)
 		.useValue(
-			new MovieService(
-				dependencies.repository,
-				dependencies.scraping,
-				"any_uri"
-			)
+			new MovieService(dependencies.repository, dependencies.scraper, "any_uri")
 		)
 		.compile();
 	return app.get<MovieController>(MovieController);

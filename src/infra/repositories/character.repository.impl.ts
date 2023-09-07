@@ -7,7 +7,7 @@ import {
 	CreateCharacterOutputDTO,
 	FindCharacterByNameInputDTO,
 	FindCharacterByNameOutputDTO,
-} from "@/domain/dtos/character-dtos";
+} from "@/domain/dtos";
 import { CharacterRepository } from "@/domain/repositories";
 import { Character } from "@/domain/entities";
 

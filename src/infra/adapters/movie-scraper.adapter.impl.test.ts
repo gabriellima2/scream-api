@@ -1,12 +1,12 @@
-import { MovieScrapingAdapterImpl } from ".";
+import { MovieScraperAdapterImpl } from "./movie-scraper.adapter.impl";
 
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 import { movieHtml } from "@/__mocks__/movie-html";
 
-const makeSut = () => new MovieScrapingAdapterImpl();
+const makeSut = () => new MovieScraperAdapterImpl();
 
-describe("MovieScrapingAdapterImpl", () => {
+describe("MovieScraperAdapterImpl", () => {
 	const NAME = "any_name";
 	const IMAGE = "any_src";
 	const SYNOPSIS = "any_synopsis";

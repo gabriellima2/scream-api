@@ -1,5 +1,5 @@
 import { Movie } from "../entities";
 
-export namespace MovieScrapingProtocols {
+export namespace MovieScraperProtocols {
 	export type Response = Partial<Omit<Movie, "id">>;
 }

@@ -1,2 +1,2 @@
-export * from "./movie-repository-impl";
-export * from "./character-repository-impl";
+export * from "./movie.repository.impl";
+export * from "./character.repository.impl";

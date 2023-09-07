@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { HttpClient } from "@/domain/gateways";
+import { HttpClientGateway } from "@/domain/gateways";
 
 @Injectable()
-export class HttpClientImpl implements HttpClient {
+export class HttpClientGatewayImpl implements HttpClientGateway {
 	async getHtmlPage(url: string): Promise<string> {
 		const response = await fetch(url);
 		const html = await response.text();

@@ -1,2 +1,2 @@
-export * from "./movie-schema";
-export * from "./character-schema";
+export * from "./movie.schema";
+export * from "./character.schema";

@@ -4,11 +4,11 @@ import {
 	GetCharacterProtocols,
 	GetCharactersProtocols,
 } from "@/domain/protocols";
-import { CreateCharacterInputDTO } from "@/domain/dtos/character-dtos";
 import { EmptyDataError, InvalidParamsError } from "@/domain/errors";
 import { CharacterRepository } from "@/domain/repositories";
+import { CreateCharacterInputDTO } from "@/domain/dtos";
+import { ScraperGateway } from "@/domain/gateways";
 import { Character } from "@/domain/entities";
-import { Scraping } from "@/domain/gateways";
 
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
 import { CHARACTER_NAMES } from "@/domain/constants/character-names";
@@ -17,7 +17,7 @@ import { CHARACTER_NAMES } from "@/domain/constants/character-names";
 export class CharacterService {
 	constructor(
 		private readonly repository: CharacterRepository,
-		private readonly scraping: Scraping<Character>,
+		private readonly scraper: ScraperGateway<Character>,
 		private readonly uri: string
 	) {}
 
@@ -36,7 +36,7 @@ export class CharacterService {
 		);
 		if (characterFromDB) return characterFromDB;
 		const url = `${this.uri}/${name}`;
-		const character = await this.scraping.execute(url);
+		const character = await this.scraper.execute(url);
 		if (!character) throw new EmptyDataError();
 		const createdCharacter = await this.repository.create(
 			character as CreateCharacterInputDTO

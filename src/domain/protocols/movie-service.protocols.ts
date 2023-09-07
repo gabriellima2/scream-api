@@ -1,4 +1,4 @@
-import { CreateMovieOutputDTO } from "../dtos/movie-dtos";
+import { CreateMovieOutputDTO } from "../dtos";
 
 export namespace GetMoviesProtocols {
 	export type Response = Promise<CreateMovieOutputDTO[]>;

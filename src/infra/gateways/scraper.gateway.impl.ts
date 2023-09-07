@@ -1,15 +1,15 @@
-import { GenericScrapingAdapter } from "@/domain/adapters";
+import { GenericScraperAdapter } from "@/domain/adapters";
 import { EmptyDataError } from "@/domain/errors";
 import { Injectable } from "@nestjs/common";
 
-import { HttpClient } from "@/domain/gateways";
+import { HttpClientGateway, ScraperGateway } from "@/domain/gateways";
 import { ObjectIsEmpty } from "@/domain/helpers/functions/object-is-empty";
 
 @Injectable()
-export class ScrapingImpl<T extends object> {
+export class ScraperGatewayImpl<T extends object> implements ScraperGateway<T> {
 	constructor(
-		private readonly http: HttpClient,
-		private readonly scrapingAdapter: GenericScrapingAdapter<T>
+		private readonly http: HttpClientGateway,
+		private readonly scrapingAdapter: GenericScraperAdapter<T>
 	) {}
 
 	async execute(url: string): Promise<T> {

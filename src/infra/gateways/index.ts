@@ -1,2 +1,2 @@
-export * from "./http-client-impl";
-export * from "./scraping-impl";
+export * from "./http-client.gateway.impl";
+export * from "./scraper.gateway.impl";

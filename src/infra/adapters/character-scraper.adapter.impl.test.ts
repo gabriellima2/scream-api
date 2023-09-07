@@ -1,12 +1,12 @@
-import { CharacterScrapingAdapterImpl } from "./character-scraping-adapter-impl";
+import { CharacterScraperAdapterImpl } from "./character-scraper.adapter.impl";
 
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { characterHtml } from "@/__mocks__/character-html";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 
-const makeSut = () => new CharacterScrapingAdapterImpl();
+const makeSut = () => new CharacterScraperAdapterImpl();
 
-describe("CharacterScrapingAdapterImpl", () => {
+describe("CharacterScraperAdapterImpl", () => {
 	const NAME = "any_name";
 	const IMAGE = "any_src";
 	const DESCRIPTION = "any_description";

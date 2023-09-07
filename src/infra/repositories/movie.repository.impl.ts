@@ -7,7 +7,7 @@ import {
 	CreateMovieOutputDTO,
 	FindMovieByNameInputDTO,
 	FindMovieByNameOutputDTO,
-} from "@/domain/dtos/movie-dtos";
+} from "@/domain/dtos";
 import { MovieRepository } from "@/domain/repositories";
 import { Movie } from "@/domain/entities";
 

@@ -3,7 +3,7 @@ import {
 	CreateCharacterOutputDTO,
 	FindCharacterByNameInputDTO,
 	FindCharacterByNameOutputDTO,
-} from "../dtos/character-dtos";
+} from "../dtos";
 
 export interface CharacterRepository {
 	create(data: CreateCharacterInputDTO): Promise<CreateCharacterOutputDTO>;

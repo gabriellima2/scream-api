@@ -1,15 +1,15 @@
-import type { GenericScrapingAdapter } from "@/domain/adapters";
-import { type HttpClient } from "@/domain/gateways";
+import type { GenericScraperAdapter } from "@/domain/adapters";
+import { type HttpClientGateway } from "@/domain/gateways";
 import { EmptyDataError } from "@/domain/errors";
 
 import { characterHtml } from "@/__mocks__/character-html";
-import { ScrapingImpl } from ".";
+import { ScraperGatewayImpl } from ".";
 
 type ExpectedScrapedData = { name: string };
 
 type Dependencies = {
-	httpClient: HttpClient;
-	scraper: GenericScrapingAdapter<ExpectedScrapedData>;
+	httpClient: HttpClientGateway;
+	scraper: GenericScraperAdapter<ExpectedScrapedData>;
 };
 
 const BASE_URL = "any_url";
@@ -18,7 +18,7 @@ const EXPECTED_SCRAPED_DATA: ExpectedScrapedData = {
 };
 
 const makeSut = (dependencies: Dependencies) => {
-	return new ScrapingImpl(dependencies.httpClient, dependencies.scraper);
+	return new ScraperGatewayImpl(dependencies.httpClient, dependencies.scraper);
 };
 
 const MockDependenciesReturnValue = (
@@ -34,7 +34,7 @@ const MockDependenciesReturnValue = (
 	};
 };
 
-describe("ScrapingImpl", () => {
+describe("ScraperGatewayImpl", () => {
 	describe("Methods", () => {
 		describe("Execute", () => {
 			describe("Success", () => {

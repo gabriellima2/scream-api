@@ -11,7 +11,7 @@ const MOVIE_WITHOUT_ID = { name: mockMovie.name };
 
 export const dependencies = {
 	repository: { findByName: jest.fn(), create: jest.fn() },
-	scraping: { execute: jest.fn() },
+	scraper: { execute: jest.fn() },
 };
 
 const makeSut = async () => {
@@ -20,7 +20,7 @@ const makeSut = async () => {
 	})
 		.overrideProvider(MovieService)
 		.useValue(
-			new MovieService(dependencies.repository, dependencies.scraping, URI)
+			new MovieService(dependencies.repository, dependencies.scraper, URI)
 		)
 		.compile();
 	return app.get<MovieService>(MovieService);
@@ -39,8 +39,8 @@ describe("MovieService", () => {
 		expect(data[0]).toMatchObject(mockMovie);
 	}
 	function expectMoviesHasBeenScraped(uri: string, quantity: number) {
-		expect(dependencies.scraping.execute).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.scraping.execute).toHaveBeenCalledWith(uri);
+		expect(dependencies.scraper.execute).toHaveBeenCalledTimes(quantity);
+		expect(dependencies.scraper.execute).toHaveBeenCalledWith(uri);
 		expect(dependencies.repository.findByName).toHaveBeenCalled();
 		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.create).toHaveBeenCalledWith(
@@ -48,7 +48,7 @@ describe("MovieService", () => {
 		);
 	}
 	function expectMoviesHasBeenDB(movieName: string, quantity: number) {
-		expect(dependencies.scraping.execute).not.toHaveBeenCalled();
+		expect(dependencies.scraper.execute).not.toHaveBeenCalled();
 		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.findByName).toHaveBeenCalledWith(
 			movieName.toLowerCase()
@@ -68,7 +68,7 @@ describe("MovieService", () => {
 				expectMoviesHasBeenDB(NAME_PARAM, 1);
 			});
 			it("should return movie scraped from received web address", async () => {
-				dependencies.scraping.execute.mockReturnValue(MOVIE_WITHOUT_ID);
+				dependencies.scraper.execute.mockReturnValue(MOVIE_WITHOUT_ID);
 				dependencies.repository.create.mockReturnValue(mockMovie);
 				const sut = await makeSut();
 
@@ -88,8 +88,8 @@ describe("MovieService", () => {
 					expect(err).toBeInstanceOf(Error);
 				}
 			});
-			it("should throw an error when scraping return is empty", async () => {
-				dependencies.scraping.execute.mockReturnValue(undefined);
+			it("should throw an error when scraper return is empty", async () => {
+				dependencies.scraper.execute.mockReturnValue(undefined);
 				try {
 					const sut = await makeSut();
 					await sut.getMovie(NAME_PARAM);
@@ -121,7 +121,7 @@ describe("MovieService", () => {
 				expectMoviesHasBeenDB(MOVIE_NAMES[0], MOVIES_QUANTITY);
 			});
 			it("should return movies scraped from received web address", async () => {
-				dependencies.scraping.execute.mockReturnValue(MOVIE_WITHOUT_ID);
+				dependencies.scraper.execute.mockReturnValue(MOVIE_WITHOUT_ID);
 				dependencies.repository.create.mockReturnValue(mockMovie);
 				const sut = await makeSut();
 
@@ -138,7 +138,7 @@ describe("MovieService", () => {
 				const data = await sut.getMovies();
 
 				expectHasMovies(data);
-				expect(dependencies.scraping.execute).not.toHaveBeenCalled();
+				expect(dependencies.scraper.execute).not.toHaveBeenCalled();
 				expect(dependencies.repository.findByName).toHaveBeenCalled();
 			});
 		});

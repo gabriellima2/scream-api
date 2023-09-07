@@ -1,7 +1,7 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { CharacterScrapingProtocols } from "@/domain/protocols";
-import { CharacterScrapingAdapter } from "@/domain/adapters";
+import { CharacterScraperProtocols } from "@/domain/protocols";
+import { CharacterScraperAdapter } from "@/domain/adapters";
 import { CharacterOverview } from "@/domain/entities";
 
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
@@ -15,8 +15,8 @@ import { formatOverviewContent } from "@/domain/helpers/scraping";
 
 const OVERVIEW_INFOS = ["born", "actors/actress", "status", "personality"];
 
-export class CharacterScrapingAdapterImpl implements CharacterScrapingAdapter {
-	execute(html: string): CharacterScrapingProtocols.Response {
+export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
+	execute(html: string): CharacterScraperProtocols.Response {
 		const $ = load(html);
 		return {
 			name: this.getName($),

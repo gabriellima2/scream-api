@@ -11,7 +11,7 @@ const CHARACTER_WITHOUT_ID = { name: mockCharacter.name };
 
 export const dependencies = {
 	repository: { findByName: jest.fn(), create: jest.fn() },
-	scraping: { execute: jest.fn() },
+	scraper: { execute: jest.fn() },
 };
 
 const makeSut = async () => {
@@ -20,7 +20,7 @@ const makeSut = async () => {
 	})
 		.overrideProvider(CharacterService)
 		.useValue(
-			new CharacterService(dependencies.repository, dependencies.scraping, URI)
+			new CharacterService(dependencies.repository, dependencies.scraper, URI)
 		)
 		.compile();
 	return app.get<CharacterService>(CharacterService);
@@ -39,8 +39,8 @@ describe("CharacterService", () => {
 		expect(data[0]).toMatchObject(mockCharacter);
 	}
 	function expectCharactersHasBeenScraped(uri: string, quantity: number) {
-		expect(dependencies.scraping.execute).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.scraping.execute).toHaveBeenCalledWith(uri);
+		expect(dependencies.scraper.execute).toHaveBeenCalledTimes(quantity);
+		expect(dependencies.scraper.execute).toHaveBeenCalledWith(uri);
 		expect(dependencies.repository.findByName).toHaveBeenCalled();
 		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.create).toHaveBeenCalledWith(
@@ -48,7 +48,7 @@ describe("CharacterService", () => {
 		);
 	}
 	function expectCharactersHasBeenDB(characterName: string, quantity: number) {
-		expect(dependencies.scraping.execute).not.toHaveBeenCalled();
+		expect(dependencies.scraper.execute).not.toHaveBeenCalled();
 		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.findByName).toHaveBeenCalledWith(
 			characterName.toLowerCase()
@@ -68,7 +68,7 @@ describe("CharacterService", () => {
 				expectCharactersHasBeenDB(NAME_PARAM, 1);
 			});
 			it("should return character scraped from received web address", async () => {
-				dependencies.scraping.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
+				dependencies.scraper.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
 				dependencies.repository.create.mockReturnValue(mockCharacter);
 				const sut = await makeSut();
 
@@ -88,8 +88,8 @@ describe("CharacterService", () => {
 					expect(err).toBeInstanceOf(Error);
 				}
 			});
-			it("should throw an error when scraping return is empty", async () => {
-				dependencies.scraping.execute.mockReturnValue(undefined);
+			it("should throw an error when scraper return is empty", async () => {
+				dependencies.scraper.execute.mockReturnValue(undefined);
 				try {
 					const sut = await makeSut();
 					await sut.getCharacter(NAME_PARAM);
@@ -121,7 +121,7 @@ describe("CharacterService", () => {
 				expectCharactersHasBeenDB(CHARACTER_NAMES[0], CHARACTER_QUANTITY);
 			});
 			it("should return characters scraped from received web address", async () => {
-				dependencies.scraping.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
+				dependencies.scraper.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
 				dependencies.repository.create.mockReturnValue(mockCharacter);
 				const sut = await makeSut();
 
@@ -138,7 +138,7 @@ describe("CharacterService", () => {
 				const data = await sut.getCharacters();
 
 				expectHasCharacters(data);
-				expect(dependencies.scraping.execute).not.toHaveBeenCalled();
+				expect(dependencies.scraper.execute).not.toHaveBeenCalled();
 				expect(dependencies.repository.findByName).toHaveBeenCalled();
 			});
 		});

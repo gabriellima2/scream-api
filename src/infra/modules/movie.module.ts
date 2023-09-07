@@ -1,17 +1,18 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { HttpClientImpl, ScrapingImpl } from "../gateways";
-import { MovieScrapingAdapterImpl } from "../adapters";
+import { HttpClientGatewayImpl, ScraperGatewayImpl } from "../gateways";
+import { MovieScraperAdapterImpl } from "../adapters";
 import { MovieRepositoryImpl } from "../repositories";
 import { MovieController } from "../controllers";
 import { MovieService } from "../services";
 import { MovieSchema } from "../schemas";
 import { MovieModel } from "../models";
 
-import { HttpClient, Scraping } from "@/domain/gateways";
-import { MovieRepository } from "@/domain/repositories";
-import { Movie } from "@/domain/entities";
+import type { HttpClientGateway, ScraperGateway } from "@/domain/gateways";
+import type { MovieScraperAdapter } from "@/domain/adapters";
+import type { MovieRepository } from "@/domain/repositories";
+import type { Movie } from "@/domain/entities";
 
 @Module({
 	imports: [
@@ -23,27 +24,27 @@ import { Movie } from "@/domain/entities";
 			provide: MovieService,
 			useFactory: (
 				repository: MovieRepository,
-				scraping: Scraping<Movie>,
+				scraping: ScraperGateway<Movie>,
 				uri: string
 			) => {
 				return new MovieService(repository, scraping, uri);
 			},
-			inject: [MovieRepositoryImpl, ScrapingImpl, "URI"],
+			inject: [MovieRepositoryImpl, ScraperGatewayImpl, "URI"],
 		},
 		{
-			provide: ScrapingImpl,
-			useFactory: (http: HttpClient, adapter: MovieScrapingAdapterImpl) => {
-				return new ScrapingImpl(http, adapter);
+			provide: ScraperGatewayImpl,
+			useFactory: (http: HttpClientGateway, adapter: MovieScraperAdapter) => {
+				return new ScraperGatewayImpl(http, adapter);
 			},
-			inject: [HttpClientImpl, MovieScrapingAdapterImpl],
+			inject: [HttpClientGatewayImpl, MovieScraperAdapterImpl],
 		},
 		{
 			provide: "URI",
 			useValue: "https://scream.fandom.com/wiki",
 		},
 		MovieRepositoryImpl,
-		HttpClientImpl,
-		MovieScrapingAdapterImpl,
+		HttpClientGatewayImpl,
+		MovieScraperAdapterImpl,
 	],
 	exports: [MovieService],
 })

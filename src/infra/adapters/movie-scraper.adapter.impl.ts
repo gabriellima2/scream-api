@@ -1,8 +1,8 @@
 import { CheerioAPI, load } from "cheerio";
 import { Injectable } from "@nestjs/common";
 
-import { MovieScrapingProtocols } from "@/domain/protocols";
-import { MovieScrapingAdapter } from "@/domain/adapters";
+import { MovieScraperProtocols } from "@/domain/protocols";
+import { MovieScraperAdapter } from "@/domain/adapters";
 import { MovieOverview } from "@/domain/entities";
 
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
@@ -15,8 +15,8 @@ import { createObject } from "@/domain/helpers/functions/create-object";
 import { formatOverviewContent } from "@/domain/helpers/scraping";
 
 @Injectable()
-export class MovieScrapingAdapterImpl implements MovieScrapingAdapter {
-	execute(html: string): MovieScrapingProtocols.Response {
+export class MovieScraperAdapterImpl implements MovieScraperAdapter {
+	execute(html: string): MovieScraperProtocols.Response {
 		const $ = load(html);
 		return {
 			name: this.getName($),

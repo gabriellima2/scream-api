@@ -1,3 +1,3 @@
-export * from "./movie-scraping-adapter";
-export * from "./character-scraping-adapter";
-export * from "./generic-scraping-adapter";
+export * from "./movie-scraper.adapter";
+export * from "./character-scraper.adapter";
+export * from "./generic-scraper.adapter";

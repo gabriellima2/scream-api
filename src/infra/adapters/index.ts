@@ -1,2 +1,2 @@
-export * from "./movie-scraping-adapter-impl";
-export * from "./character-scraping-adapter-impl";
+export * from "./character-scraper.adapter.impl";
+export * from "./movie-scraper.adapter.impl";
