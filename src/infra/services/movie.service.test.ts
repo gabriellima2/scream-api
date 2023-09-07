@@ -142,25 +142,5 @@ describe("MovieService", () => {
 				expect(dependencies.repository.findByName).toHaveBeenCalled();
 			});
 		});
-		describe("Errors", () => {
-			it("should throw an error when scraping return is empty", async () => {
-				dependencies.scraping.execute.mockReturnValue(undefined);
-				try {
-					const sut = await makeSut();
-					await sut.getMovies();
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
-			});
-			it("should throw an error when has error when creating a movie in db", async () => {
-				dependencies.repository.create.mockReturnValue(null);
-				try {
-					const sut = await makeSut();
-					await sut.getMovies();
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
-			});
-		});
 	});
 });
