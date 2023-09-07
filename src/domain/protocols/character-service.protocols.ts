@@ -1,4 +1,4 @@
-import { CreateCharacterOutputDTO } from "../dtos/character-dtos";
+import { CreateCharacterOutputDTO } from "../dtos";
 
 export namespace GetCharactersProtocols {
 	export type Response = Promise<CreateCharacterOutputDTO[]>;

@@ -7,6 +7,7 @@ import { CreateMovieInputDTO } from "@/domain/dtos";
 import { ScraperGateway } from "@/domain/gateways";
 import { Movie } from "@/domain/entities";
 
+import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
 import { MOVIE_NAMES } from "@/domain/constants/movie-names";
 
 @Injectable()
@@ -19,7 +20,7 @@ export class MovieService {
 
 	async getMovies(): GetMoviesProtocols.Response {
 		const promises = MOVIE_NAMES.map(async (movie) => {
-			return await this.getMovie(movie);
+			return await this.getMovie(removeInvalidChars(movie));
 		});
 		const movies = await Promise.all(promises);
 		return [...new Set(movies)];
