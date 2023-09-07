@@ -2,11 +2,12 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+import { MovieModule, CharacterModule } from "./infra/modules";
 
 @Module({
 	imports: [
+		MovieModule,
+		CharacterModule,
 		ConfigModule.forRoot({
 			envFilePath: ".env",
 		}),
@@ -23,7 +24,5 @@ import { AppService } from "./app.service";
 			}),
 		}),
 	],
-	controllers: [AppController],
-	providers: [AppService],
 })
 export class AppModule {}
