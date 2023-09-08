@@ -1,5 +1,5 @@
-export * from "./characters-name-scraper.protocols";
-export * from "./movies-name-scraper.protocols";
+export * from "./character-names-scraper.protocols";
+export * from "./movie-names-scraper.protocols";
 export * from "./character-scraper.protocols";
 export * from "./character-service.protocols";
 export * from "./movie-service.protocols";

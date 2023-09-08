@@ -1,11 +1,11 @@
-import { CharactersNameScraperAdapterImpl } from "./characters-name-scraper.adapter.impl";
+import { CharacterNamesScraperAdapterImpl } from "./character-names-scraper.adapter.impl";
 
 import { charactersNameHtml } from "@/__mocks__/characters-name-html";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 
-const makeSut = () => new CharactersNameScraperAdapterImpl();
+const makeSut = () => new CharacterNamesScraperAdapterImpl();
 
-describe("CharactersNameScraperAdapterImpl", () => {
+describe("CharacterNamesScraperAdapterImpl", () => {
 	it("should return correctly with characters name", () => {
 		const sut = makeSut();
 		const response = sut.execute(charactersNameHtml);

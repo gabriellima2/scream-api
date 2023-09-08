@@ -1,12 +1,12 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { MoviesNameScraperProtocols } from "@/domain/protocols";
-import { MoviesNameScraperAdapter } from "@/domain/adapters";
+import { MovieNamesScraperProtocols } from "@/domain/protocols";
+import { MovieNamesScraperAdapter } from "@/domain/adapters";
 
 import { convertMovieNameToDbStandard } from "@/domain/helpers/scraping";
 
-export class MoviesNameScraperAdapterImpl implements MoviesNameScraperAdapter {
-	execute(html: string): MoviesNameScraperProtocols.Response {
+export class MovieNamesScraperAdapterImpl implements MovieNamesScraperAdapter {
+	execute(html: string): MovieNamesScraperProtocols.Response {
 		const $ = load(html);
 		return this.getNames($);
 	}

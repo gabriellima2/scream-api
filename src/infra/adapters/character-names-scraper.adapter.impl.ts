@@ -1,14 +1,14 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { CharactersNameScraperProtocols } from "@/domain/protocols";
-import { CharactersNameScraperAdapter } from "@/domain/adapters";
+import { CharacterNamesScraperProtocols } from "@/domain/protocols";
+import { CharacterNamesScraperAdapter } from "@/domain/adapters";
 
 import { createApiParam } from "@/domain/helpers/functions/create-api-param";
 
-export class CharactersNameScraperAdapterImpl
-	implements CharactersNameScraperAdapter
+export class CharacterNamesScraperAdapterImpl
+	implements CharacterNamesScraperAdapter
 {
-	execute(html: string): CharactersNameScraperProtocols.Response {
+	execute(html: string): CharacterNamesScraperProtocols.Response {
 		const $ = load(html);
 		return this.getNames($);
 	}
