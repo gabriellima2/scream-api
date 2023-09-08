@@ -9,20 +9,20 @@ export class MovieModel extends Document implements Omit<Movie, "id"> {
 	name: string;
 	@Prop({
 		type: String,
-		required: true,
+		required: false,
 	})
 	image: string;
 	@Prop({
 		type: String,
-		required: true,
+		required: false,
 	})
 	synopsis: string;
 	@Prop({
-		required: true,
+		required: false,
 		type: {
 			directors: {
 				type: MongooseSchema.Types.Mixed,
-				required: true,
+				required: false,
 				validate: {
 					validator: function (v) {
 						return (
@@ -36,7 +36,7 @@ export class MovieModel extends Document implements Omit<Movie, "id"> {
 			},
 			writers: {
 				type: MongooseSchema.Types.Mixed,
-				required: true,
+				required: false,
 				validate: {
 					validator: function (v) {
 						return (
@@ -50,11 +50,11 @@ export class MovieModel extends Document implements Omit<Movie, "id"> {
 			},
 			producers: {
 				type: [String],
-				required: true,
+				required: false,
 			},
 			composer: {
 				type: MongooseSchema.Types.Mixed,
-				required: true,
+				required: false,
 				validate: {
 					validator: function (v) {
 						return (
@@ -68,22 +68,22 @@ export class MovieModel extends Document implements Omit<Movie, "id"> {
 			},
 			release_date: {
 				type: String,
-				required: true,
+				required: false,
 			},
 			running_time: {
 				type: String,
-				required: true,
+				required: false,
 			},
 			box_office: {
 				type: String,
-				required: true,
+				required: false,
 			},
 		},
 	})
 	overview: MovieOverview;
 	@Prop({
 		type: [String],
-		required: true,
+		required: false,
 	})
 	characters: string[];
 }

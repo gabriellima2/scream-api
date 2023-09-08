@@ -2,17 +2,23 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
 import { HttpClientGatewayImpl, ScraperGatewayImpl } from "../gateways";
-import { MovieScraperAdapterImpl } from "../adapters";
+import {
+	MovieNamesScraperAdapterImpl,
+	MovieScraperAdapterImpl,
+} from "../adapters";
 import { MovieRepositoryImpl } from "../repositories";
 import { MovieController } from "../controllers";
 import { MovieService } from "../services";
 import { MovieSchema } from "../schemas";
 import { MovieModel } from "../models";
 
-import type { HttpClientGateway, ScraperGateway } from "@/domain/gateways";
-import type { MovieScraperAdapter } from "@/domain/adapters";
+import type { HttpClientGateway } from "@/domain/gateways";
+import type {
+	MovieNamesScraperAdapter,
+	MovieScraperAdapter,
+	MovieScrapersAdapter,
+} from "@/domain/adapters";
 import type { MovieRepository } from "@/domain/repositories";
-import type { Movie } from "@/domain/entities";
 
 @Module({
 	imports: [
@@ -24,19 +30,28 @@ import type { Movie } from "@/domain/entities";
 			provide: MovieService,
 			useFactory: (
 				repository: MovieRepository,
-				scraper: ScraperGateway<Movie>,
+				scrapers: MovieScrapersAdapter,
 				uri: string
 			) => {
-				return new MovieService(repository, scraper, uri);
+				return new MovieService(repository, scrapers, uri);
 			},
-			inject: [MovieRepositoryImpl, ScraperGatewayImpl, "URI"],
+			inject: [MovieRepositoryImpl, "SCRAPERS", "URI"],
 		},
 		{
-			provide: ScraperGatewayImpl,
-			useFactory: (http: HttpClientGateway, adapter: MovieScraperAdapter) => {
-				return new ScraperGatewayImpl(http, adapter);
-			},
-			inject: [HttpClientGatewayImpl, MovieScraperAdapterImpl],
+			provide: "SCRAPERS",
+			useFactory: (
+				http: HttpClientGateway,
+				movieScraperAdapter: MovieScraperAdapter,
+				nameScraperAdapter: MovieNamesScraperAdapter
+			) => ({
+				movie: new ScraperGatewayImpl(http, movieScraperAdapter),
+				names: new ScraperGatewayImpl(http, nameScraperAdapter),
+			}),
+			inject: [
+				HttpClientGatewayImpl,
+				MovieScraperAdapterImpl,
+				MovieNamesScraperAdapterImpl,
+			],
 		},
 		{
 			provide: "URI",
@@ -45,6 +60,7 @@ import type { Movie } from "@/domain/entities";
 		MovieRepositoryImpl,
 		HttpClientGatewayImpl,
 		MovieScraperAdapterImpl,
+		MovieNamesScraperAdapterImpl,
 	],
 	exports: [MovieService],
 })
