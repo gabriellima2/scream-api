@@ -4,7 +4,7 @@ export interface CharacterOverview {
 	born: string;
 	personality: string[];
 	status: CharacterStatus;
-	portrayed_by: string;
+	portrayed_by: string[] | string;
 }
 
 export interface Character {

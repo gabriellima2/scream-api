@@ -26,6 +26,7 @@ export class CharacterNamesScraperAdapterImpl
 			});
 		});
 		if (names.length <= 0) return;
+		console.log(names);
 		return names;
 	}
 }

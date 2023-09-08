@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Schema as MongooseSchema } from "mongoose";
 import { Prop, Schema } from "@nestjs/mongoose";
 
 import type { Character, CharacterOverview } from "@/domain/entities";
@@ -9,39 +9,49 @@ export class CharacterModel extends Document implements Omit<Character, "id"> {
 	name: string;
 	@Prop({
 		type: String,
-		required: true,
+		required: false,
 	})
 	image: string;
 	@Prop({
 		type: String,
-		required: true,
+		required: false,
 	})
 	description: string;
 	@Prop({
-		required: true,
+		required: false,
 		type: {
 			born: {
 				type: String,
-				required: true,
+				required: false,
 			},
 			personality: {
 				type: [String],
-				required: true,
+				required: false,
 			},
 			status: {
 				type: String,
-				required: true,
+				required: false,
 			},
 			portrayed_by: {
-				type: String,
-				required: true,
+				type: MongooseSchema.Types.Mixed,
+				required: false,
+				validate: {
+					validator: function (v) {
+						return (
+							typeof v === "string" ||
+							(Array.isArray(v) && v.every((item) => typeof item === "string"))
+						);
+					},
+					message: (props) =>
+						`${props.value} is not a valid value for myField!`,
+				},
 			},
 		},
 	})
 	overview: CharacterOverview;
 	@Prop({
 		type: [String],
-		required: true,
+		required: false,
 	})
 	appearances: string[];
 }

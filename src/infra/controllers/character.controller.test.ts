@@ -25,7 +25,7 @@ const makeSut = async () => {
 		.useValue(
 			new CharacterService(
 				dependencies.repository,
-				dependencies.scraper,
+				dependencies.scrapers,
 				"any_uri"
 			)
 		)
