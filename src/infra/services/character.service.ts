@@ -11,7 +11,7 @@ import { ScraperGateway } from "@/domain/gateways";
 import { Character } from "@/domain/entities";
 
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
-import { CHARACTER_NAMES } from "@/domain/constants/character-names";
+import { CHARACTER_NAMES } from "@/__mocks__/character-names";
 
 @Injectable()
 export class CharacterService {

@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import { MovieService } from "./movie.service";
 
 import { MockMovie, mockMovie } from "@/__mocks__/mock-movie";
-import { MOVIE_NAMES } from "@/domain/constants/movie-names";
+import { MOVIE_NAMES } from "@/__mocks__/movie-names";
 
 const URI = "any_uri";
 const NAME_PARAM = MOVIE_NAMES[0];

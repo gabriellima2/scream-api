@@ -3,7 +3,7 @@ import { Test } from "@nestjs/testing";
 import { CharacterService } from "./character.service";
 
 import { MockCharacter, mockCharacter } from "@/__mocks__/mock-character";
-import { CHARACTER_NAMES } from "@/domain/constants/character-names";
+import { CHARACTER_NAMES } from "@/__mocks__/character-names";
 
 const URI = "any_uri";
 const NAME_PARAM = CHARACTER_NAMES[0];

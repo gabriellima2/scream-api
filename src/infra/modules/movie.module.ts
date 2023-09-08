@@ -1,23 +1,23 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { HttpClientGatewayImpl, ScraperGatewayImpl } from "../gateways";
 import {
 	MovieNamesScraperAdapterImpl,
 	MovieScraperAdapterImpl,
 } from "../adapters";
+import { HttpClientGatewayImpl, ScraperGatewayImpl } from "../gateways";
 import { MovieRepositoryImpl } from "../repositories";
 import { MovieController } from "../controllers";
 import { MovieService } from "../services";
 import { MovieSchema } from "../schemas";
 import { MovieModel } from "../models";
 
-import type { HttpClientGateway } from "@/domain/gateways";
 import type {
 	MovieNamesScraperAdapter,
 	MovieScraperAdapter,
 	MovieScrapersAdapter,
 } from "@/domain/adapters";
+import type { HttpClientGateway } from "@/domain/gateways";
 import type { MovieRepository } from "@/domain/repositories";
 
 @Module({
