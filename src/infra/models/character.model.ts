@@ -1,7 +1,7 @@
-import { Document, Schema as MongooseSchema } from "mongoose";
+import { Document } from "mongoose";
 import { Prop, Schema } from "@nestjs/mongoose";
 
-import type { Character, CharacterOverview } from "@/domain/entities";
+import type { Character, CharacterStatus } from "@/domain/entities";
 
 @Schema({ collection: "characters" })
 export class CharacterModel extends Document implements Omit<Character, "id"> {
@@ -18,37 +18,25 @@ export class CharacterModel extends Document implements Omit<Character, "id"> {
 	})
 	description: string;
 	@Prop({
+		type: String,
 		required: false,
-		type: {
-			born: {
-				type: String,
-				required: false,
-			},
-			personality: {
-				type: [String],
-				required: false,
-			},
-			status: {
-				type: String,
-				required: false,
-			},
-			portrayed_by: {
-				type: MongooseSchema.Types.Mixed,
-				required: false,
-				validate: {
-					validator: function (v) {
-						return (
-							typeof v === "string" ||
-							(Array.isArray(v) && v.every((item) => typeof item === "string"))
-						);
-					},
-					message: (props) =>
-						`${props.value} is not a valid value for myField!`,
-				},
-			},
-		},
 	})
-	overview: CharacterOverview;
+	born: string;
+	@Prop({
+		type: [String],
+		required: false,
+	})
+	personality: string[];
+	@Prop({
+		type: String,
+		required: false,
+	})
+	status: CharacterStatus;
+	@Prop({
+		type: [String],
+		required: false,
+	})
+	portrayed_by: string[];
 	@Prop({
 		type: [String],
 		required: false,

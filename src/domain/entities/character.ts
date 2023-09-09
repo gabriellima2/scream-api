@@ -1,17 +1,13 @@
-export type CharacterStatus = "alive" | "dead" | "unknown";
-
-export interface CharacterOverview {
-	born: string;
-	personality: string[];
-	status: CharacterStatus;
-	portrayed_by: string[] | string;
-}
+export type CharacterStatus = "Alive" | "Deceased" | "Unknown";
 
 export interface Character {
 	id: string;
 	name: string;
 	image: string;
 	description: string;
-	overview: CharacterOverview;
+	born: string;
+	personality: string[];
+	status: CharacterStatus;
+	portrayed_by: string[];
 	appearances: string[];
 }
