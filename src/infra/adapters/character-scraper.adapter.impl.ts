@@ -9,7 +9,7 @@ import { createListFromString } from "@/domain/helpers/functions/create-list-fro
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
 import { createApiParam } from "@/domain/helpers/functions/create-api-param";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
-import { scrapeGeneralInfo } from "@/domain/helpers/scraping";
+import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private $: CheerioAPI;

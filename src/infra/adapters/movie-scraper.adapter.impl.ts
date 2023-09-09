@@ -5,12 +5,12 @@ import { MovieScraperProtocols } from "@/domain/protocols";
 import { MovieScraperAdapter } from "@/domain/adapters";
 
 import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
-import { scrapeGeneralInfo } from "@/domain/helpers/scraping/scrape-general-info";
 import { removeDollarAbbr } from "@/domain/helpers/functions/remove-dollar-abbr";
 import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
 import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
 import { createApiParam } from "@/domain/helpers/functions/create-api-param";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
+import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
 
 @Injectable()
 export class MovieScraperAdapterImpl implements MovieScraperAdapter {
