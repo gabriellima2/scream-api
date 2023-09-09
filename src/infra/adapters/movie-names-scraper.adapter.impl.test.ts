@@ -10,7 +10,7 @@ describe("MovieNamesScraperAdapterImpl", () => {
 		const sut = makeSut();
 		const response = sut.execute(moviesNameHtml);
 
-		expect(response).toMatchObject(["Any_Name"]);
+		expect(response).toMatchObject(["any_name"]);
 	});
 	it("should return correctly when movies name is not found", () => {
 		const sut = makeSut();

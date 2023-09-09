@@ -25,15 +25,19 @@ export class MovieRepositoryImpl implements MovieRepository {
 			characters: movie.characters,
 			image: movie.image,
 			synopsis: movie.synopsis,
-			overview: movie.overview,
+			producers: movie.producers,
+			directors: movie.directors,
+			writers: movie.writers,
+			composer: movie.composer,
+			box_office: movie.box_office,
+			release_date: movie.release_date,
+			running_time: movie.running_time,
 		});
 	}
 	async findByName(
 		name: FindMovieByNameInputDTO
 	): Promise<FindMovieByNameOutputDTO> {
-		const movie = await this.model.findOne({
-			name: { $regex: new RegExp(name.replace(/_/g, " "), "i") },
-		});
+		const movie = await this.model.findOne({ name });
 		if (!movie) return null;
 		return Object.freeze<Movie>({
 			id: movie._id,
@@ -41,7 +45,13 @@ export class MovieRepositoryImpl implements MovieRepository {
 			characters: movie.characters,
 			image: movie.image,
 			synopsis: movie.synopsis,
-			overview: movie.overview,
+			producers: movie.producers,
+			directors: movie.directors,
+			writers: movie.writers,
+			composer: movie.composer,
+			box_office: movie.box_office,
+			release_date: movie.release_date,
+			running_time: movie.running_time,
 		});
 	}
 }

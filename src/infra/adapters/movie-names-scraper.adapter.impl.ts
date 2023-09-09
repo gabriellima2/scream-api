@@ -3,7 +3,7 @@ import { CheerioAPI, load } from "cheerio";
 import { MovieNamesScraperProtocols } from "@/domain/protocols";
 import { MovieNamesScraperAdapter } from "@/domain/adapters";
 
-import { convertMovieNameToDbStandard } from "@/domain/helpers/scraping";
+import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
 
 export class MovieNamesScraperAdapterImpl implements MovieNamesScraperAdapter {
 	execute(html: string): MovieNamesScraperProtocols.Response {
@@ -18,7 +18,7 @@ export class MovieNamesScraperAdapterImpl implements MovieNamesScraperAdapter {
 		$("li", els).each((_, el) => {
 			const name = $("i > a", el).text();
 			if (!name) return;
-			names.push(convertMovieNameToDbStandard(names, name));
+			names.push(formatMovieName(name));
 		});
 		if (names.length <= 0) return;
 		return names;

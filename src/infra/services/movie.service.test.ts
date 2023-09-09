@@ -50,9 +50,7 @@ describe("MovieService", () => {
 	function expectMoviesHasBeenDB(movieName: string, quantity: number) {
 		expect(dependencies.scrapers.movie.execute).not.toHaveBeenCalled();
 		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.repository.findByName).toHaveBeenCalledWith(
-			movieName.toLowerCase()
-		);
+		expect(dependencies.repository.findByName).toHaveBeenCalledWith(movieName);
 		expect(dependencies.repository.create).not.toHaveBeenCalled();
 	}
 

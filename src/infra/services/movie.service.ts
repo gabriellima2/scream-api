@@ -6,6 +6,8 @@ import { MovieScrapersAdapter } from "@/domain/adapters";
 import { MovieRepository } from "@/domain/repositories";
 import { CreateMovieInputDTO } from "@/domain/dtos";
 
+import { createApiParam } from "@/domain/helpers/functions/create-api-param";
+
 @Injectable()
 export class MovieService {
 	constructor(
@@ -27,9 +29,9 @@ export class MovieService {
 
 	async getMovie(name: string): GetMovieProtocols.Response {
 		if (!name) throw new InvalidParamsError();
-		const movieFromDB = await this.repository.findByName(name.toLowerCase());
+		const movieFromDB = await this.repository.findByName(name);
 		if (movieFromDB) return movieFromDB;
-		const url = `${this.uri}/${name}`;
+		const url = `${this.uri}/${createApiParam(name)}`;
 		const movie = await this.scrapers.movie.execute(url);
 		if (!movie) throw new EmptyDataError();
 		const createdMovie = await this.repository.create(
