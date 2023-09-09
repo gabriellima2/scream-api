@@ -11,7 +11,8 @@ describe("CharacterScraperAdapterImpl", () => {
 	const CHARACTER: Omit<Character, "id"> = {
 		name: "any_name",
 		image: "any_src",
-		description: "any_description",
+		description:
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 		appearances: [createApiUrl("movies", "Any_Movie")],
 		born: "any_value",
 		status: "Unknown",
