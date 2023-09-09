@@ -3,55 +3,67 @@ import { Injectable } from "@nestjs/common";
 
 import { MovieScraperProtocols } from "@/domain/protocols";
 import { MovieScraperAdapter } from "@/domain/adapters";
-import { MovieOverview } from "@/domain/entities";
 
-import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
+import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
+import { scrapeGeneralInfo } from "@/domain/helpers/scraping/scrape-general-info";
+import { removeDollarAbbr } from "@/domain/helpers/functions/remove-dollar-abbr";
+import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
 import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
-import { formatObjectKey } from "@/domain/helpers/functions/format-object-key";
 import { createApiParam } from "@/domain/helpers/functions/create-api-param";
-import { ObjectIsEmpty } from "@/domain/helpers/functions/object-is-empty";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
-import { createObject } from "@/domain/helpers/functions/create-object";
-import { formatOverviewContent } from "@/domain/helpers/scraping";
 
 @Injectable()
 export class MovieScraperAdapterImpl implements MovieScraperAdapter {
+	private $: CheerioAPI;
+	constructor() {
+		this.$;
+	}
+
 	execute(html: string): MovieScraperProtocols.Response {
-		const $ = load(html);
+		this.$ = load(html);
 		return {
-			name: this.getName($),
-			image: this.getImage($),
-			synopsis: this.getSynopsis($),
-			overview: this.getOverview($),
-			characters: this.getCharacters($),
+			name: this.getName(),
+			image: this.getImage(),
+			synopsis: this.getSynopsis(),
+			box_office: this.getBoxOffice(),
+			composer: this.getComposer(),
+			directors: this.getDirectors(),
+			writers: this.getWriters(),
+			producers: this.getProducers(),
+			release_date: this.getRealeaseDate(),
+			characters: this.getCharacters(),
+			running_time: this.getRunningTime(),
 		};
 	}
 
-	private getImage($: CheerioAPI): string | undefined {
-		return $("figure > a > img").attr("src");
+	private getImage(): string | undefined {
+		return this.$("figure > a > img").attr("src");
 	}
 
-	private getName($: CheerioAPI): string | undefined {
-		const name = $("#firstHeading > i").add($("#firstHeading")).first().text();
-		if (!name) return undefined;
-		return removeInvalidChars(name);
+	private getName(): string | undefined {
+		const name = this.$("#firstHeading > i")
+			.add(this.$("#firstHeading"))
+			.first()
+			.text();
+		if (!name) return;
+		return formatMovieName(name);
 	}
 
-	private getSynopsis($: CheerioAPI): string | undefined {
-		const synopsis = $("#Synopsis").parent().next("p").text();
-		if (!synopsis) return undefined;
+	private getSynopsis(): string | undefined {
+		const synopsis = this.$("#Synopsis").parent().next("p").text();
+		if (!synopsis) return;
 		return removeBreakLine(synopsis);
 	}
 
-	private getCharacters($: CheerioAPI): string[] | undefined {
+	private getCharacters(): string[] | undefined {
 		const characters: string[] = [];
-		const container = $("#Main_Characters")
+		const container = this.$("#Main_Characters")
 			.parent()
 			.nextUntil("h2")
-			.add($("#Main_characters").parent().nextUntil("h2"));
-		if (!container) return undefined;
+			.add(this.$("#Main_characters").parent().nextUntil("h2"));
+		if (!container) return;
 		container.each((_, el) => {
-			const characterName = $("ul > li > a", el).eq(1).text();
+			const characterName = this.$("ul > li > a", el).eq(1).text();
 			if (!characterName) return;
 			const characterApiUrl = createApiUrl(
 				"characters",
@@ -59,23 +71,49 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 			);
 			characters.push(characterApiUrl);
 		});
-		if (characters.length <= 0) return undefined;
+		if (characters.length <= 0) return;
 		return characters;
 	}
 
-	private getOverview($: CheerioAPI): MovieOverview | undefined {
-		let overview: MovieOverview = {} as MovieOverview;
-		const container = $(".pi-data");
-		if (!container) return undefined;
-		container.each((i, el) => {
-			const title = $(".pi-data-label", el).text();
-			if (title.toLowerCase() === "starring") return;
-			const content = $(".pi-data-value.pi-font", el).text();
-			const titleFormatted = formatObjectKey(title);
-			const values = formatOverviewContent(content);
-			overview = { ...overview, ...createObject(titleFormatted, values) };
-		});
-		if (ObjectIsEmpty(overview)) return undefined;
-		return overview;
+	private getDirectors(): string[] | undefined {
+		const directors = scrapeGeneralInfo(this.$, "director");
+		if (!directors) return;
+		return createListFromString(directors);
+	}
+
+	private getWriters(): string[] | undefined {
+		const writers = scrapeGeneralInfo(this.$, "writer");
+		if (!writers) return;
+		return createListFromString(writers);
+	}
+
+	private getProducers(): string[] | undefined {
+		const producers = scrapeGeneralInfo(this.$, "producer");
+		if (!producers) return;
+		return createListFromString(producers);
+	}
+
+	private getComposer(): string[] | undefined {
+		const composer = scrapeGeneralInfo(this.$, "composer");
+		if (!composer) return;
+		return createListFromString(composer);
+	}
+
+	private getRealeaseDate(): string | undefined {
+		const realeaseDate = scrapeGeneralInfo(this.$, "release");
+		if (!realeaseDate) return;
+		return realeaseDate;
+	}
+
+	private getRunningTime(): string | undefined {
+		const runningTime = scrapeGeneralInfo(this.$, "runtime");
+		if (!runningTime) return;
+		return runningTime;
+	}
+
+	private getBoxOffice(): string | undefined {
+		const boxOffice = scrapeGeneralInfo(this.$, "boxoffice");
+		if (!boxOffice) return;
+		return removeDollarAbbr(boxOffice);
 	}
 }
