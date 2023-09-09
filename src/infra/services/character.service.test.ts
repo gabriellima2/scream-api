@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 
 import { CharacterService } from "./character.service";
 
+import { createApiParam } from "@/domain/helpers/functions/create-api-param";
 import { MockCharacter, mockCharacter } from "@/__mocks__/mock-character";
 import { CHARACTER_NAMES } from "@/__mocks__/character-names";
 
@@ -52,12 +53,10 @@ describe("CharacterService", () => {
 			CHARACTER_WITHOUT_ID
 		);
 	}
-	function expectCharactersHasBeenDB(characterName: string, quantity: number) {
+	function expectCharactersHasBeenDB(name: string, quantity: number) {
 		expect(dependencies.scrapers.character.execute).not.toHaveBeenCalled();
 		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.repository.findByName).toHaveBeenCalledWith(
-			characterName.toLowerCase()
-		);
+		expect(dependencies.repository.findByName).toHaveBeenCalledWith(name);
 		expect(dependencies.repository.create).not.toHaveBeenCalled();
 	}
 
@@ -80,7 +79,7 @@ describe("CharacterService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getCharacter(NAME_PARAM);
-				const uri = `${URI}/${NAME_PARAM}`;
+				const uri = `${URI}/${createApiParam(NAME_PARAM)}`;
 
 				expectHasCharacter(data);
 				expectCharactersHasBeenScraped(uri, 1);
@@ -137,7 +136,7 @@ describe("CharacterService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getCharacters();
-				const uri = `${URI}/${CHARACTER_NAMES[0]}`;
+				const uri = `${URI}/${createApiParam(CHARACTER_NAMES[0])}`;
 
 				expectHasCharacters(data);
 				expectCharactersHasBeenScraped(uri, CHARACTER_QUANTITY);

@@ -10,7 +10,7 @@ describe("CharacterNamesScraperAdapterImpl", () => {
 		const sut = makeSut();
 		const response = sut.execute(charactersNameHtml);
 
-		expect(response).toMatchObject(["Any_Name"]);
+		expect(response).toMatchObject(["any_name"]);
 	});
 	it("should return correctly when characters name is not found", () => {
 		const sut = makeSut();

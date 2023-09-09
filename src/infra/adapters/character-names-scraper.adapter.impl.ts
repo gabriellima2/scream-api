@@ -3,8 +3,6 @@ import { CheerioAPI, load } from "cheerio";
 import { CharacterNamesScraperProtocols } from "@/domain/protocols";
 import { CharacterNamesScraperAdapter } from "@/domain/adapters";
 
-import { createApiParam } from "@/domain/helpers/functions/create-api-param";
-
 export class CharacterNamesScraperAdapterImpl
 	implements CharacterNamesScraperAdapter
 {
@@ -22,7 +20,7 @@ export class CharacterNamesScraperAdapterImpl
 				const name = $(".category-page__member-link", item).text();
 				const hasInvalidChars = name.includes(":") || name.includes("(");
 				if (!name || hasInvalidChars) return;
-				names.push(createApiParam(name));
+				names.push(name);
 			});
 		});
 		if (names.length <= 0) return;

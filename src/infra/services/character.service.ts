@@ -9,7 +9,7 @@ import { CharacterScrapersAdapter } from "@/domain/adapters";
 import { CharacterRepository } from "@/domain/repositories";
 import { CreateCharacterInputDTO } from "@/domain/dtos";
 
-import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
+import { createApiParam } from "@/domain/helpers/functions/create-api-param";
 
 @Injectable()
 export class CharacterService {
@@ -32,11 +32,9 @@ export class CharacterService {
 
 	async getCharacter(name: string): GetCharacterProtocols.Response {
 		if (!name) throw new InvalidParamsError();
-		const characterFromDB = await this.repository.findByName(
-			removeInvalidChars(name.toLowerCase())
-		);
+		const characterFromDB = await this.repository.findByName(name);
 		if (characterFromDB) return characterFromDB;
-		const url = `${this.uri}/${name}`;
+		const url = `${this.uri}/${createApiParam(name)}`;
 		const character = await this.scrapers.character.execute(url);
 		if (!character) throw new EmptyDataError();
 		const createdCharacter = await this.repository.create(
