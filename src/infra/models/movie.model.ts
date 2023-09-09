@@ -1,7 +1,7 @@
-import { Document, Schema as MongooseSchema } from "mongoose";
+import { Document } from "mongoose";
 import { Prop, Schema } from "@nestjs/mongoose";
 
-import type { Movie, MovieOverview } from "@/domain/entities";
+import type { Movie } from "@/domain/entities";
 
 @Schema({ collection: "movies" })
 export class MovieModel extends Document implements Omit<Movie, "id"> {
@@ -18,69 +18,40 @@ export class MovieModel extends Document implements Omit<Movie, "id"> {
 	})
 	synopsis: string;
 	@Prop({
+		type: [String],
 		required: false,
-		type: {
-			directors: {
-				type: MongooseSchema.Types.Mixed,
-				required: false,
-				validate: {
-					validator: function (v) {
-						return (
-							typeof v === "string" ||
-							(Array.isArray(v) && v.every((item) => typeof item === "string"))
-						);
-					},
-					message: (props) =>
-						`${props.value} is not a valid value for myField!`,
-				},
-			},
-			writers: {
-				type: MongooseSchema.Types.Mixed,
-				required: false,
-				validate: {
-					validator: function (v) {
-						return (
-							typeof v === "string" ||
-							(Array.isArray(v) && v.every((item) => typeof item === "string"))
-						);
-					},
-					message: (props) =>
-						`${props.value} is not a valid value for myField!`,
-				},
-			},
-			producers: {
-				type: [String],
-				required: false,
-			},
-			composer: {
-				type: MongooseSchema.Types.Mixed,
-				required: false,
-				validate: {
-					validator: function (v) {
-						return (
-							typeof v === "string" ||
-							(Array.isArray(v) && v.every((item) => typeof item === "string"))
-						);
-					},
-					message: (props) =>
-						`${props.value} is not a valid value for myField!`,
-				},
-			},
-			release_date: {
-				type: String,
-				required: false,
-			},
-			running_time: {
-				type: String,
-				required: false,
-			},
-			box_office: {
-				type: String,
-				required: false,
-			},
-		},
 	})
-	overview: MovieOverview;
+	directors: string[];
+	@Prop({
+		type: [String],
+		required: false,
+	})
+	writers: string[];
+	@Prop({
+		type: [String],
+		required: false,
+	})
+	producers: string[];
+	@Prop({
+		type: [String],
+		required: false,
+	})
+	composer: string[];
+	@Prop({
+		type: String,
+		required: false,
+	})
+	release_date: string;
+	@Prop({
+		type: String,
+		required: false,
+	})
+	running_time: string;
+	@Prop({
+		type: String,
+		required: false,
+	})
+	box_office: string;
 	@Prop({
 		type: [String],
 		required: false,
