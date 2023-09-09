@@ -2,85 +2,64 @@ import { CheerioAPI, load } from "cheerio";
 
 import { CharacterScraperProtocols } from "@/domain/protocols";
 import { CharacterScraperAdapter } from "@/domain/adapters";
-import { CharacterOverview } from "@/domain/entities";
+import { CharacterStatus } from "@/domain/entities";
 
+import { formatCharacterStatus } from "@/domain/helpers/functions/format-character-status";
+import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
-import { formatObjectKey } from "@/domain/helpers/functions/format-object-key";
 import { createApiParam } from "@/domain/helpers/functions/create-api-param";
-import { hasInformation } from "@/domain/helpers/functions/has-information";
-import { ObjectIsEmpty } from "@/domain/helpers/functions/object-is-empty";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
-import { createObject } from "@/domain/helpers/functions/create-object";
-import { formatOverviewContent } from "@/domain/helpers/scraping";
-
-const OVERVIEW_INFOS = ["born", "actors/actress", "status", "personality"];
+import { scrapeGeneralInfo } from "@/domain/helpers/scraping";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
+	private $: CheerioAPI;
+	constructor() {
+		this.$;
+	}
+
 	execute(html: string): CharacterScraperProtocols.Response {
-		const $ = load(html);
+		this.$ = load(html);
 		return {
-			name: this.getName($),
-			image: this.getImage($),
-			description: this.getDescription($),
-			overview: this.getOverview($),
-			appearances: this.getAppearances($),
+			name: this.getName(),
+			image: this.getImage(),
+			description: this.getDescription(),
+			appearances: this.getAppearances(),
+			born: this.getBorn(),
+			personality: this.getPersonality(),
+			portrayed_by: this.getPortrayedBy(),
+			status: this.getStatus(),
 		};
 	}
 
-	private getImage($: CheerioAPI): string | undefined {
-		return $("figure > a > img").attr("src");
+	private getImage(): string | undefined {
+		return this.$("figure > a > img").attr("src");
 	}
 
-	private getName($: CheerioAPI): string | undefined {
-		const name = $("#firstHeading > i").add($("#firstHeading")).first().text();
+	private getName(): string | undefined {
+		const name = this.$("#firstHeading > i")
+			.add(this.$("#firstHeading"))
+			.first()
+			.text();
 		if (!name) return undefined;
 		return removeInvalidChars(name);
 	}
 
-	private getDescription($: CheerioAPI): string | undefined {
-		const paragraphs = $(".mw-parser-output > p");
+	private getDescription(): string | undefined {
+		const paragraphs = this.$(".mw-parser-output > p");
 		const description = paragraphs
-			.filter((_, el) => $(el).text().trim().length > 0)
+			.filter((_, el) => this.$(el).text().trim().length > 100)
 			.first()
 			.text();
 		if (!description) return undefined;
 		return removeInvalidChars(description);
 	}
 
-	private getOverview($: CheerioAPI): CharacterOverview | undefined {
-		let overview: CharacterOverview = {} as CharacterOverview;
-		const els = $(".pi-data");
-		if (!els) return undefined;
-		els.each((_, el) => {
-			if (!hasInformation(OVERVIEW_INFOS, el.attribs["data-source"])) return;
-			const title = formatObjectKey($(".pi-data-label", el).text());
-			const contentEl = $(".pi-data-value", el);
-			const isListEl = contentEl.children().first().is("ul");
-			if (isListEl) {
-				const contents = [];
-				$("ul > li", contentEl).each((_, el) => {
-					const content = $(el).text();
-					contents.push(formatOverviewContent(content));
-				});
-				overview = { ...overview, ...createObject(title, contents) };
-				return;
-			}
-			const content = contentEl.text();
-			overview = {
-				...overview,
-				...createObject(title, formatOverviewContent(content)),
-			};
-		});
-		if (ObjectIsEmpty(overview)) return undefined;
-		return overview;
-	}
-
-	private getAppearances($: CheerioAPI): string[] | undefined {
+	private getAppearances(): string[] | undefined {
 		const appearances = [];
-		const els = $("#Appearances").parent().next("ul");
+		const els = this.$("#Appearances").parent().next("ul");
 		if (!els) return undefined;
-		$("li", els).each((_, el) => {
-			const appearance = $("li > i > a", el).text();
+		this.$("li", els).each((_, el) => {
+			const appearance = this.$("li > i > a", el).text();
 			if (!appearance) return;
 			const appearanceApiUrl = createApiUrl(
 				"movies",
@@ -90,5 +69,29 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 		});
 		if (appearances.length <= 0) return undefined;
 		return appearances;
+	}
+
+	private getBorn(): string | undefined {
+		const born = scrapeGeneralInfo(this.$, "born");
+		if (!born) return;
+		return born;
+	}
+
+	private getStatus(): CharacterStatus | undefined {
+		const status = scrapeGeneralInfo(this.$, "status");
+		if (!status) return;
+		return formatCharacterStatus(status);
+	}
+
+	private getPersonality(): string[] | undefined {
+		const personality = scrapeGeneralInfo(this.$, "personality");
+		if (!personality) return;
+		return createListFromString(personality);
+	}
+
+	private getPortrayedBy(): string[] | undefined {
+		const portrayedBy = scrapeGeneralInfo(this.$, "actors/actress");
+		if (!portrayedBy) return;
+		return createListFromString(portrayedBy);
 	}
 }

@@ -29,15 +29,16 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 			description: character.description,
 			image: character.image,
 			appearances: character.appearances,
-			overview: character.overview,
+			born: character.born,
+			personality: character.personality,
+			portrayed_by: character.portrayed_by,
+			status: character.status,
 		});
 	}
 	async findByName(
 		name: FindCharacterByNameInputDTO
 	): Promise<FindCharacterByNameOutputDTO> {
-		const character = await this.model.findOne({
-			name: { $regex: new RegExp(name.replace(/_/g, " "), "i") },
-		});
+		const character = await this.model.findOne({ name });
 		if (!character) return null;
 		return Object.freeze<Character>({
 			id: character._id,
@@ -45,7 +46,10 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 			description: character.description,
 			image: character.image,
 			appearances: character.appearances,
-			overview: character.overview,
+			born: character.born,
+			personality: character.personality,
+			portrayed_by: character.portrayed_by,
+			status: character.status,
 		});
 	}
 }
