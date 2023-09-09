@@ -2,11 +2,8 @@ import { createApiParam } from "../functions/create-api-param";
 
 export function convertMovieNameToDbStandard(names: string[], name: string) {
 	const formattedName = createApiParam(name);
-	if (names.includes("scream_4") && formattedName === "scream") {
+	if (names.includes("Scream_4") && formattedName === "Scream")
 		return `${formattedName}_5`;
-	}
-	if (formattedName === "scream_vi") {
-		return formattedName.replace("vi", "6");
-	}
+	if (formattedName === "Scream_VI") return formattedName.replace("VI", "6");
 	return formattedName;
 }

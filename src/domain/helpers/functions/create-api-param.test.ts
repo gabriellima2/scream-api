@@ -1,6 +1,6 @@
 import { createApiParam } from "./create-api-param";
 
-const BASE_VALUE = "any_value";
+const BASE_VALUE = "Any_Value";
 
 describe("CreateApiParam function", () => {
 	it("should replace blank spaces with underscores", () => {
@@ -9,14 +9,14 @@ describe("CreateApiParam function", () => {
 	});
 	it("should remove invalid characters", () => {
 		const returnedValue = createApiParam("  any.value ");
-		expect(returnedValue).toBe("anyvalue");
+		expect(returnedValue).toBe("Anyvalue");
 	});
-	it("should change the chars to lower case", () => {
-		const returnedValue = createApiParam("ANY_VALUE");
+	it("should capitalize the word", () => {
+		const returnedValue = createApiParam("any value");
 		expect(returnedValue).toBe(BASE_VALUE);
 	});
 	it("should return the formatted value", () => {
-		const returnedValue = createApiParam(" ANY VAL.UE   ");
+		const returnedValue = createApiParam(" any val.ue   ");
 		expect(returnedValue).toBe(BASE_VALUE);
 	});
 });
