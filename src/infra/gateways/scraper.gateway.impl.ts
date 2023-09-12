@@ -9,13 +9,13 @@ import { ObjectIsEmpty } from "@/domain/helpers/functions/object-is-empty";
 export class ScraperGatewayImpl<T extends object> implements ScraperGateway<T> {
 	constructor(
 		private readonly http: HttpClientGateway,
-		private readonly scrapingAdapter: GenericScraperAdapter<T>
+		private readonly scraperAdapter: GenericScraperAdapter<T>
 	) {}
 
 	async execute(url: string): Promise<T> {
-		const html = await this.http.getHtmlPage(url);
+		const html = await this.http.getHtml(url);
 		if (!html) throw new EmptyDataError();
-		const data = this.scrapingAdapter.execute(html);
+		const data = this.scraperAdapter.execute(html);
 		if (ObjectIsEmpty(data)) throw new EmptyDataError();
 		return data;
 	}
