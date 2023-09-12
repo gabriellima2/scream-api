@@ -9,6 +9,7 @@ import { removeDollarAbbr } from "@/domain/helpers/functions/remove-dollar-abbr"
 import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
 import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
 import { createPathname } from "@/domain/helpers/functions/create-pathname";
+import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
 
@@ -71,32 +72,35 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 			);
 			characters.push(characterApiUrl);
 		});
-		if (characters.length <= 0) return;
-		return characters;
+		return arrayIsEmpty(characters) ? undefined : characters;
 	}
 
 	private getDirectors(): string[] | undefined {
-		const directors = scrapeGeneralInfo(this.$, "director");
-		if (!directors) return;
-		return createListFromString(directors);
+		const director = scrapeGeneralInfo(this.$, "director");
+		if (!director) return;
+		const directors = createListFromString(director);
+		return arrayIsEmpty(directors) ? undefined : directors;
 	}
 
 	private getWriters(): string[] | undefined {
-		const writers = scrapeGeneralInfo(this.$, "writer");
-		if (!writers) return;
-		return createListFromString(writers);
+		const writer = scrapeGeneralInfo(this.$, "writer");
+		if (!writer) return;
+		const writers = createListFromString(writer);
+		return arrayIsEmpty(writers) ? undefined : writers;
 	}
 
 	private getProducers(): string[] | undefined {
-		const producers = scrapeGeneralInfo(this.$, "producer");
-		if (!producers) return;
-		return createListFromString(producers);
+		const producer = scrapeGeneralInfo(this.$, "producer");
+		if (!producer) return;
+		const producers = createListFromString(producer);
+		return arrayIsEmpty(producers) ? undefined : producers;
 	}
 
 	private getComposer(): string[] | undefined {
 		const composer = scrapeGeneralInfo(this.$, "composer");
 		if (!composer) return;
-		return createListFromString(composer);
+		const composers = createListFromString(composer);
+		return arrayIsEmpty(composers) ? undefined : composers;
 	}
 
 	private getRealeaseDate(): string | undefined {

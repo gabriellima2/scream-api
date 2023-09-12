@@ -15,7 +15,6 @@ describe("MovieNamesScraperAdapterImpl", () => {
 	it("should return correctly when movies name is not found", () => {
 		const sut = makeSut();
 		const response = sut.execute(invalidHtml);
-
 		expect(response).toBeUndefined();
 	});
 });

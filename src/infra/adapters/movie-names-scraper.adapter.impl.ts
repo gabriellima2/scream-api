@@ -4,6 +4,7 @@ import { MovieNamesScraperProtocols } from "@/domain/protocols";
 import { MovieNamesScraperAdapter } from "@/domain/adapters";
 
 import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
+import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
 
 export class MovieNamesScraperAdapterImpl implements MovieNamesScraperAdapter {
 	execute(html: string): MovieNamesScraperProtocols.Response {
@@ -20,7 +21,6 @@ export class MovieNamesScraperAdapterImpl implements MovieNamesScraperAdapter {
 			if (!name) return;
 			names.push(formatMovieName(name));
 		});
-		if (names.length <= 0) return;
-		return names;
+		return arrayIsEmpty(names) ? undefined : names;
 	}
 }

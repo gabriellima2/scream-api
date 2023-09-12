@@ -3,6 +3,8 @@ import { CheerioAPI, load } from "cheerio";
 import { CharacterNamesScraperProtocols } from "@/domain/protocols";
 import { CharacterNamesScraperAdapter } from "@/domain/adapters";
 
+import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
+
 export class CharacterNamesScraperAdapterImpl
 	implements CharacterNamesScraperAdapter
 {
@@ -12,7 +14,7 @@ export class CharacterNamesScraperAdapterImpl
 	}
 
 	private getNames($: CheerioAPI): string[] | undefined {
-		const names = [];
+		const names: string[] = [];
 		const els = $(".category-page__members");
 		if (!els) return undefined;
 		els.each((_, el) => {
@@ -23,8 +25,6 @@ export class CharacterNamesScraperAdapterImpl
 				names.push(name);
 			});
 		});
-		if (names.length <= 0) return;
-		console.log(names);
-		return names;
+		return arrayIsEmpty(names) ? undefined : names;
 	}
 }

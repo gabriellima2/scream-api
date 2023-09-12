@@ -8,6 +8,7 @@ import { formatCharacterStatus } from "@/domain/helpers/functions/format-charact
 import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
 import { createPathname } from "@/domain/helpers/functions/create-pathname";
+import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
 
@@ -55,7 +56,7 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	}
 
 	private getAppearances(): string[] | undefined {
-		const appearances = [];
+		const appearances: string[] = [];
 		const els = this.$("#Appearances").parent().next("ul");
 		if (!els) return undefined;
 		this.$("li", els).each((_, el) => {
@@ -67,8 +68,7 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 			);
 			appearances.push(appearanceApiUrl);
 		});
-		if (appearances.length <= 0) return undefined;
-		return appearances;
+		return arrayIsEmpty(appearances) ? undefined : appearances;
 	}
 
 	private getBorn(): string | undefined {
@@ -86,12 +86,14 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private getPersonality(): string[] | undefined {
 		const personality = scrapeGeneralInfo(this.$, "personality");
 		if (!personality) return;
-		return createListFromString(personality);
+		const personalities = createListFromString(personality);
+		return arrayIsEmpty(personalities) ? undefined : personalities;
 	}
 
 	private getPortrayedBy(): string[] | undefined {
 		const portrayedBy = scrapeGeneralInfo(this.$, "actors/actress");
 		if (!portrayedBy) return;
-		return createListFromString(portrayedBy);
+		const actorsAndActress = createListFromString(portrayedBy);
+		return arrayIsEmpty(actorsAndActress) ? undefined : actorsAndActress;
 	}
 }
