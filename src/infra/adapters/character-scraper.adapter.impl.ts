@@ -7,7 +7,7 @@ import { CharacterStatus } from "@/domain/entities";
 import { formatCharacterStatus } from "@/domain/helpers/functions/format-character-status";
 import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
 import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
-import { createApiParam } from "@/domain/helpers/functions/create-api-param";
+import { createPathname } from "@/domain/helpers/functions/create-pathname";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
 
@@ -63,7 +63,7 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 			if (!appearance) return;
 			const appearanceApiUrl = createApiUrl(
 				"movies",
-				createApiParam(appearance)
+				createPathname(appearance)
 			);
 			appearances.push(appearanceApiUrl);
 		});

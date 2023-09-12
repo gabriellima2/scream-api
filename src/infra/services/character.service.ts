@@ -9,7 +9,7 @@ import { CharacterScrapersAdapter } from "@/domain/adapters";
 import { CharacterRepository } from "@/domain/repositories";
 import { CreateCharacterInputDTO } from "@/domain/dtos";
 
-import { createApiParam } from "@/domain/helpers/functions/create-api-param";
+import { createPathname } from "@/domain/helpers/functions/create-pathname";
 
 @Injectable()
 export class CharacterService {
@@ -34,7 +34,7 @@ export class CharacterService {
 		if (!name) throw new InvalidParamsError();
 		const characterFromDB = await this.repository.findByName(name);
 		if (characterFromDB) return characterFromDB;
-		const url = `${this.baseUrl}/${createApiParam(name)}`;
+		const url = `${this.baseUrl}/${createPathname(name)}`;
 		const character = await this.scrapers.character.execute(url);
 		if (!character) throw new EmptyDataError();
 		const createdCharacter = await this.repository.create(

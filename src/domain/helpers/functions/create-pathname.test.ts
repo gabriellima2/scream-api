@@ -1,22 +1,22 @@
-import { createApiParam } from "./create-api-param";
+import { createPathname } from "./create-pathname";
 
 const BASE_VALUE = "Any_Value";
 
-describe("CreateApiParam function", () => {
+describe("DreatePathname function", () => {
 	it("should replace blank spaces with underscores", () => {
-		const returnedValue = createApiParam("any value");
+		const returnedValue = createPathname("any value");
 		expect(returnedValue).toBe(BASE_VALUE);
 	});
 	it("should remove invalid characters", () => {
-		const returnedValue = createApiParam("  any.value ");
+		const returnedValue = createPathname("  any.value ");
 		expect(returnedValue).toBe("Anyvalue");
 	});
 	it("should capitalize the word", () => {
-		const returnedValue = createApiParam("any value");
+		const returnedValue = createPathname("any value");
 		expect(returnedValue).toBe(BASE_VALUE);
 	});
 	it("should return the formatted value", () => {
-		const returnedValue = createApiParam(" any val.ue   ");
+		const returnedValue = createPathname(" any val.ue   ");
 		expect(returnedValue).toBe(BASE_VALUE);
 	});
 });

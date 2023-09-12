@@ -8,7 +8,7 @@ import { createListFromString } from "@/domain/helpers/functions/create-list-fro
 import { removeDollarAbbr } from "@/domain/helpers/functions/remove-dollar-abbr";
 import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
 import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
-import { createApiParam } from "@/domain/helpers/functions/create-api-param";
+import { createPathname } from "@/domain/helpers/functions/create-pathname";
 import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
 
@@ -67,7 +67,7 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 			if (!characterName) return;
 			const characterApiUrl = createApiUrl(
 				"characters",
-				createApiParam(characterName)
+				createPathname(characterName)
 			);
 			characters.push(characterApiUrl);
 		});

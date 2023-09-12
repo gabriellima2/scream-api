@@ -2,7 +2,7 @@ import { Test } from "@nestjs/testing";
 
 import { CharacterService } from "./character.service";
 
-import { createApiParam } from "@/domain/helpers/functions/create-api-param";
+import { createPathname } from "@/domain/helpers/functions/create-pathname";
 import { MockCharacter, mockCharacter } from "@/__mocks__/mock-character";
 import { CHARACTER_NAMES } from "@/__mocks__/character-names";
 
@@ -85,7 +85,7 @@ describe("CharacterService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getCharacter(NAME_PARAM);
-				const url = `${BASE_URL}/${createApiParam(NAME_PARAM)}`;
+				const url = `${BASE_URL}/${createPathname(NAME_PARAM)}`;
 
 				expectHasCharacter(data);
 				expectCharactersHasBeenScraped(url, 1);
@@ -142,7 +142,7 @@ describe("CharacterService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getCharacters();
-				const url = `${BASE_URL}/${createApiParam(CHARACTER_NAMES[0])}`;
+				const url = `${BASE_URL}/${createPathname(CHARACTER_NAMES[0])}`;
 
 				expectHasCharacters(data);
 				expectCharactersHasBeenScraped(url, CHARACTER_QUANTITY);
