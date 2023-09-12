@@ -26,7 +26,7 @@ const makeSut = async () => {
 			new CharacterService(
 				dependencies.repository,
 				dependencies.scrapers,
-				"any_uri"
+				"any_url"
 			)
 		)
 		.compile();

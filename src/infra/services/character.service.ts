@@ -16,11 +16,11 @@ export class CharacterService {
 	constructor(
 		private readonly repository: CharacterRepository,
 		private readonly scrapers: CharacterScrapersAdapter,
-		private readonly uri: string
+		private readonly baseUrl: string
 	) {}
 
 	async getCharacters(): GetCharactersProtocols.Response {
-		const url = `${this.uri}/Category:Characters`;
+		const url = `${this.baseUrl}/Category:Characters`;
 		const names = await this.scrapers.names.execute(url);
 		if (!names) throw new EmptyDataError();
 		const promises = names.map(async (character) => {
@@ -34,7 +34,7 @@ export class CharacterService {
 		if (!name) throw new InvalidParamsError();
 		const characterFromDB = await this.repository.findByName(name);
 		if (characterFromDB) return characterFromDB;
-		const url = `${this.uri}/${createApiParam(name)}`;
+		const url = `${this.baseUrl}/${createApiParam(name)}`;
 		const character = await this.scrapers.character.execute(url);
 		if (!character) throw new EmptyDataError();
 		const createdCharacter = await this.repository.create(

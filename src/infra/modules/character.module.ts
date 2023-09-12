@@ -1,24 +1,24 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { HttpClientGatewayImpl, ScraperGatewayImpl } from "../gateways";
 import {
 	CharacterNamesScraperAdapterImpl,
 	CharacterScraperAdapterImpl,
 } from "../adapters";
+import { HttpClientGatewayImpl, ScraperGatewayImpl } from "../gateways";
 import { CharacterRepositoryImpl } from "../repositories";
 import { CharacterController } from "../controllers";
 import { CharacterService } from "../services";
 import { CharacterSchema } from "../schemas";
 import { CharacterModel } from "../models";
 
-import type { HttpClientGateway } from "@/domain/gateways";
 import type {
 	CharacterNamesScraperAdapter,
 	CharacterScraperAdapter,
 	CharacterScrapersAdapter,
 } from "@/domain/adapters";
 import type { CharacterRepository } from "@/domain/repositories";
+import type { HttpClientGateway } from "@/domain/gateways";
 
 @Module({
 	imports: [
@@ -33,11 +33,11 @@ import type { CharacterRepository } from "@/domain/repositories";
 			useFactory: (
 				repository: CharacterRepository,
 				scrapers: CharacterScrapersAdapter,
-				uri: string
+				baseUrl: string
 			) => {
-				return new CharacterService(repository, scrapers, uri);
+				return new CharacterService(repository, scrapers, baseUrl);
 			},
-			inject: [CharacterRepositoryImpl, "SCRAPERS", "URI"],
+			inject: [CharacterRepositoryImpl, "SCRAPERS", "BASEURL"],
 		},
 		{
 			provide: "SCRAPERS",
@@ -56,7 +56,7 @@ import type { CharacterRepository } from "@/domain/repositories";
 			],
 		},
 		{
-			provide: "URI",
+			provide: "BASEURL",
 			useValue: "https://scream.fandom.com/wiki",
 		},
 		CharacterRepositoryImpl,

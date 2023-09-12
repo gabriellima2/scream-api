@@ -5,7 +5,7 @@ import { MovieService } from "./movie.service";
 import { MockMovie, mockMovie } from "@/__mocks__/mock-movie";
 import { MOVIE_NAMES } from "@/__mocks__/movie-names";
 
-const URI = "any_uri";
+const BASE_URL = "any_url";
 const NAME_PARAM = MOVIE_NAMES[0];
 const MOVIE_WITHOUT_ID = { name: mockMovie.name };
 
@@ -20,7 +20,7 @@ const makeSut = async () => {
 	})
 		.overrideProvider(MovieService)
 		.useValue(
-			new MovieService(dependencies.repository, dependencies.scrapers, URI)
+			new MovieService(dependencies.repository, dependencies.scrapers, BASE_URL)
 		)
 		.compile();
 	return app.get<MovieService>(MovieService);
@@ -38,9 +38,9 @@ describe("MovieService", () => {
 		expect(data.length).toBe(1);
 		expect(data[0]).toMatchObject(mockMovie);
 	}
-	function expectMoviesHasBeenScraped(uri: string, quantity: number) {
+	function expectMoviesHasBeenScraped(BASE_URL: string, quantity: number) {
 		expect(dependencies.scrapers.movie.execute).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.scrapers.movie.execute).toHaveBeenCalledWith(uri);
+		expect(dependencies.scrapers.movie.execute).toHaveBeenCalledWith(BASE_URL);
 		expect(dependencies.repository.findByName).toHaveBeenCalled();
 		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.create).toHaveBeenCalledWith(
@@ -71,10 +71,10 @@ describe("MovieService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getMovie(NAME_PARAM);
-				const uri = `${URI}/${NAME_PARAM}`;
+				const url = `${BASE_URL}/${NAME_PARAM}`;
 
 				expectHasMovie(data);
-				expectMoviesHasBeenScraped(uri, 1);
+				expectMoviesHasBeenScraped(url, 1);
 			});
 		});
 		describe("Errors", () => {
@@ -126,13 +126,13 @@ describe("MovieService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getMovies();
-				const uri = `${URI}/${MOVIE_NAMES[0]}`;
+				const url = `${BASE_URL}/${MOVIE_NAMES[0]}`;
 
 				expectHasMovies(data);
-				expectMoviesHasBeenScraped(uri, MOVIES_QUANTITY);
+				expectMoviesHasBeenScraped(url, MOVIES_QUANTITY);
 				expect(dependencies.scrapers.names.execute).toBeCalledTimes(1);
 				expect(dependencies.scrapers.names.execute).toBeCalledWith(
-					`${URI}/Category:Film`
+					`${url}/Category:Film`
 				);
 			});
 			it("should remove duplicate movies", async () => {

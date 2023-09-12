@@ -13,11 +13,11 @@ export class MovieService {
 	constructor(
 		private readonly repository: MovieRepository,
 		private readonly scrapers: MovieScrapersAdapter,
-		private readonly uri: string
+		private readonly baseUrl: string
 	) {}
 
 	async getMovies(): GetMoviesProtocols.Response {
-		const url = `${this.uri}/Category:Film`;
+		const url = `${this.baseUrl}/Category:Film`;
 		const names = await this.scrapers.names.execute(url);
 		if (!names) throw new EmptyDataError();
 		const promises = names.map(async (name) => {
@@ -31,7 +31,7 @@ export class MovieService {
 		if (!name) throw new InvalidParamsError();
 		const movieFromDB = await this.repository.findByName(name);
 		if (movieFromDB) return movieFromDB;
-		const url = `${this.uri}/${createApiParam(name)}`;
+		const url = `${this.baseUrl}/${createApiParam(name)}`;
 		const movie = await this.scrapers.movie.execute(url);
 		if (!movie) throw new EmptyDataError();
 		const createdMovie = await this.repository.create(

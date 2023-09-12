@@ -17,8 +17,8 @@ import type {
 	MovieScraperAdapter,
 	MovieScrapersAdapter,
 } from "@/domain/adapters";
-import type { HttpClientGateway } from "@/domain/gateways";
 import type { MovieRepository } from "@/domain/repositories";
+import type { HttpClientGateway } from "@/domain/gateways";
 
 @Module({
 	imports: [
@@ -31,11 +31,11 @@ import type { MovieRepository } from "@/domain/repositories";
 			useFactory: (
 				repository: MovieRepository,
 				scrapers: MovieScrapersAdapter,
-				uri: string
+				baseUrl: string
 			) => {
-				return new MovieService(repository, scrapers, uri);
+				return new MovieService(repository, scrapers, baseUrl);
 			},
-			inject: [MovieRepositoryImpl, "SCRAPERS", "URI"],
+			inject: [MovieRepositoryImpl, "SCRAPERS", "BASEURL"],
 		},
 		{
 			provide: "SCRAPERS",
@@ -54,7 +54,7 @@ import type { MovieRepository } from "@/domain/repositories";
 			],
 		},
 		{
-			provide: "URI",
+			provide: "BASEURL",
 			useValue: "https://scream.fandom.com/wiki",
 		},
 		MovieRepositoryImpl,

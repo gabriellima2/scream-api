@@ -23,7 +23,7 @@ const makeSut = async () => {
 			new MovieService(
 				dependencies.repository,
 				dependencies.scrapers,
-				"any_uri"
+				"any_url"
 			)
 		)
 		.compile();

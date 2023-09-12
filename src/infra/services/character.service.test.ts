@@ -6,7 +6,7 @@ import { createApiParam } from "@/domain/helpers/functions/create-api-param";
 import { MockCharacter, mockCharacter } from "@/__mocks__/mock-character";
 import { CHARACTER_NAMES } from "@/__mocks__/character-names";
 
-const URI = "any_uri";
+const BASE_URL = "any_url";
 const NAME_PARAM = CHARACTER_NAMES[0];
 const CHARACTER_WITHOUT_ID = { name: mockCharacter.name };
 
@@ -24,7 +24,11 @@ const makeSut = async () => {
 	})
 		.overrideProvider(CharacterService)
 		.useValue(
-			new CharacterService(dependencies.repository, dependencies.scrapers, URI)
+			new CharacterService(
+				dependencies.repository,
+				dependencies.scrapers,
+				BASE_URL
+			)
 		)
 		.compile();
 	return app.get<CharacterService>(CharacterService);
@@ -42,11 +46,13 @@ describe("CharacterService", () => {
 		expect(data.length).toBe(1);
 		expect(data[0]).toMatchObject(mockCharacter);
 	}
-	function expectCharactersHasBeenScraped(uri: string, quantity: number) {
+	function expectCharactersHasBeenScraped(BASE_URL: string, quantity: number) {
 		expect(dependencies.scrapers.character.execute).toHaveBeenCalledTimes(
 			quantity
 		);
-		expect(dependencies.scrapers.character.execute).toHaveBeenCalledWith(uri);
+		expect(dependencies.scrapers.character.execute).toHaveBeenCalledWith(
+			BASE_URL
+		);
 		expect(dependencies.repository.findByName).toHaveBeenCalled();
 		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
 		expect(dependencies.repository.create).toHaveBeenCalledWith(
@@ -79,10 +85,10 @@ describe("CharacterService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getCharacter(NAME_PARAM);
-				const uri = `${URI}/${createApiParam(NAME_PARAM)}`;
+				const url = `${BASE_URL}/${createApiParam(NAME_PARAM)}`;
 
 				expectHasCharacter(data);
-				expectCharactersHasBeenScraped(uri, 1);
+				expectCharactersHasBeenScraped(url, 1);
 			});
 		});
 		describe("Errors", () => {
@@ -136,13 +142,13 @@ describe("CharacterService", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getCharacters();
-				const uri = `${URI}/${createApiParam(CHARACTER_NAMES[0])}`;
+				const url = `${BASE_URL}/${createApiParam(CHARACTER_NAMES[0])}`;
 
 				expectHasCharacters(data);
-				expectCharactersHasBeenScraped(uri, CHARACTER_QUANTITY);
+				expectCharactersHasBeenScraped(url, CHARACTER_QUANTITY);
 				expect(dependencies.scrapers.names.execute).toBeCalledTimes(1);
 				expect(dependencies.scrapers.names.execute).toBeCalledWith(
-					`${URI}/Category:Characters`
+					`${url}/Category:Characters`
 				);
 			});
 			it("should remove duplicate characters", async () => {
