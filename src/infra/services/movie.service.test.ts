@@ -132,7 +132,7 @@ describe("MovieService", () => {
 				expectMoviesHasBeenScraped(url, MOVIES_QUANTITY);
 				expect(dependencies.scrapers.names.execute).toBeCalledTimes(1);
 				expect(dependencies.scrapers.names.execute).toBeCalledWith(
-					`${url}/Category:Film`
+					`${BASE_URL}/Category:Film`
 				);
 			});
 			it("should remove duplicate movies", async () => {

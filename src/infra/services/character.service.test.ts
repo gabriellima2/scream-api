@@ -148,7 +148,7 @@ describe("CharacterService", () => {
 				expectCharactersHasBeenScraped(url, CHARACTER_QUANTITY);
 				expect(dependencies.scrapers.names.execute).toBeCalledTimes(1);
 				expect(dependencies.scrapers.names.execute).toBeCalledWith(
-					`${url}/Category:Characters`
+					`${BASE_URL}/Category:Characters`
 				);
 			});
 			it("should remove duplicate characters", async () => {
