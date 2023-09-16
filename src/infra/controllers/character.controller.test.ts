@@ -71,15 +71,20 @@ describe("CharacterController", () => {
 		});
 	});
 	describe("GetCharacters", () => {
+		const characters = [mockCharacter];
+		const GET_CHARACTERS_RESOLVED_VALUE = {
+			items: characters as Character[],
+			total: characters.length,
+		};
+
 		describe("Success", () => {
 			it("should return the data correctly", async () => {
-				const characters = [mockCharacter];
-				spyGetCharacters.mockResolvedValue(characters as Character[]);
+				spyGetCharacters.mockResolvedValue(GET_CHARACTERS_RESOLVED_VALUE);
 				const sut = await makeSut();
 
-				const data = await sut.getCharacters();
+				const response = await sut.getCharacters();
 
-				expectReturnedDataCorrectly(data, characters);
+				expectReturnedDataCorrectly(response.items, characters);
 			});
 		});
 		describe("Fail", () => {
