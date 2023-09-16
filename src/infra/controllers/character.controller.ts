@@ -4,6 +4,7 @@ import {
 	HttpCode,
 	HttpException,
 	Param,
+	Query,
 } from "@nestjs/common";
 
 import {
@@ -20,9 +21,12 @@ export class CharacterController {
 
 	@Get("/characters")
 	@HttpCode(200)
-	async getCharacters(): GetCharactersProtocols.Response {
+	async getCharacters(
+		@Query("page") page?: string,
+		@Query("limit") limit?: string
+	): GetCharactersProtocols.Response {
 		try {
-			const response = await this.service.getCharacters();
+			const response = await this.service.getCharacters(page, limit);
 			return response;
 		} catch (err) {
 			const error = handleError(err);
