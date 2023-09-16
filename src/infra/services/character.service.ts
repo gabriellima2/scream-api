@@ -7,7 +7,10 @@ import {
 import { EmptyDataError, InvalidParamsError } from "@/domain/errors";
 import { CharacterScrapersAdapter } from "@/domain/adapters";
 import { CharacterRepository } from "@/domain/repositories";
-import { CreateCharacterInputDTO } from "@/domain/dtos";
+import {
+	CreateCharacterInputDTO,
+	InsertManyCharactersInputDTO,
+} from "@/domain/dtos";
 
 import { createPathname } from "@/domain/helpers/functions/create-pathname";
 
@@ -19,15 +22,50 @@ export class CharacterService {
 		private readonly baseUrl: string
 	) {}
 
-	async getCharacters(): GetCharactersProtocols.Response {
-		const url = `${this.baseUrl}/Category:Characters`;
-		const names = await this.scrapers.names.execute(url);
-		if (!names) throw new EmptyDataError();
-		const promises = names.map(async (character) => {
-			return await this.getCharacter(character);
-		});
-		const characters = await Promise.all(promises);
-		return [...new Set(characters)];
+	async getCharacters(
+		page?: string,
+		limit?: string
+	): GetCharactersProtocols.Response {
+		const charactersFromDB = await this.repository.getAll();
+		if (!charactersFromDB) {
+			const namesUrl = `${this.baseUrl}/Category:Characters`;
+			const names = await this.scrapers.names.execute(namesUrl);
+			if (!names) throw new EmptyDataError();
+			const promises = names.map(async (name) => {
+				const characterUrl = `${this.baseUrl}/${createPathname(name)}`;
+				return await this.scrapers.character.execute(characterUrl);
+			});
+			const characters = await Promise.all(promises);
+			const insertedCharacters = await this.repository.insertMany(
+				characters as InsertManyCharactersInputDTO
+			);
+			if (!insertedCharacters) throw new EmptyDataError();
+			const insertedCharactersTotal = insertedCharacters.length;
+			if (!limit) {
+				return {
+					items: insertedCharacters,
+					total: insertedCharactersTotal,
+				};
+			}
+			const slicedCharacters = insertedCharacters.slice(0, Number(limit));
+			return {
+				items: slicedCharacters,
+				total: slicedCharacters.length,
+			};
+		}
+		if (!page)
+			return { items: charactersFromDB, total: charactersFromDB.length };
+		const pagedCharacters = await this.repository.getAll(
+			page && {
+				page: Number(page),
+				limit: Number(limit),
+			}
+		);
+		if (!pagedCharacters) throw new EmptyDataError();
+		return {
+			items: pagedCharacters,
+			total: pagedCharacters.length,
+		};
 	}
 
 	async getCharacter(name: string): GetCharacterProtocols.Response {

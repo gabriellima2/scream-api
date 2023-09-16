@@ -4,14 +4,19 @@ import { CharacterService } from "./character.service";
 
 import { createPathname } from "@/domain/helpers/functions/create-pathname";
 import { MockCharacter, mockCharacter } from "@/__mocks__/mock-character";
-import { CHARACTER_NAMES } from "@/__mocks__/character-names";
+import { charactersName } from "@/__mocks__/characters-name";
 
 const BASE_URL = "any_url";
-const NAME_PARAM = CHARACTER_NAMES[0];
+const NAME_PARAM = charactersName[0];
 const CHARACTER_WITHOUT_ID = { name: mockCharacter.name };
 
 export const dependencies = {
-	repository: { findByName: jest.fn(), create: jest.fn() },
+	repository: {
+		findByName: jest.fn(),
+		create: jest.fn(),
+		getAll: jest.fn(),
+		insertMany: jest.fn(),
+	},
 	scrapers: {
 		names: { execute: jest.fn() },
 		character: { execute: jest.fn() },
@@ -35,6 +40,9 @@ const makeSut = async () => {
 };
 
 describe("CharacterService", () => {
+	const { repository, scrapers } = dependencies;
+	const characters = [mockCharacter];
+
 	beforeEach(() => {
 		jest.resetAllMocks();
 	});
@@ -42,53 +50,39 @@ describe("CharacterService", () => {
 	function expectHasCharacter(data: MockCharacter) {
 		expect(data).toMatchObject(mockCharacter);
 	}
-	function expectHasCharacters(data: MockCharacter[]) {
-		expect(data.length).toBe(1);
+	function expectHasCharacters(data: MockCharacter[], length?: number) {
+		expect(data.length).toBe(length ?? 1);
 		expect(data[0]).toMatchObject(mockCharacter);
-	}
-	function expectCharactersHasBeenScraped(BASE_URL: string, quantity: number) {
-		expect(dependencies.scrapers.character.execute).toHaveBeenCalledTimes(
-			quantity
-		);
-		expect(dependencies.scrapers.character.execute).toHaveBeenCalledWith(
-			BASE_URL
-		);
-		expect(dependencies.repository.findByName).toHaveBeenCalled();
-		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.repository.create).toHaveBeenCalledWith(
-			CHARACTER_WITHOUT_ID
-		);
-	}
-	function expectCharactersHasBeenDB(name: string, quantity: number) {
-		expect(dependencies.scrapers.character.execute).not.toHaveBeenCalled();
-		expect(dependencies.repository.findByName).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.repository.findByName).toHaveBeenCalledWith(name);
-		expect(dependencies.repository.create).not.toHaveBeenCalled();
 	}
 
 	describe("GetCharacter", () => {
 		describe("Success", () => {
 			it("should return the character that are saved in the database", async () => {
-				dependencies.repository.findByName.mockReturnValue(mockCharacter);
-				const sut = await makeSut();
+				repository.findByName.mockReturnValue(mockCharacter);
 
+				const sut = await makeSut();
 				const data = await sut.getCharacter(NAME_PARAM);
 
 				expectHasCharacter(data);
-				expectCharactersHasBeenDB(NAME_PARAM, 1);
+				expect(scrapers.character.execute).not.toHaveBeenCalled();
+				expect(repository.findByName).toHaveBeenCalledWith(NAME_PARAM);
+				expect(repository.findByName).toHaveBeenCalledTimes(1);
+				expect(repository.create).not.toHaveBeenCalled();
 			});
 			it("should return character scraped from received web address", async () => {
-				dependencies.scrapers.character.execute.mockReturnValue(
-					CHARACTER_WITHOUT_ID
-				);
-				dependencies.repository.create.mockReturnValue(mockCharacter);
-				const sut = await makeSut();
+				scrapers.character.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
+				repository.create.mockReturnValue(mockCharacter);
 
+				const sut = await makeSut();
 				const data = await sut.getCharacter(NAME_PARAM);
 				const url = `${BASE_URL}/${createPathname(NAME_PARAM)}`;
 
 				expectHasCharacter(data);
-				expectCharactersHasBeenScraped(url, 1);
+				expect(scrapers.character.execute).toHaveBeenCalledWith(url);
+				expect(scrapers.character.execute).toHaveBeenCalledTimes(1);
+				expect(repository.create).toHaveBeenCalledTimes(1);
+				expect(repository.findByName).toHaveBeenCalled();
+				expect(repository.create).toHaveBeenCalledWith(CHARACTER_WITHOUT_ID);
 			});
 		});
 		describe("Errors", () => {
@@ -101,7 +95,7 @@ describe("CharacterService", () => {
 				}
 			});
 			it("should throw an error when character-scraper return is empty", async () => {
-				dependencies.scrapers.character.execute.mockReturnValue(undefined);
+				scrapers.character.execute.mockReturnValue(undefined);
 				try {
 					const sut = await makeSut();
 					await sut.getCharacter(NAME_PARAM);
@@ -110,7 +104,7 @@ describe("CharacterService", () => {
 				}
 			});
 			it("should throw an error when creating a character in db", async () => {
-				dependencies.repository.create.mockReturnValue(null);
+				repository.create.mockReturnValue(null);
 				try {
 					const sut = await makeSut();
 					await sut.getCharacter(NAME_PARAM);
@@ -121,51 +115,110 @@ describe("CharacterService", () => {
 		});
 	});
 	describe("GetCharacters", () => {
-		const CHARACTER_QUANTITY = CHARACTER_NAMES.length;
+		function expectResponseToBeCorrect(response: {
+			items: MockCharacter[];
+			total: number;
+		}) {
+			expectHasCharacters(response.items);
+			expect(response.total).toBe(response.items.length);
+		}
 		describe("Success", () => {
-			it("should return the characters that are saved in the database", async () => {
-				dependencies.scrapers.names.execute.mockReturnValue(CHARACTER_NAMES);
-				dependencies.repository.findByName.mockReturnValue(mockCharacter);
-				const sut = await makeSut();
+			describe("With data in DB", () => {
+				beforeEach(() => {
+					repository.getAll.mockReturnValue(characters);
+				});
+				it("should return the characters without pagination that are saved in the database", async () => {
+					const sut = await makeSut();
+					const response = await sut.getCharacters();
 
-				const data = await sut.getCharacters();
+					expectHasCharacters(response.items);
+					expect(response.total).toBe(response.items.length);
+					expect(repository.getAll).toHaveBeenCalledTimes(1);
+				});
+				it("should return the characters with pagination that are saved in the database", async () => {
+					const page = 1;
+					const limit = 2;
 
-				expectHasCharacters(data);
-				expectCharactersHasBeenDB(CHARACTER_NAMES[0], CHARACTER_QUANTITY);
+					const sut = await makeSut();
+					const response = await sut.getCharacters(
+						page.toString(),
+						limit.toString()
+					);
+
+					expectResponseToBeCorrect(response);
+					expect(repository.getAll).toHaveBeenCalledTimes(2);
+					expect(repository.getAll).toHaveBeenCalledWith({ page, limit });
+				});
 			});
-			it("should return characters scraped from received web address", async () => {
-				dependencies.scrapers.names.execute.mockReturnValue(CHARACTER_NAMES);
-				dependencies.scrapers.character.execute.mockReturnValue(
-					CHARACTER_WITHOUT_ID
-				);
-				dependencies.repository.create.mockReturnValue(mockCharacter);
-				const sut = await makeSut();
+			describe("Without data in DB", () => {
+				beforeEach(() => {
+					scrapers.character.execute.mockReturnValue(charactersWithoutID[0]);
+					scrapers.names.execute.mockReturnValue(charactersName);
+					repository.insertMany.mockReturnValue(characters);
+					repository.create.mockReturnValue(mockCharacter);
+					repository.getAll.mockReturnValue(undefined);
+				});
 
-				const data = await sut.getCharacters();
-				const url = `${BASE_URL}/${createPathname(CHARACTER_NAMES[0])}`;
+				const charactersWithoutID = [
+					CHARACTER_WITHOUT_ID,
+					CHARACTER_WITHOUT_ID,
+					CHARACTER_WITHOUT_ID,
+				];
 
-				expectHasCharacters(data);
-				expectCharactersHasBeenScraped(url, CHARACTER_QUANTITY);
-				expect(dependencies.scrapers.names.execute).toBeCalledTimes(1);
-				expect(dependencies.scrapers.names.execute).toBeCalledWith(
-					`${BASE_URL}/Category:Characters`
-				);
-			});
-			it("should remove duplicate characters", async () => {
-				dependencies.scrapers.names.execute.mockReturnValue(CHARACTER_NAMES);
-				dependencies.repository.findByName.mockReturnValue(mockCharacter);
-				const sut = await makeSut();
+				function expectToHandleCharactersCreation() {
+					expect(scrapers.character.execute).toHaveBeenCalledWith(
+						`${BASE_URL}/${createPathname(charactersName[0])}`
+					);
+					expect(scrapers.names.execute).toHaveBeenCalledWith(
+						`${BASE_URL}/Category:Characters`
+					);
+					expect(scrapers.names.execute).toHaveBeenCalledTimes(1);
+					expect(repository.insertMany).toHaveBeenCalledWith(
+						charactersWithoutID
+					);
+					expect(repository.insertMany).toHaveBeenCalledTimes(1);
+				}
 
-				const data = await sut.getCharacters();
+				it("should return characters scraped without pagination from the received web address when there is no data in the db", async () => {
+					const sut = await makeSut();
+					const response = await sut.getCharacters();
 
-				expectHasCharacters(data);
-				expect(dependencies.scrapers.character.execute).not.toHaveBeenCalled();
-				expect(dependencies.repository.findByName).toHaveBeenCalled();
+					expectResponseToBeCorrect(response);
+					expectToHandleCharactersCreation();
+				});
+				it("should return characters scraped with pagination from the received web address when there is no data in the db", async () => {
+					const sut = await makeSut();
+					const response = await sut.getCharacters("1", "2");
+
+					expectHasCharacters([response.items[0], response.items[1]], 2);
+					expectToHandleCharactersCreation();
+				});
 			});
 		});
 		describe("Errors", () => {
 			it("should throw an error when name-scraper return is empty", async () => {
-				dependencies.scrapers.names.execute.mockReturnValue(undefined);
+				scrapers.names.execute.mockReturnValue(undefined);
+				try {
+					const sut = await makeSut();
+					await sut.getCharacters();
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
+			});
+			it("should throw an error when insert-many return is empty", async () => {
+				scrapers.names.execute.mockReturnValue(undefined);
+				repository.insertMany.mockReturnValue(undefined);
+				repository.getAll.mockReturnValue(undefined);
+				try {
+					const sut = await makeSut();
+					await sut.getCharacters();
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
+			});
+			it("should throw an error when get-with-pagination return is empty", async () => {
+				repository.getAll.mockReturnValueOnce(characters);
+				repository.getAll.mockReturnValueOnce(undefined);
 				try {
 					const sut = await makeSut();
 					await sut.getCharacters();
