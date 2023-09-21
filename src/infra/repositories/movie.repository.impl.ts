@@ -7,15 +7,22 @@ import {
 	CreateMovieOutputDTO,
 	FindMovieByNameInputDTO,
 	FindMovieByNameOutputDTO,
+	GetAllMoviesOutputDTO,
 } from "@/domain/dtos";
 import { MovieRepository } from "@/domain/repositories";
 import { Movie } from "@/domain/entities";
 
 import { MovieModel } from "../models";
+import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
 
 @Injectable()
 export class MovieRepositoryImpl implements MovieRepository {
 	constructor(@InjectModel(MovieModel.name) private model: Model<MovieModel>) {}
+	async getAll(): Promise<GetAllMoviesOutputDTO> {
+		const movies = await this.model.find().lean();
+		if (!movies || arrayIsEmpty(movies)) return null;
+		return movies as GetAllMoviesOutputDTO;
+	}
 	async create(data: CreateMovieInputDTO): Promise<CreateMovieOutputDTO> {
 		const movie = await new this.model(data).save();
 		if (!movie) return null;
