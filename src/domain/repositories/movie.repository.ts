@@ -1,6 +1,7 @@
 import {
 	CreateMovieInputDTO,
 	CreateMovieOutputDTO,
+	GetAllMoviesOutputDTO,
 	FindMovieByNameInputDTO,
 	FindMovieByNameOutputDTO,
 } from "../dtos";
@@ -8,4 +9,5 @@ import {
 export interface MovieRepository {
 	create(data: CreateMovieInputDTO): Promise<CreateMovieOutputDTO>;
 	findByName(name: FindMovieByNameInputDTO): Promise<FindMovieByNameOutputDTO>;
+	getAll(): Promise<GetAllMoviesOutputDTO>;
 }
