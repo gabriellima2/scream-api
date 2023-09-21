@@ -17,6 +17,8 @@ export class MovieService {
 	) {}
 
 	async getMovies(): GetMoviesProtocols.Response {
+		const moviesFromDB = await this.repository.getAll();
+		if (moviesFromDB) return moviesFromDB;
 		const url = `${this.baseUrl}/Category:Film`;
 		const names = await this.scrapers.names.execute(url);
 		if (!names) throw new EmptyDataError();

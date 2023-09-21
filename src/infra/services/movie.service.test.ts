@@ -10,7 +10,7 @@ const NAME_PARAM = MOVIE_NAMES[0];
 const MOVIE_WITHOUT_ID = { name: mockMovie.name };
 
 export const dependencies = {
-	repository: { findByName: jest.fn(), create: jest.fn() },
+	repository: { findByName: jest.fn(), create: jest.fn(), getAll: jest.fn() },
 	scrapers: { names: { execute: jest.fn() }, movie: { execute: jest.fn() } },
 };
 
@@ -110,14 +110,14 @@ describe("MovieService", () => {
 		const MOVIES_QUANTITY = MOVIE_NAMES.length;
 		describe("Success", () => {
 			it("should return the movies that are saved in the database", async () => {
-				dependencies.scrapers.names.execute.mockReturnValue(MOVIE_NAMES);
-				dependencies.repository.findByName.mockReturnValue(mockMovie);
+				const movies = [mockMovie];
+				dependencies.repository.getAll.mockReturnValue(movies);
 				const sut = await makeSut();
 
 				const data = await sut.getMovies();
 
-				expectHasMovies(data);
-				expectMoviesHasBeenDB(MOVIE_NAMES[0], MOVIES_QUANTITY);
+				expect(data).toMatchObject(movies);
+				expect(dependencies.repository.getAll).toHaveBeenCalledTimes(1);
 			});
 			it("should return movies scraped from received web address", async () => {
 				dependencies.scrapers.names.execute.mockReturnValue(MOVIE_NAMES);
