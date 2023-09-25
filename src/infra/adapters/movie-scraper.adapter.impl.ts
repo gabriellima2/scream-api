@@ -5,6 +5,7 @@ import { MovieScraperProtocols } from "@/domain/protocols";
 import { MovieScraperAdapter } from "@/domain/adapters";
 
 import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
+import { formatCharacterName } from "@/domain/helpers/functions/format-character-name";
 import { removeDollarAbbr } from "@/domain/helpers/functions/remove-dollar-abbr";
 import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
 import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
@@ -66,9 +67,10 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 		container.each((_, el) => {
 			const characterName = this.$("ul > li > a", el).eq(1).text();
 			if (!characterName) return;
+			const formattedCharacterName = formatCharacterName(characterName);
 			const characterApiUrl = createApiUrl(
 				"characters",
-				createPathname(characterName)
+				createPathname(formattedCharacterName)
 			);
 			characters.push(characterApiUrl);
 		});
