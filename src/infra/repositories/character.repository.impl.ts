@@ -28,7 +28,6 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 		params?: GetAllCharactersInputDTO
 	): Promise<GetAllCharactersOutputDTO> {
 		let characters: GetAllCharactersOutputDTO;
-
 		if (params) {
 			if (isNaN(params.page) || isNaN(params.limit))
 				throw new InvalidParamsError();

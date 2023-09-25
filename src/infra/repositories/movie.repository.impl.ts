@@ -19,7 +19,7 @@ import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
 export class MovieRepositoryImpl implements MovieRepository {
 	constructor(@InjectModel(MovieModel.name) private model: Model<MovieModel>) {}
 	async getAll(): Promise<GetAllMoviesOutputDTO> {
-		const movies = await this.model.find().lean();
+		const movies = await this.model.find().lean().sort("name").exec();
 		if (!movies || arrayIsEmpty(movies)) return null;
 		return movies as GetAllMoviesOutputDTO;
 	}
