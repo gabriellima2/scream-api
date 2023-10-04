@@ -1,16 +1,16 @@
 import * as DTO from "../dtos/character.dto";
 
 export interface CharacterRepository {
-	insertMany(
-		data: DTO.InsertManyCharactersInputDTO
-	): Promise<DTO.InsertManyCharactersOutputDTO>;
+	insert(
+		data: DTO.InsertCharactersInputDTO
+	): Promise<DTO.InsertCharactersOutputDTO>;
 	create(
 		data: DTO.CreateCharacterInputDTO
 	): Promise<DTO.CreateCharacterOutputDTO>;
-	findByName(
-		name: DTO.FindCharacterByNameInputDTO
-	): Promise<DTO.FindCharacterByNameOutputDTO>;
+	getByName(
+		name: DTO.GetCharacterByNameInputDTO
+	): Promise<DTO.GetCharacterByNameOutputDTO>;
 	getAll(
-		params?: DTO.GetAllCharactersInputDTO
-	): Promise<DTO.GetAllCharactersOutputDTO>;
+		params: DTO.GetCharactersInputDTO
+	): Promise<DTO.GetCharactersOutputDTO["items"]>;
 }
