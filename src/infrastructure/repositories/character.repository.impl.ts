@@ -31,8 +31,8 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 		if (params) {
 			if (isNaN(params.page) || isNaN(params.limit))
 				throw new InvalidParamsException();
-			const limit = params.limit ?? 30;
-			const skip = (params.page - 1) * limit;
+			const { page, limit } = params;
+			const skip = (page - 1) * limit;
 			characters = await this.model.find().skip(skip).limit(limit).lean();
 		} else {
 			characters = await this.model.find().lean();

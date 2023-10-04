@@ -65,13 +65,17 @@ export class CharacterServiceImpl implements CharacterService {
 				currentPage: 1,
 				totalPages: 1,
 			};
-		const pagedCharacters = await this.repository.getAll(params.page && params);
+		const limit =
+			params.limit === undefined || params.limit >= 60 ? 60 : params.limit;
+		const pagedCharacters = await this.repository.getAll(
+			params.page && { ...params, limit }
+		);
 		if (!pagedCharacters) throw new EmptyDataException();
 		return {
 			items: pagedCharacters,
 			total: pagedCharacters.length,
 			currentPage: params.page,
-			totalPages: Math.ceil(pagedCharacters.length / params.limit),
+			totalPages: Math.ceil(charactersFromDB.length / limit),
 		};
 	}
 
