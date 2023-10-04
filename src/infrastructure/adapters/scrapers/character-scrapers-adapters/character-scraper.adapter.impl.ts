@@ -1,16 +1,17 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { CharacterScraperProtocols } from "@/domain/protocols";
-import { CharacterScraperAdapter } from "@/domain/adapters";
-import { CharacterStatus } from "@/domain/entities";
+import { CharacterScraperAdapter } from "@/adapters/scrapers/character-scrapers-adapters/character-scraper.adapter";
+import { CharacterScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
+import { CharacterStatus } from "@/core/domain/entities/character.entity";
 
-import { formatCharacterStatus } from "@/domain/helpers/functions/format-character-status";
-import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
-import { removeInvalidChars } from "@/domain/helpers/functions/remove-invalid-chars";
-import { createPathname } from "@/domain/helpers/functions/create-pathname";
-import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
-import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
-import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
+import { formatCharacterStatus } from "@/core/domain/functions/formatters/format-character-status";
+import { removeInvalidChars } from "@/core/domain/functions/formatters/remove-invalid-chars";
+import { createListFromString } from "@/core/domain/functions/create-list-from-string";
+import { createPathname } from "@/core/domain/functions/create-pathname";
+import { createApiUrl } from "@/core/domain/functions/create-api-url";
+import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
+
+import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private $: CheerioAPI;

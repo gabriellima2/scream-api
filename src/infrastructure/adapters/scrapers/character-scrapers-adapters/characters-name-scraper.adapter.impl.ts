@@ -1,15 +1,15 @@
 import { CheerioAPI, load } from "cheerio";
 
-import { CharacterNamesScraperProtocols } from "@/domain/protocols";
-import { CharacterNamesScraperAdapter } from "@/domain/adapters";
+import { CharactersNameScraperAdapter } from "@/adapters/scrapers/character-scrapers-adapters/characters-name-scraper.adapter";
+import { CharactersNameScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
 
-import { formatCharacterName } from "@/domain/helpers/functions/format-character-name";
-import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
+import { formatCharacterName } from "@/core/domain/functions/formatters/format-character-name";
+import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
 
-export class CharacterNamesScraperAdapterImpl
-	implements CharacterNamesScraperAdapter
+export class CharactersNameScraperAdapterImpl
+	implements CharactersNameScraperAdapter
 {
-	execute(html: string): CharacterNamesScraperProtocols.Response {
+	execute(html: string): CharactersNameScraperProtocols.Response {
 		const $ = load(html);
 		return this.getNames($);
 	}

@@ -1,14 +1,15 @@
 import { MovieScraperAdapterImpl } from "./movie-scraper.adapter.impl";
 
-import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
+import { MovieEntity } from "@/core/domain/entities/movie.entity";
+import { createApiUrl } from "@/core/domain/functions/create-api-url";
+
 import { invalidHtml } from "@/__mocks__/invalid-html";
 import { movieHtml } from "@/__mocks__/movie-html";
-import { Movie } from "@/domain/entities";
 
 const makeSut = () => new MovieScraperAdapterImpl();
 
 describe("MovieScraperAdapterImpl", () => {
-	const MOVIE: Omit<Movie, "id"> = {
+	const MOVIE: Omit<MovieEntity, "id"> = {
 		name: "any_name",
 		image: "any_src",
 		synopsis: "any_synopsis",

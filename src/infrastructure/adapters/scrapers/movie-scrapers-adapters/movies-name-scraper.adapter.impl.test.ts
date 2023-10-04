@@ -1,11 +1,11 @@
-import { MovieNamesScraperAdapterImpl } from "./movie-names-scraper.adapter.impl";
+import { MoviesNameScraperAdapterImpl } from "./movies-name-scraper.adapter.impl";
 
 import { moviesNameHtml } from "@/__mocks__/movies-name-html";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 
-const makeSut = () => new MovieNamesScraperAdapterImpl();
+const makeSut = () => new MoviesNameScraperAdapterImpl();
 
-describe("MovieNamesScraperAdapterImpl", () => {
+describe("MoviesNameScraperAdapterImpl", () => {
 	it("should return correctly with movies name", () => {
 		const sut = makeSut();
 		const response = sut.execute(moviesNameHtml);

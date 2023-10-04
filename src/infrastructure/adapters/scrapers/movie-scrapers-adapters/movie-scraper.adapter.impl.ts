@@ -1,18 +1,19 @@
 import { CheerioAPI, load } from "cheerio";
 import { Injectable } from "@nestjs/common";
 
-import { MovieScraperProtocols } from "@/domain/protocols";
-import { MovieScraperAdapter } from "@/domain/adapters";
+import { MovieScraperAdapter } from "@/adapters/scrapers/movie-scrapers-adapters/movie-scraper.adapter";
+import { MovieScraperProtocols } from "@/core/domain/protocols/scrapers/movie-scrapers.protocol";
 
-import { createListFromString } from "@/domain/helpers/functions/create-list-from-string";
-import { formatCharacterName } from "@/domain/helpers/functions/format-character-name";
-import { removeDollarAbbr } from "@/domain/helpers/functions/remove-dollar-abbr";
-import { formatMovieName } from "@/domain/helpers/functions/format-movie-name";
-import { removeBreakLine } from "@/domain/helpers/functions/remove-break-line";
-import { createPathname } from "@/domain/helpers/functions/create-pathname";
-import { arrayIsEmpty } from "@/domain/helpers/functions/array-is-empty";
-import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
-import { scrapeGeneralInfo } from "../helpers/scrape-general-info";
+import { formatCharacterName } from "@/core/domain/functions/formatters/format-character-name";
+import { removeDollarAbbr } from "@/core/domain/functions/formatters/remove-dollar-abbr";
+import { createListFromString } from "@/core/domain/functions/create-list-from-string";
+import { formatMovieName } from "@/core/domain/functions/formatters/format-movie-name";
+import { removeBreakLine } from "@/core/domain/functions/formatters/remove-break-line";
+import { createPathname } from "@/core/domain/functions/create-pathname";
+import { createApiUrl } from "@/core/domain/functions/create-api-url";
+import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
+
+import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
 
 @Injectable()
 export class MovieScraperAdapterImpl implements MovieScraperAdapter {
