@@ -1,3 +1,3 @@
 export interface ScraperGatewayAdapter<T> {
-	execute(url: string): T;
+	execute(url: string): Promise<T>;
 }

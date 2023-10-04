@@ -1,15 +1,16 @@
-import type { GenericScraperAdapter } from "@/domain/adapters";
-import { type HttpClientGateway } from "@/domain/gateways";
-import { EmptyDataError } from "@/domain/errors";
+import { ScraperGatewayAdapterImpl } from "./scraper-gateway.adapter.impl";
+
+import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
+import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
+import { BaseScraperAdapter } from "@/adapters/scrapers/base-scraper.adapter";
 
 import { characterHtml } from "@/__mocks__/character-html";
-import { ScraperGatewayImpl } from ".";
 
 type ExpectedScrapedData = { name: string };
 
 type Dependencies = {
-	httpClient: HttpClientGateway;
-	scraper: GenericScraperAdapter<ExpectedScrapedData>;
+	http: HttpGatewayAdapter;
+	scraper: BaseScraperAdapter<ExpectedScrapedData>;
 };
 
 const BASE_URL = "any_url";
@@ -18,15 +19,15 @@ const EXPECTED_SCRAPED_DATA: ExpectedScrapedData = {
 };
 
 const makeSut = (dependencies: Dependencies) => {
-	return new ScraperGatewayImpl(dependencies.httpClient, dependencies.scraper);
+	return new ScraperGatewayAdapterImpl(dependencies.http, dependencies.scraper);
 };
 
 const mockDependenciesReturnValue = (
 	values: Record<keyof Dependencies, unknown>
 ) => {
 	return {
-		httpClient: {
-			getHtml: jest.fn().mockResolvedValueOnce(values.httpClient),
+		http: {
+			getHtml: jest.fn().mockResolvedValueOnce(values.http),
 		},
 		scraper: {
 			execute: jest.fn().mockReturnValue(values.scraper),
@@ -34,22 +35,22 @@ const mockDependenciesReturnValue = (
 	};
 };
 
-describe("ScraperGatewayImpl", () => {
+describe("ScraperGatewayAdapterImpl", () => {
 	describe("Methods", () => {
 		describe("Execute", () => {
 			describe("Success", () => {
 				it("should return the correct data from the scraped page", async () => {
-					const { httpClient, scraper } = mockDependenciesReturnValue({
-						httpClient: characterHtml.onlyName,
+					const { http, scraper } = mockDependenciesReturnValue({
+						http: characterHtml.onlyName,
 						scraper: EXPECTED_SCRAPED_DATA,
 					});
-					const sut = makeSut({ httpClient, scraper });
+					const sut = makeSut({ http, scraper });
 
 					const result = await sut.execute(BASE_URL);
 
 					expect(result).toMatchObject(EXPECTED_SCRAPED_DATA);
-					expect(httpClient.getHtml).toHaveBeenCalledWith(BASE_URL);
-					expect(httpClient.getHtml).toHaveBeenCalledTimes(1);
+					expect(http.getHtml).toHaveBeenCalledWith(BASE_URL);
+					expect(http.getHtml).toHaveBeenCalledTimes(1);
 					expect(scraper.execute).toHaveBeenCalledWith(characterHtml.onlyName);
 					expect(scraper.execute).toHaveBeenCalledTimes(1);
 				});
@@ -57,11 +58,11 @@ describe("ScraperGatewayImpl", () => {
 			describe("Errors", () => {
 				it("should throw an error when scraper return invalid value", async () => {
 					try {
-						const { httpClient, scraper } = mockDependenciesReturnValue({
-							httpClient: undefined,
+						const { http, scraper } = mockDependenciesReturnValue({
+							http: undefined,
 							scraper: EXPECTED_SCRAPED_DATA,
 						});
-						const sut = makeSut({ httpClient, scraper });
+						const sut = makeSut({ http, scraper });
 
 						await sut.execute(BASE_URL);
 					} catch (err) {
@@ -70,15 +71,15 @@ describe("ScraperGatewayImpl", () => {
 				});
 				it("should throw an error when scraper return invalid value", async () => {
 					try {
-						const { httpClient, scraper } = mockDependenciesReturnValue({
-							httpClient: characterHtml.onlyName,
+						const { http, scraper } = mockDependenciesReturnValue({
+							http: characterHtml.onlyName,
 							scraper: { name: undefined },
 						});
-						const sut = makeSut({ httpClient, scraper });
+						const sut = makeSut({ http, scraper });
 
 						await sut.execute(BASE_URL);
 					} catch (err) {
-						expect(err).toBeInstanceOf(EmptyDataError);
+						expect(err).toBeInstanceOf(EmptyDataException);
 					}
 				});
 			});

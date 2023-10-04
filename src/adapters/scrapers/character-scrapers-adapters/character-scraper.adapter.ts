@@ -1,5 +1,5 @@
 import { CharacterScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
-import { ScraperGatewayAdapter } from "@/adapters/gateways/scraper-gateway.adapter";
+import { BaseScraperAdapter } from "../base-scraper.adapter";
 
 export interface CharacterScraperAdapter
-	extends ScraperGatewayAdapter<CharacterScraperProtocols.Response> {}
+	extends BaseScraperAdapter<CharacterScraperProtocols.Response> {}

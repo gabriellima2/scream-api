@@ -1,5 +1,5 @@
-import { ScraperGatewayAdapter } from "@/adapters/gateways/scraper-gateway.adapter";
 import { MovieScraperProtocols } from "@/core/domain/protocols/scrapers/movie-scrapers.protocol";
+import { BaseScraperAdapter } from "../base-scraper.adapter";
 
 export interface MovieScraperAdapter
-	extends ScraperGatewayAdapter<MovieScraperProtocols.Response> {}
+	extends BaseScraperAdapter<MovieScraperProtocols.Response> {}
