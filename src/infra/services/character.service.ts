@@ -45,16 +45,25 @@ export class CharacterService {
 				return {
 					items: insertedCharacters,
 					total: insertedCharactersTotal,
+					currentPage: 1,
+					totalPages: 1,
 				};
 			}
 			const slicedCharacters = insertedCharacters.slice(0, Number(limit));
 			return {
 				items: slicedCharacters,
 				total: slicedCharacters.length,
+				currentPage: 1,
+				totalPages: 1,
 			};
 		}
 		if (!page)
-			return { items: charactersFromDB, total: charactersFromDB.length };
+			return {
+				items: charactersFromDB,
+				total: charactersFromDB.length,
+				currentPage: 1,
+				totalPages: 1,
+			};
 		const pagedCharacters = await this.repository.getAll(
 			page && {
 				page: Number(page),
@@ -65,6 +74,8 @@ export class CharacterService {
 		return {
 			items: pagedCharacters,
 			total: pagedCharacters.length,
+			currentPage: Number(page),
+			totalPages: Math.ceil(pagedCharacters.length / Number(limit)),
 		};
 	}
 

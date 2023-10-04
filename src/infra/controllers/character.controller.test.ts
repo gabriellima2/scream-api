@@ -9,6 +9,7 @@ import { dependencies } from "../services/character.service.test";
 import { mockError } from "@/__mocks__/mock-error";
 
 import type { Character } from "@/domain/entities";
+import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 
 const spyGetCharacter = jest.spyOn(CharacterService.prototype, "getCharacter");
 const spyGetCharacters = jest.spyOn(
@@ -71,20 +72,59 @@ describe("CharacterController", () => {
 		});
 	});
 	describe("GetCharacters", () => {
-		const characters = [mockCharacter];
-		const GET_CHARACTERS_RESOLVED_VALUE = {
-			items: characters as Character[],
-			total: characters.length,
-		};
+		const characters = [mockCharacter, mockCharacter] as Character[];
 
 		describe("Success", () => {
-			it("should return the data correctly", async () => {
+			const cases = [
+				{
+					description:
+						"should return the data correctly when on the first page",
+					items: characters,
+					page: 1,
+				},
+				{
+					description:
+						"should return the data correctly when on the middle page",
+					items: [...characters, ...characters],
+					page: 2,
+				},
+				{
+					description: "should return the data correctly when on the last page",
+					items: characters,
+					page: 2,
+				},
+			];
+			function createPaginationUrl(currentPage: number, total: number) {
+				const BASE_URL = createApiUrl("characters");
+				return {
+					next: `${BASE_URL}?page=${currentPage + 1}&limit=${total}`,
+					last: `${BASE_URL}?page=${currentPage - 1}&limit=${total}`,
+				};
+			}
+			function createResolvedValue(items: Character[], initialPage: number) {
+				const total = items.length;
+				return {
+					items,
+					total,
+					totalPages: total,
+					currentPage: initialPage,
+				};
+			}
+			test.each(cases)("%s", async ({ items, page }) => {
+				const GET_CHARACTERS_RESOLVED_VALUE = createResolvedValue(items, page);
 				spyGetCharacters.mockResolvedValue(GET_CHARACTERS_RESOLVED_VALUE);
 				const sut = await makeSut();
 
 				const response = await sut.getCharacters();
+				const { currentPage, total, totalPages } =
+					GET_CHARACTERS_RESOLVED_VALUE;
+				const { next, last } = createPaginationUrl(currentPage, total);
 
-				expectReturnedDataCorrectly(response.items, characters);
+				expectReturnedDataCorrectly(response.items, items);
+				expect(response.next).toBe(
+					currentPage === totalPages ? undefined : next
+				);
+				expect(response.last).toBe(page !== 1 ? last : undefined);
 			});
 		});
 		describe("Fail", () => {

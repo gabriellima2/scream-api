@@ -7,13 +7,11 @@ import {
 	Query,
 } from "@nestjs/common";
 
-import {
-	GetCharacterProtocols,
-	GetCharactersProtocols,
-} from "@/domain/protocols";
+import { GetCharacterProtocols } from "@/domain/protocols";
 import { CharacterService } from "../services";
 
 import { handleError } from "@/domain/helpers/functions/handle-error";
+import { createApiUrl } from "@/domain/helpers/functions/create-api-url";
 
 @Controller()
 export class CharacterController {
@@ -24,10 +22,22 @@ export class CharacterController {
 	async getCharacters(
 		@Query("page") page?: string,
 		@Query("limit") limit?: string
-	): GetCharactersProtocols.Response {
+	) {
 		try {
 			const response = await this.service.getCharacters(page, limit);
-			return response;
+			const url = createApiUrl("characters");
+			return {
+				total: response.total,
+				items: response.items,
+				next:
+					response.currentPage < response.totalPages
+						? url + `?page=${response.currentPage + 1}&limit=${response.total}`
+						: undefined,
+				last:
+					response.currentPage > 1
+						? url + `?page=${response.currentPage - 1}&limit=${response.total}`
+						: undefined,
+			};
 		} catch (err) {
 			const error = handleError(err);
 			throw new HttpException({ message: error.message }, error.statusCode);
