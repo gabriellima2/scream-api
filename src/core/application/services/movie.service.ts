@@ -6,7 +6,5 @@ import {
 
 export interface MovieService {
 	getMovies(): Promise<GetMoviesOutputDTO>;
-	getMovieByName(
-		params: GetMovieByNameInputDTO
-	): Promise<GetMovieByNameOutputDTO>;
+	getMovie(params: GetMovieByNameInputDTO): Promise<GetMovieByNameOutputDTO>;
 }

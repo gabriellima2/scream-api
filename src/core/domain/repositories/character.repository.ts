@@ -11,6 +11,6 @@ export interface CharacterRepository {
 		name: DTO.GetCharacterByNameInputDTO
 	): Promise<DTO.GetCharacterByNameOutputDTO>;
 	getAll(
-		params: DTO.GetCharactersInputDTO
+		params?: DTO.GetCharactersInputDTO
 	): Promise<DTO.GetCharactersOutputDTO["items"]>;
 }
