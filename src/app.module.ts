@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
-import { MovieModule, CharacterModule } from "./infra/modules";
+import { CharacterModule } from "./infrastructure/modules/character.module";
+import { MovieModule } from "./infrastructure/modules/movie.module";
 
 @Module({
 	imports: [

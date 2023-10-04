@@ -7,12 +7,13 @@ import {
 } from "@nestjs/common";
 
 import { MovieControllerProtocol } from "@/core/domain/protocols/controllers/movie-controller.protocol";
+import { MovieController } from "@/core/application/controllers/movie.controller";
 import { MovieServiceImpl } from "../services/movie.service.impl";
 
 import { handleError } from "@/core/domain/functions/handle-error";
 
 @Controller()
-export class MovieController {
+export class MovieControllerImpl implements MovieController {
 	constructor(private readonly service: MovieServiceImpl) {}
 
 	@Get("/movies")
@@ -20,6 +21,7 @@ export class MovieController {
 	async getMovies(): Promise<MovieControllerProtocol.GetMoviesResponse> {
 		try {
 			const response = await this.service.getMovies();
+			console.log(response);
 			return response;
 		} catch (err) {
 			const error = handleError(err);

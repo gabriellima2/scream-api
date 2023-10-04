@@ -1,4 +1,4 @@
-import { GetMovieByNameOutputDTO } from "../../dtos/movie.dto";
+import { GetCharacterByNameOutputDTO } from "../../dtos/character.dto";
 import { CharacterEntity } from "../../entities/character.entity";
 
 export namespace CharacterControllerProtocol {
@@ -8,5 +8,5 @@ export namespace CharacterControllerProtocol {
 		next: string | undefined;
 		last: string | undefined;
 	};
-	export type GetCharacterResponse = GetMovieByNameOutputDTO;
+	export type GetCharacterResponse = GetCharacterByNameOutputDTO;
 }

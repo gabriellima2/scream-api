@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 
-import { MovieController } from "./movie.controller";
+import { MovieControllerImpl } from "./movie.controller";
 import { MovieServiceImpl } from "../services/movie.service.impl";
 
 import { BaseException } from "@/core/domain/exceptions/base.exception";
@@ -15,7 +15,7 @@ const spyGetMovies = jest.spyOn(MovieServiceImpl.prototype, "getMovies");
 
 const makeSut = async () => {
 	const app = await Test.createTestingModule({
-		controllers: [MovieController],
+		controllers: [MovieControllerImpl],
 		providers: [MovieServiceImpl],
 	})
 		.overrideProvider(MovieServiceImpl)
@@ -27,10 +27,10 @@ const makeSut = async () => {
 			)
 		)
 		.compile();
-	return app.get<MovieController>(MovieController);
+	return app.get<MovieControllerImpl>(MovieControllerImpl);
 };
 
-describe("MovieController", () => {
+describe("MovieControllerImpl", () => {
 	function expectReturnedDataCorrectly(
 		data: MovieEntity | MovieEntity[],
 		mock: MockMovie | MockMovie[]
