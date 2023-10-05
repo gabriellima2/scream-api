@@ -14,7 +14,7 @@ export class AppearancesEntity {
 		return this.appearences;
 	}
 	private static validate(appearences: string[]) {
-		return isEmptyArray(appearences);
+		return !appearences || isEmptyArray(appearences);
 	}
 	private static format(appearences: string[]) {
 		return appearences.map((appearence) => {
