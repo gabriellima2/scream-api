@@ -2,7 +2,7 @@ import { CharacterStatus, StatusEntity } from "./status.entity";
 import { PortrayedByEntity } from "./portrayed-by.entity";
 import { DescriptionEntity } from "./description.entity";
 import { PersonalityEntity } from "./personality.entity";
-import { AppearanceEntity } from "./appearence.entity";
+import { AppearancesEntity } from "./appearences.entity";
 import { BornEntity } from "./born.entity";
 import { NameEntity } from "./name.entity";
 
@@ -15,7 +15,7 @@ interface CharacterEntityProps {
 	personality: PersonalityEntity;
 	status: StatusEntity;
 	portrayed_by: PortrayedByEntity;
-	appearances: AppearanceEntity;
+	appearances: AppearancesEntity;
 }
 
 type Params = {
@@ -41,7 +41,7 @@ export class CharacterEntity {
 		const personality = PersonalityEntity.create(params.personality);
 		const status = StatusEntity.create(params.status);
 		const portrayed_by = PortrayedByEntity.create(params.portrayed_by);
-		const appearances = AppearanceEntity.create(params.appearances);
+		const appearances = AppearancesEntity.create(params.appearances);
 
 		return new CharacterEntity({
 			...params,
