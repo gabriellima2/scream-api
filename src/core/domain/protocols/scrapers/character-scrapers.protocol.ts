@@ -1,4 +1,4 @@
-import { CharacterEntity } from "../../entities/character.entity";
+import { CharacterEntity } from "../../entities/character-entity/character.entity";
 import { NameEntity } from "../../entities/name.entity";
 
 export namespace CharacterScraperProtocols {

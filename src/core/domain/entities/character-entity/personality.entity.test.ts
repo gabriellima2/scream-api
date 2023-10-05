@@ -1,25 +1,25 @@
 import { PersonalityEntity } from "./personality.entity";
 
 describe("PersonalityEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValues = ["any_value"];
+		const personality = PersonalityEntity.create(validValues);
+
+		expect(personality.value).toMatchObject(validValues);
+	});
+
 	const cases = [
 		{
-			unformatted: "Any_valueAny_value_1",
-			result: ["Any_value", "Any_value_1"],
+			value: ["Any", undefined],
 		},
-		{ unformatted: "Any_value", result: ["Any_value"] },
+		{ value: undefined },
 	];
 	test.each(cases)(
-		"should format the personality when passed an unformatted value",
-		async ({ unformatted, result }) => {
-			const personality = PersonalityEntity.create(unformatted);
+		"should return undefined when passed a invalid value",
+		async ({ value }) => {
+			const appearances = PersonalityEntity.create(value);
 
-			expect(personality.value).toMatchObject(result);
+			expect(appearances).toBeUndefined();
 		}
 	);
-
-	it("should return undefined when passed a invalid value", () => {
-		const appearances = PersonalityEntity.create(undefined);
-
-		expect(appearances).toBeUndefined();
-	});
 });

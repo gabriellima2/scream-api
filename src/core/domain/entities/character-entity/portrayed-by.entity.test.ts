@@ -1,25 +1,25 @@
 import { PortrayedByEntity } from "./portrayed-by.entity";
 
 describe("PortrayedByEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValues = ["any_value"];
+		const portrayedBy = PortrayedByEntity.create(validValues);
+
+		expect(portrayedBy.value).toMatchObject(validValues);
+	});
+
 	const cases = [
 		{
-			unformatted: "Any_valueAny_value_1",
-			result: ["Any_value", "Any_value_1"],
+			value: ["Any", undefined],
 		},
-		{ unformatted: "Any_value", result: ["Any_value"] },
+		{ value: undefined },
 	];
 	test.each(cases)(
-		"should format the portrayed_by when passed an unformatted value",
-		async ({ unformatted, result }) => {
-			const portrayedBy = PortrayedByEntity.create(unformatted);
+		"should return undefined when passed a invalid value",
+		async ({ value }) => {
+			const appearances = PortrayedByEntity.create(value);
 
-			expect(portrayedBy.value).toMatchObject(result);
+			expect(appearances).toBeUndefined();
 		}
 	);
-
-	it("should return undefined when passed a invalid value", () => {
-		const appearances = PortrayedByEntity.create(undefined);
-
-		expect(appearances).toBeUndefined();
-	});
 });

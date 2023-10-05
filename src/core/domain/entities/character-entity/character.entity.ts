@@ -7,7 +7,7 @@ import { BornEntity } from "./born.entity";
 import { NameEntity } from "./name.entity";
 
 interface CharacterEntityProps {
-	id: string;
+	id?: string;
 	name: NameEntity;
 	image: string;
 	description: DescriptionEntity;
@@ -19,7 +19,7 @@ interface CharacterEntityProps {
 }
 
 type Params = {
-	id: string;
+	id?: string;
 	name: string;
 	image: string;
 	description: string;
@@ -53,6 +53,9 @@ export class CharacterEntity {
 			portrayed_by,
 			appearances,
 		});
+	}
+	public setId(id: string) {
+		this.props.id = id;
 	}
 	get id() {
 		return this.props.id;

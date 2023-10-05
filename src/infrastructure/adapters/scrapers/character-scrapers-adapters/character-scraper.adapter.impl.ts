@@ -2,16 +2,10 @@ import { CheerioAPI, load } from "cheerio";
 
 import { CharacterScraperAdapter } from "@/adapters/scrapers/character-scrapers-adapters/character-scraper.adapter";
 import { CharacterScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
-import { CharacterStatus } from "@/core/domain/entities/character.entity";
-
-import { formatCharacterStatus } from "@/core/domain/functions/formatters/format-character-status";
-import { removeInvalidChars } from "@/core/domain/functions/formatters/remove-invalid-chars";
-import { createListFromString } from "@/core/domain/functions/create-list-from-string";
-import { createPathname } from "@/core/domain/functions/create-pathname";
-import { createApiUrl } from "@/core/domain/functions/create-api-url";
-import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
 
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
+import { CharacterStatus } from "@/core/domain/entities/character-entity/status.entity";
+import { createListFromString } from "@/core/domain/functions/create-list-from-string";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private $: CheerioAPI;
@@ -34,7 +28,9 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	}
 
 	private getImage(): string | undefined {
-		return this.$("figure > a > img").attr("src");
+		const image = this.$("figure > a > img").attr("src");
+		if (!image) return;
+		return image;
 	}
 
 	private getName(): string | undefined {
@@ -42,8 +38,8 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 			.add(this.$("#firstHeading"))
 			.first()
 			.text();
-		if (!name) return undefined;
-		return removeInvalidChars(name);
+		if (!name) return;
+		return name;
 	}
 
 	private getDescription(): string | undefined {
@@ -52,8 +48,8 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 			.filter((_, el) => this.$(el).text().trim().length > 100)
 			.first()
 			.text();
-		if (!description) return undefined;
-		return removeInvalidChars(description);
+		if (!description) return;
+		return description;
 	}
 
 	private getAppearances(): string[] | undefined {
@@ -63,13 +59,9 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 		this.$("li", els).each((_, el) => {
 			const appearance = this.$("li > i > a", el).text();
 			if (!appearance) return;
-			const appearanceApiUrl = createApiUrl(
-				"movies",
-				createPathname(appearance)
-			);
-			appearances.push(appearanceApiUrl);
+			appearances.push(appearance);
 		});
-		return arrayIsEmpty(appearances) ? undefined : appearances;
+		return appearances;
 	}
 
 	private getBorn(): string | undefined {
@@ -81,20 +73,18 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private getStatus(): CharacterStatus | undefined {
 		const status = scrapeGeneralInfo(this.$, "status");
 		if (!status) return;
-		return formatCharacterStatus(status);
+		return status as CharacterStatus;
 	}
 
 	private getPersonality(): string[] | undefined {
 		const personality = scrapeGeneralInfo(this.$, "personality");
 		if (!personality) return;
-		const personalities = createListFromString(personality);
-		return arrayIsEmpty(personalities) ? undefined : personalities;
+		return createListFromString(personality);
 	}
 
 	private getPortrayedBy(): string[] | undefined {
 		const portrayedBy = scrapeGeneralInfo(this.$, "actors/actress");
 		if (!portrayedBy) return;
-		const actorsAndActress = createListFromString(portrayedBy);
-		return arrayIsEmpty(actorsAndActress) ? undefined : actorsAndActress;
+		return createListFromString(portrayedBy);
 	}
 }
