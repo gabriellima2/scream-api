@@ -1,3 +1,5 @@
+import { NEW_LINE_AND_TAB } from "../../helpers/regex";
+
 export class NameEntity {
 	private constructor(private readonly name: string) {}
 	public static create(name: string) {
@@ -8,9 +10,9 @@ export class NameEntity {
 		return this.name;
 	}
 	private static validate(name: string) {
-		return name;
+		return !!name;
 	}
 	private static format(name: string) {
-		return name;
+		return name.replace(NEW_LINE_AND_TAB, "").trim();
 	}
 }
