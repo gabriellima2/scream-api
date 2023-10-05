@@ -13,6 +13,9 @@ export class NameEntity {
 		return !name;
 	}
 	private static format(name: string) {
-		return name.replace(NEW_LINE_AND_TAB, "").trim();
+		const formattedName = name.replace(NEW_LINE_AND_TAB, "").trim();
+		const hasMoreThanTwoWords = /^(\S+)\s+(?:.*\s)?(\S+)$/;
+		const match = formattedName.match(hasMoreThanTwoWords);
+		return match ? `${match[1]} ${match[2]}` : formattedName;
 	}
 }

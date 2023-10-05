@@ -1,4 +1,4 @@
-import { TEXT_TOGETHER } from "../helpers/regex";
+import { TEXT_TOGETHER } from "../../helpers/regex";
 
 export function separateWords(sentence: string) {
 	return sentence.replace(TEXT_TOGETHER, "$1  $2");

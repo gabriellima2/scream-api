@@ -1,5 +1,5 @@
 import { DOUBLE_BLANK_SPACES } from "../helpers/regex";
-import { separateWords } from "./separate-words";
+import { separateWords } from "./formatters/separate-words";
 
 export function createListFromString(value: string) {
 	const separatedValue = separateWords(value);
