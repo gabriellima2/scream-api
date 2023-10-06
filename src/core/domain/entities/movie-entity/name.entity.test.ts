@@ -2,7 +2,7 @@ import { NameEntity } from "./name.entity";
 
 describe("NameEntity function", () => {
 	describe("Format", () => {
-		it("should format the name", () => {
+		it("should create correctly when passed an valid value", () => {
 			const name = NameEntity.create("scream_2");
 			expect(name.value).toBe("Scream 2");
 		});

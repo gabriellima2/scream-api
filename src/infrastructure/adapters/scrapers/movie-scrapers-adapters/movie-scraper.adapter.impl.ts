@@ -56,7 +56,7 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 	private getSynopsis(): string | undefined {
 		const synopsis = this.$("#Synopsis").parent().next("p").text();
 		if (!synopsis) return;
-		return removeBreakLine(synopsis);
+		return synopsis;
 	}
 
 	private getCharacters(): string[] | undefined {
@@ -118,6 +118,6 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 	private getBoxOffice(): string | undefined {
 		const boxOffice = scrapeGeneralInfo(this.$, "boxoffice");
 		if (!boxOffice) return;
-		return removeDollarAbbr(boxOffice);
+		return boxOffice;
 	}
 }

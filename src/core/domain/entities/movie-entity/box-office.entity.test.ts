@@ -1,16 +1,17 @@
-export class BoxOfficeEntity {
-	private constructor(private readonly boxOffice: string) {}
-	public static create(boxOffice: string) {
-		if (BoxOfficeEntity.validate(boxOffice)) return;
-		return new BoxOfficeEntity(BoxOfficeEntity.format(boxOffice));
-	}
-	get value() {
-		return this.boxOffice;
-	}
-	private static validate(boxOffice: string) {
-		return !boxOffice;
-	}
-	private static format(boxOffice: string) {
-		return boxOffice;
-	}
-}
+import { BoxOfficeEntity } from "./box-office.entity";
+
+describe("BoxOfficeEntity", () => {
+	it("should create correctly when passed an valid value", () => {
+		const validValue = "any_value";
+		const unformattedValue = `${validValue} USD`;
+		const boxOffice = BoxOfficeEntity.create(unformattedValue);
+
+		expect(boxOffice.value).toBe(validValue);
+	});
+
+	it("should return undefined when passed a invalid value", () => {
+		const boxOffice = BoxOfficeEntity.create("");
+
+		expect(boxOffice).toBeUndefined();
+	});
+});

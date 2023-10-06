@@ -11,6 +11,6 @@ export class BoxOfficeEntity {
 		return !boxOffice;
 	}
 	private static format(boxOffice: string) {
-		return boxOffice;
+		return boxOffice.replace("USD", "").trim();
 	}
 }
