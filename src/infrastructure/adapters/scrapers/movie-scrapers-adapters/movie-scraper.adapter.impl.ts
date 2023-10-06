@@ -14,6 +14,7 @@ import { createApiUrl } from "@/core/domain/functions/create-api-url";
 import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
 
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
+import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
 
 @Injectable()
 export class MovieScraperAdapterImpl implements MovieScraperAdapter {
@@ -81,29 +82,25 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 	private getDirectors(): string[] | undefined {
 		const director = scrapeGeneralInfo(this.$, "director");
 		if (!director) return;
-		const directors = createListFromString(director);
-		return arrayIsEmpty(directors) ? undefined : directors;
+		return transformStringIntoArray(director);
 	}
 
 	private getWriters(): string[] | undefined {
 		const writer = scrapeGeneralInfo(this.$, "writer");
 		if (!writer) return;
-		const writers = createListFromString(writer);
-		return arrayIsEmpty(writers) ? undefined : writers;
+		return transformStringIntoArray(writer);
 	}
 
 	private getProducers(): string[] | undefined {
 		const producer = scrapeGeneralInfo(this.$, "producer");
 		if (!producer) return;
-		const producers = createListFromString(producer);
-		return arrayIsEmpty(producers) ? undefined : producers;
+		return transformStringIntoArray(producer);
 	}
 
 	private getComposer(): string[] | undefined {
 		const composer = scrapeGeneralInfo(this.$, "composer");
 		if (!composer) return;
-		const composers = createListFromString(composer);
-		return arrayIsEmpty(composers) ? undefined : composers;
+		return transformStringIntoArray(composer);
 	}
 
 	private getRealeaseDate(): string | undefined {

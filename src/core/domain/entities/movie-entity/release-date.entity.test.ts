@@ -1,16 +1,16 @@
-export class ReleaseDateEntity {
-	private constructor(private readonly releaseDate: string) {}
-	public static create(releaseDate: string) {
-		if (ReleaseDateEntity.validate(releaseDate)) return;
-		return new ReleaseDateEntity(ReleaseDateEntity.format(releaseDate));
-	}
-	get value() {
-		return this.releaseDate;
-	}
-	private static validate(releaseDate: string) {
-		return !releaseDate;
-	}
-	private static format(releaseDate: string) {
-		return releaseDate;
-	}
-}
+import { ReleaseDateEntity } from "./release-date.entity";
+
+describe("ReleaseDateEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValue = "any_value";
+		const date = ReleaseDateEntity.create(validValue);
+
+		expect(date.value).toBe(validValue);
+	});
+
+	it("should return undefined when passed a invalid value", () => {
+		const date = ReleaseDateEntity.create("");
+
+		expect(date).toBeUndefined();
+	});
+});

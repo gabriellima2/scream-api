@@ -1,16 +1,25 @@
-export class ComposerEntity {
-	private constructor(private readonly composer: string[]) {}
-	public static create(composer: string[]) {
-		if (ComposerEntity.validate(composer)) return;
-		return new ComposerEntity(ComposerEntity.format(composer));
-	}
-	get value() {
-		return this.composer;
-	}
-	private static validate(composer: string[]) {
-		return !composer;
-	}
-	private static format(composer: string[]) {
-		return composer;
-	}
-}
+import { ComposerEntity } from "./composer.entity";
+
+describe("ComposerEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValues = ["any_value"];
+		const composer = ComposerEntity.create(validValues);
+
+		expect(composer.value).toMatchObject(validValues);
+	});
+
+	const cases = [
+		{
+			value: ["Any", undefined],
+		},
+		{ value: undefined },
+	];
+	test.each(cases)(
+		"should return undefined when passed a invalid value",
+		async ({ value }) => {
+			const composer = ComposerEntity.create(value);
+
+			expect(composer).toBeUndefined();
+		}
+	);
+});

@@ -1,16 +1,25 @@
-export class WritersEntity {
-	private constructor(private readonly writers: string[]) {}
-	public static create(writers: string[]) {
-		if (WritersEntity.validate(writers)) return;
-		return new WritersEntity(WritersEntity.format(writers));
-	}
-	get value() {
-		return this.writers;
-	}
-	private static validate(writers: string[]) {
-		return !writers;
-	}
-	private static format(writers: string[]) {
-		return writers;
-	}
-}
+import { WritersEntity } from "./writers.entity";
+
+describe("WritersEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValues = ["any_value"];
+		const writers = WritersEntity.create(validValues);
+
+		expect(writers.value).toMatchObject(validValues);
+	});
+
+	const cases = [
+		{
+			value: ["Any", undefined],
+		},
+		{ value: undefined },
+	];
+	test.each(cases)(
+		"should return undefined when passed a invalid value",
+		async ({ value }) => {
+			const writers = WritersEntity.create(value);
+
+			expect(writers).toBeUndefined();
+		}
+	);
+});

@@ -1,16 +1,16 @@
-export class RunningTimeEntity {
-	private constructor(private readonly runningTime: string) {}
-	public static create(runningTime: string) {
-		if (RunningTimeEntity.validate(runningTime)) return;
-		return new RunningTimeEntity(RunningTimeEntity.format(runningTime));
-	}
-	get value() {
-		return this.runningTime;
-	}
-	private static validate(runningTime: string) {
-		return !runningTime;
-	}
-	private static format(runningTime: string) {
-		return runningTime;
-	}
-}
+import { RunningTimeEntity } from "./running-time.entity";
+
+describe("RunningTimeEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValue = "any_value";
+		const time = RunningTimeEntity.create(validValue);
+
+		expect(time.value).toBe(validValue);
+	});
+
+	it("should return undefined when passed a invalid value", () => {
+		const time = RunningTimeEntity.create("");
+
+		expect(time).toBeUndefined();
+	});
+});
