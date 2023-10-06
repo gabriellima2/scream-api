@@ -4,7 +4,7 @@ import { CharacterScraperAdapter } from "@/adapters/scrapers/character-scrapers-
 import { CharacterScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
 
 import { CharacterStatus } from "@/core/domain/entities/character-entity/status.entity";
-import { createListFromString } from "@/core/domain/functions/create-list-from-string";
+import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
 
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
 import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
@@ -81,12 +81,12 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private getPersonality(): string[] | undefined {
 		const personality = scrapeGeneralInfo(this.$, "personality");
 		if (!personality) return;
-		return createListFromString(personality);
+		return transformStringIntoArray(personality);
 	}
 
 	private getPortrayedBy(): string[] | undefined {
 		const portrayedBy = scrapeGeneralInfo(this.$, "actors/actress");
 		if (!portrayedBy) return;
-		return createListFromString(portrayedBy);
+		return transformStringIntoArray(portrayedBy);
 	}
 }

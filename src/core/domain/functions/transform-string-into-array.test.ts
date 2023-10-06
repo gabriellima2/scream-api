@@ -1,12 +1,12 @@
-import { createListFromString } from "./create-list-from-string";
+import { transformStringIntoArray } from "./transform-string-into-array";
 
-describe("CreateListFromString function", () => {
+describe("transformStringIntoArray function", () => {
 	it("should create list when one value is passed", () => {
-		const returnedValue = createListFromString("Any value");
+		const returnedValue = transformStringIntoArray("Any value");
 		expect(returnedValue).toMatchObject(["Any value"]);
 	});
 	it("should create list when more than one value is passed", () => {
-		const returnedValue = createListFromString("HelloWorld");
+		const returnedValue = transformStringIntoArray("HelloWorld");
 		expect(returnedValue).toMatchObject(["Hello", "World"]);
 	});
 });
