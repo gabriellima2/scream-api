@@ -1,16 +1,16 @@
-export class SynopsisEntity {
-	private constructor(private readonly synopsis: string) {}
-	public static create(synopsis: string) {
-		if (SynopsisEntity.validate(synopsis)) return;
-		return new SynopsisEntity(SynopsisEntity.format(synopsis));
-	}
-	get value() {
-		return this.synopsis;
-	}
-	private static validate(synopsis: string) {
-		return !synopsis;
-	}
-	private static format(synopsis: string) {
-		return synopsis;
-	}
-}
+import { SynopsisEntity } from "./synopsis.entity";
+
+describe("SynopsisEntity", () => {
+	it("should create correctly when passed an valid values", () => {
+		const validValue = "any_value";
+		const synopsis = SynopsisEntity.create(`${validValue}\n`);
+
+		expect(synopsis.value).toBe(validValue);
+	});
+
+	it("should return undefined when passed a invalid value", () => {
+		const synopsis = SynopsisEntity.create("");
+
+		expect(synopsis).toBeUndefined();
+	});
+});

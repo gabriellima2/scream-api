@@ -1,3 +1,5 @@
+import { BREAK_LINE } from "../../helpers/regex";
+
 export class SynopsisEntity {
 	private constructor(private readonly synopsis: string) {}
 	public static create(synopsis: string) {
@@ -11,6 +13,6 @@ export class SynopsisEntity {
 		return !synopsis;
 	}
 	private static format(synopsis: string) {
-		return synopsis;
+		return synopsis.replaceAll(BREAK_LINE, "").trim();
 	}
 }
