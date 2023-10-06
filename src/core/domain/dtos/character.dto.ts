@@ -1,14 +1,16 @@
-import { CharacterEntity } from "../entities/character.entity";
+import { CharacterData } from "../entities/character-entity/character.entity";
 import { PaginationInputDTO, PaginationOutputDTO } from "./pagination.dto";
 
-export type CreateCharacterInputDTO = Omit<CharacterEntity, "id">;
-export type CreateCharacterOutputDTO = CharacterEntity | null;
+export type CreateCharacterInputDTO = Omit<CharacterData, "id">;
+export type CreateCharacterOutputDTO = Required<CharacterData> | null;
 
 export type GetCharacterByNameInputDTO = string;
-export type GetCharacterByNameOutputDTO = CharacterEntity | null;
+export type GetCharacterByNameOutputDTO = Required<CharacterData> | null;
 
 export type GetCharactersInputDTO = PaginationInputDTO;
-export type GetCharactersOutputDTO = PaginationOutputDTO<CharacterEntity[]>;
+export type GetCharactersOutputDTO = PaginationOutputDTO<
+	Required<CharacterData>[]
+>;
 
-export type InsertCharactersInputDTO = Omit<CharacterEntity, "id">[];
-export type InsertCharactersOutputDTO = CharacterEntity[];
+export type InsertCharactersInputDTO = Omit<CharacterData, "id">[];
+export type InsertCharactersOutputDTO = Required<CharacterData>[];

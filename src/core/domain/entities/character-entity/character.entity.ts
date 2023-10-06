@@ -18,7 +18,7 @@ interface CharacterEntityProps {
 	appearances: AppearancesEntity;
 }
 
-type Params = {
+export interface CharacterData {
 	id?: string;
 	name: string;
 	image: string;
@@ -28,13 +28,11 @@ type Params = {
 	status: CharacterStatus;
 	portrayed_by: string[];
 	appearances: string[];
-};
+}
 
 export class CharacterEntity {
-	private constructor(private readonly props: CharacterEntityProps) {
-		Object.freeze(props);
-	}
-	public static create(params: Params) {
+	private constructor(private readonly props: CharacterEntityProps) {}
+	public static create(params: CharacterData) {
 		const name = NameEntity.create(params.name);
 		const description = DescriptionEntity.create(params.description);
 		const born = BornEntity.create(params.born);
@@ -64,24 +62,31 @@ export class CharacterEntity {
 		return this.props.image;
 	}
 	get name() {
+		if (!this.props.name) return;
 		return this.props.name.value;
 	}
 	get description() {
+		if (!this.props.description) return;
 		return this.props.description.value;
 	}
 	get born() {
+		if (!this.props.born) return;
 		return this.props.born.value;
 	}
 	get personality() {
+		if (!this.props.personality) return;
 		return this.props.personality.value;
 	}
 	get status() {
+		if (!this.props.status) return;
 		return this.props.status.value;
 	}
 	get portrayed_by() {
+		if (!this.props.portrayed_by) return;
 		return this.props.portrayed_by.value;
 	}
 	get appearances() {
+		if (!this.props.appearances) return;
 		return this.props.appearances.value;
 	}
 }

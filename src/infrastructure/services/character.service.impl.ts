@@ -2,8 +2,9 @@ import { Injectable } from "@nestjs/common";
 
 import { CharacterService } from "@/core/application/services/character.service";
 
+import { CharacterEntity } from "@/core/domain/entities/character-entity/character.entity";
+
 import {
-	CreateCharacterInputDTO,
 	GetCharacterByNameInputDTO,
 	GetCharacterByNameOutputDTO,
 	GetCharactersInputDTO,
@@ -86,12 +87,22 @@ export class CharacterServiceImpl implements CharacterService {
 		const characterFromDB = await this.repository.getByName(name);
 		if (characterFromDB) return characterFromDB;
 		const url = `${this.baseUrl}/${createPathname(name)}`;
-		const character = await this.scrapers.character.execute(url);
-		if (!character) throw new EmptyDataException();
-		const createdCharacter = await this.repository.create(
-			character as CreateCharacterInputDTO
-		);
+		const characterScraped = await this.scrapers.character.execute(url);
+		if (characterScraped.name === name) throw new EmptyDataException();
+		const characterEntity = CharacterEntity.create(characterScraped);
+		const character = {
+			name: characterEntity.name,
+			image: characterEntity.image,
+			description: characterEntity.description,
+			born: characterEntity.born,
+			personality: characterEntity.personality,
+			status: characterEntity.status,
+			portrayed_by: characterEntity.portrayed_by,
+			appearances: characterEntity.appearances,
+		};
+		const createdCharacter = await this.repository.create(character);
 		if (!createdCharacter) throw new Error();
-		return createdCharacter;
+		characterEntity.setId(createdCharacter.id);
+		return { ...character, id: characterEntity.id };
 	}
 }

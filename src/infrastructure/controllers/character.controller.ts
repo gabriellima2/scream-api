@@ -11,8 +11,8 @@ import { CharacterControllerProtocol } from "@/core/domain/protocols/controllers
 import { CharacterController } from "@/core/application/controllers/character.controller";
 import { CharacterServiceImpl } from "../services/character.service.impl";
 
-import { createApiUrl } from "@/core/domain/functions/create-api-url";
 import { handleError } from "@/core/domain/functions/handle-error";
+import { API_URL } from "@/core/domain/constants/api-url";
 
 @Controller()
 export class CharacterControllerImpl implements CharacterController {
@@ -29,7 +29,7 @@ export class CharacterControllerImpl implements CharacterController {
 				page: Number(page),
 				limit: Number(limit),
 			});
-			const url = createApiUrl("characters");
+			const url = `${API_URL}/characters`;
 			return {
 				total: response.total,
 				items: response.items,

@@ -4,13 +4,13 @@ import { CharacterControllerImpl } from "./character.controller";
 
 import { CharacterServiceImpl } from "../services/character.service.impl";
 
-import { CharacterEntity } from "@/core/domain/entities/character.entity";
+import { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
 import { BaseException } from "@/core/domain/exceptions/base.exception";
-import { createApiUrl } from "@/core/domain/functions/create-api-url";
 
 import { mockCharacter, type MockCharacter } from "@/__mocks__/mock-character";
 import { dependencies } from "../services/character.service.impl.test";
 import { mockError } from "@/__mocks__/mock-error";
+import { API_URL } from "@/core/domain/constants/api-url";
 
 const spyGetCharacter = jest.spyOn(
 	CharacterServiceImpl.prototype,
@@ -40,7 +40,7 @@ const makeSut = async () => {
 
 describe("CharacterControllerImpl", () => {
 	function expectReturnedDataCorrectly(
-		data: CharacterEntity | CharacterEntity[],
+		data: CharacterData | CharacterData[],
 		mock: MockCharacter | MockCharacter[]
 	) {
 		expect(data).toMatchObject(mock);
@@ -53,7 +53,7 @@ describe("CharacterControllerImpl", () => {
 	describe("GetCharacter", () => {
 		describe("Success", () => {
 			it("should return the data correctly", async () => {
-				spyGetCharacter.mockResolvedValue(mockCharacter as CharacterEntity);
+				spyGetCharacter.mockResolvedValue(mockCharacter);
 				const sut = await makeSut();
 
 				const data = await sut.getCharacter(mockCharacter.name);
@@ -76,7 +76,7 @@ describe("CharacterControllerImpl", () => {
 		});
 	});
 	describe("GetCharacters", () => {
-		const characters = [mockCharacter, mockCharacter] as CharacterEntity[];
+		const characters = [mockCharacter, mockCharacter];
 
 		describe("Success", () => {
 			const cases = [
@@ -99,14 +99,14 @@ describe("CharacterControllerImpl", () => {
 				},
 			];
 			function createPaginationUrl(currentPage: number, total: number) {
-				const BASE_URL = createApiUrl("characters");
+				const BASE_URL = `${API_URL}/characters`;
 				return {
 					next: `${BASE_URL}?page=${currentPage + 1}&limit=${total}`,
 					last: `${BASE_URL}?page=${currentPage - 1}&limit=${total}`,
 				};
 			}
 			function createResolvedValue(
-				items: CharacterEntity[],
+				items: Required<CharacterData>[],
 				initialPage: number
 			) {
 				const total = items.length;

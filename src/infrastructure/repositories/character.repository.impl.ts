@@ -13,10 +13,10 @@ import {
 	GetCharacterByNameOutputDTO,
 } from "@/core/domain/dtos/character.dto";
 import { CharacterRepository } from "@/core/domain/repositories/character.repository";
-import { CharacterEntity } from "@/core/domain/entities/character.entity";
+import { CharacterEntity } from "@/core/domain/entities/character-entity/character.entity";
 
 import { InvalidParamsException } from "@/core/domain/exceptions/invalid-params.exception";
-import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 import { CharacterModel } from "../models/character.model";
 
 @Injectable()
@@ -37,7 +37,7 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 		} else {
 			characters = await this.model.find().lean();
 		}
-		if (!characters || arrayIsEmpty(characters)) return null;
+		if (!characters || isEmptyArray(characters)) return null;
 		return characters;
 	}
 
@@ -45,7 +45,7 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 		data: InsertCharactersInputDTO
 	): Promise<InsertCharactersOutputDTO> {
 		const characters = await this.model.insertMany(data);
-		if (!characters || arrayIsEmpty(characters)) return null;
+		if (!characters || isEmptyArray(characters)) return null;
 		return characters.map((character) => ({
 			id: character._id,
 			name: character.name,
@@ -63,7 +63,7 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 	): Promise<CreateCharacterOutputDTO> {
 		const character = await new this.model(data).save();
 		if (!character) return null;
-		return Object.freeze<CharacterEntity>({
+		return Object.freeze({
 			id: character._id,
 			name: character.name,
 			description: character.description,
@@ -80,7 +80,7 @@ export class CharacterRepositoryImpl implements CharacterRepository {
 	): Promise<GetCharacterByNameOutputDTO> {
 		const character = await this.model.findOne({ name });
 		if (!character) return null;
-		return Object.freeze<CharacterEntity>({
+		return Object.freeze({
 			id: character._id,
 			name: character.name,
 			description: character.description,

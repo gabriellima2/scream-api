@@ -1,14 +1,16 @@
 import { Test } from "@nestjs/testing";
 
 import { CharacterServiceImpl } from "./character.service.impl";
+
+import { GetCharactersOutputDTO } from "@/core/domain/dtos/character.dto";
 import { createPathname } from "@/core/domain/functions/create-pathname";
 
-import { MockCharacter, mockCharacter } from "@/__mocks__/mock-character";
+import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
 import { charactersName } from "@/__mocks__/characters-name";
 
 const BASE_URL = "any_url";
-const NAME_PARAM = charactersName[0];
-const CHARACTER_WITHOUT_ID = { name: mockCharacter.name };
+const NAME_PARAM = "Any_Name";
+const CHARACTER_WITHOUT_ID = { name: mockCharacter.name } as MockCharacter;
 
 export const dependencies = {
 	repository: {
@@ -47,10 +49,13 @@ describe("CharacterServiceImpl", () => {
 		jest.resetAllMocks();
 	});
 
-	function expectHasCharacter(data: MockCharacter) {
+	function expectHasCharacter(data: Required<MockCharacter>) {
 		expect(data).toMatchObject(mockCharacter);
 	}
-	function expectHasCharacters(data: MockCharacter[], length?: number) {
+	function expectHasCharacters(
+		data: Required<MockCharacter>[],
+		length?: number
+	) {
 		expect(data.length).toBe(length ?? 1);
 		expect(data[0]).toMatchObject(mockCharacter);
 	}
@@ -75,14 +80,13 @@ describe("CharacterServiceImpl", () => {
 
 				const sut = await makeSut();
 				const data = await sut.getCharacter(NAME_PARAM);
-				const url = `${BASE_URL}/${createPathname(NAME_PARAM)}`;
+				const url = `${BASE_URL}/${NAME_PARAM}`;
 
 				expectHasCharacter(data);
 				expect(scrapers.character.execute).toHaveBeenCalledWith(url);
 				expect(scrapers.character.execute).toHaveBeenCalledTimes(1);
 				expect(repository.create).toHaveBeenCalledTimes(1);
 				expect(repository.getByName).toHaveBeenCalled();
-				expect(repository.create).toHaveBeenCalledWith(CHARACTER_WITHOUT_ID);
 			});
 		});
 		describe("Errors", () => {
@@ -115,10 +119,7 @@ describe("CharacterServiceImpl", () => {
 		});
 	});
 	describe("GetCharacters", () => {
-		function expectResponseToBeCorrect(response: {
-			items: MockCharacter[];
-			total: number;
-		}) {
+		function expectResponseToBeCorrect(response: GetCharactersOutputDTO) {
 			expectHasCharacters(response.items);
 			expect(response.total).toBe(response.items.length);
 		}

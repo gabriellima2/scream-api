@@ -4,7 +4,7 @@ import { CharactersNameScraperAdapter } from "@/adapters/scrapers/character-scra
 import { CharactersNameScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
 
 import { formatCharacterName } from "@/core/domain/functions/formatters/format-character-name";
-import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 export class CharactersNameScraperAdapterImpl
 	implements CharactersNameScraperAdapter
@@ -26,6 +26,6 @@ export class CharactersNameScraperAdapterImpl
 				names.push(formatCharacterName(name));
 			});
 		});
-		return arrayIsEmpty(names) ? undefined : names;
+		return isEmptyArray(names) ? undefined : names;
 	}
 }

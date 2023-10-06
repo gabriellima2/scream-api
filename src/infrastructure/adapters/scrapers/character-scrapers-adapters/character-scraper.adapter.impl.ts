@@ -3,9 +3,11 @@ import { CheerioAPI, load } from "cheerio";
 import { CharacterScraperAdapter } from "@/adapters/scrapers/character-scrapers-adapters/character-scraper.adapter";
 import { CharacterScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
 
-import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
 import { CharacterStatus } from "@/core/domain/entities/character-entity/status.entity";
 import { createListFromString } from "@/core/domain/functions/create-list-from-string";
+
+import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private $: CheerioAPI;
@@ -61,7 +63,7 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 			if (!appearance) return;
 			appearances.push(appearance);
 		});
-		return appearances;
+		return isEmptyArray(appearances) ? undefined : appearances;
 	}
 
 	private getBorn(): string | undefined {

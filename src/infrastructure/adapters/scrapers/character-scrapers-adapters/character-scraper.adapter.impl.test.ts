@@ -1,20 +1,17 @@
 import { CharacterScraperAdapterImpl } from "./character-scraper.adapter.impl";
 
-import { CharacterEntity } from "@/core/domain/entities/character.entity";
-import { createApiUrl } from "@/core/domain/functions/create-api-url";
-
 import { characterHtml } from "@/__mocks__/character-html";
 import { invalidHtml } from "@/__mocks__/invalid-html";
 
 const makeSut = () => new CharacterScraperAdapterImpl();
 
 describe("CharacterScraperAdapterImpl", () => {
-	const CHARACTER: Omit<CharacterEntity, "id"> = {
+	const CHARACTER = {
 		name: "any_name",
 		image: "any_src",
 		description:
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-		appearances: [createApiUrl("movies", "Any_Movie")],
+		appearances: ["Any_Movie"],
 		born: "any_value",
 		status: "Unknown",
 		personality: ["any_value"],
