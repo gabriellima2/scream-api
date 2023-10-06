@@ -1,22 +1,33 @@
 import { NameEntity } from "./name.entity";
 
 describe("NameEntity", () => {
-	it("should format the name when passed an valid value", () => {
-		const validValue = "any_value";
-		const name = NameEntity.create(`  ${validValue}\n`);
+	describe("Success", () => {
+		const cases = [
+			{ unformatted: "  any_value\n", result: "any_value" },
+			{ unformatted: "any another value", result: "any value" },
+		];
+		test.each(cases)(
+			"should format the name when passed an valid value",
+			({ unformatted, result }) => {
+				const name = NameEntity.create(unformatted);
 
-		expect(name.value).toBe(validValue);
+				expect(name.value).toBe(result);
+			}
+		);
 	});
-	it("should format the name when passed an valid value with more than two words", () => {
-		const validValue = "any value";
-		const unformattedValue = "any another value";
-		const name = NameEntity.create(`  ${unformattedValue}\n`);
+	describe("Error", () => {
+		const cases = [
+			{ unformatted: undefined },
+			{ unformatted: "any:any" },
+			{ unformatted: "any(any)" },
+		];
+		test.each(cases)(
+			"should return undefined when passed an invalid value",
+			({ unformatted }) => {
+				const name = NameEntity.create(unformatted);
 
-		expect(name.value).toBe(validValue);
-	});
-	it("should return undefined when passed an invalid value", () => {
-		const name = NameEntity.create(undefined);
-
-		expect(name).toBeUndefined();
+				expect(name).toBeUndefined();
+			}
+		);
 	});
 });

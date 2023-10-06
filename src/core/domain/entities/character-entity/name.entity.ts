@@ -10,7 +10,7 @@ export class NameEntity {
 		return this.name;
 	}
 	private static validate(name: string) {
-		return !name;
+		return !name || name.includes(":") || name.includes("(");
 	}
 	private static format(name: string) {
 		const formattedName = name.replace(NEW_LINE_AND_TAB, "").trim();
