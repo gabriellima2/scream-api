@@ -5,7 +5,6 @@ import { MovieScraperAdapter } from "@/adapters/scrapers/movie-scrapers-adapters
 import { MovieScraperProtocols } from "@/core/domain/protocols/scrapers/movie-scrapers.protocol";
 
 import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
-import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
 
@@ -33,26 +32,28 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 		};
 	}
 
-	private getImage(): string | undefined {
-		return this.$("figure > a > img").attr("src");
+	private getImage(): string {
+		const image = this.$("figure > a > img").attr("src");
+		if (!image) return "";
+		return image;
 	}
 
-	private getName(): string | undefined {
+	private getName(): string {
 		const name = this.$("#firstHeading > i")
 			.add(this.$("#firstHeading"))
 			.first()
 			.text();
-		if (!name) return;
+		if (!name) return "";
 		return name;
 	}
 
-	private getSynopsis(): string | undefined {
+	private getSynopsis(): string {
 		const synopsis = this.$("#Synopsis").parent().next("p").text();
-		if (!synopsis) return;
+		if (!synopsis) return "";
 		return synopsis;
 	}
 
-	private getCharacters(): string[] | undefined {
+	private getCharacters(): string[] {
 		const characters: string[] = [];
 		const container = this.$("#Main_Characters")
 			.parent()
@@ -64,46 +65,46 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 			if (!character) return;
 			characters.push(character);
 		});
-		return isEmptyArray(characters) ? undefined : characters;
+		return characters;
 	}
 
-	private getDirectors(): string[] | undefined {
+	private getDirectors(): string[] {
 		const director = scrapeGeneralInfo(this.$, "director");
-		if (!director) return;
+		if (!director) return [];
 		return transformStringIntoArray(director);
 	}
 
-	private getWriters(): string[] | undefined {
+	private getWriters(): string[] {
 		const writer = scrapeGeneralInfo(this.$, "writer");
-		if (!writer) return;
+		if (!writer) return [];
 		return transformStringIntoArray(writer);
 	}
 
-	private getProducers(): string[] | undefined {
+	private getProducers(): string[] {
 		const producer = scrapeGeneralInfo(this.$, "producer");
-		if (!producer) return;
+		if (!producer) return [];
 		return transformStringIntoArray(producer);
 	}
 
-	private getComposer(): string[] | undefined {
+	private getComposer(): string[] {
 		const composer = scrapeGeneralInfo(this.$, "composer");
-		if (!composer) return;
+		if (!composer) return [];
 		return transformStringIntoArray(composer);
 	}
 
-	private getRealeaseDate(): string | undefined {
+	private getRealeaseDate(): string {
 		const realeaseDate = scrapeGeneralInfo(this.$, "release");
-		if (!realeaseDate) return;
+		if (!realeaseDate) return "";
 		return realeaseDate;
 	}
 
-	private getRunningTime(): string | undefined {
+	private getRunningTime(): string {
 		const runningTime = scrapeGeneralInfo(this.$, "runtime");
-		if (!runningTime) return;
+		if (!runningTime) return "";
 		return runningTime;
 	}
 
-	private getBoxOffice(): string | undefined {
+	private getBoxOffice(): string {
 		const boxOffice = scrapeGeneralInfo(this.$, "boxoffice");
 		if (!boxOffice) return;
 		return boxOffice;

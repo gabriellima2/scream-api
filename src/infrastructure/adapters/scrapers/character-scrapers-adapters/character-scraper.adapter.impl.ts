@@ -7,7 +7,6 @@ import { CharacterStatus } from "@/core/domain/entities/character-entity/status.
 import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
 
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
-import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private $: CheerioAPI;
@@ -29,32 +28,32 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 		};
 	}
 
-	private getImage(): string | undefined {
+	private getImage(): string {
 		const image = this.$("figure > a > img").attr("src");
-		if (!image) return;
+		if (!image) return "";
 		return image;
 	}
 
-	private getName(): string | undefined {
+	private getName(): string {
 		const name = this.$("#firstHeading > i")
 			.add(this.$("#firstHeading"))
 			.first()
 			.text();
-		if (!name) return;
+		if (!name) return "";
 		return name;
 	}
 
-	private getDescription(): string | undefined {
+	private getDescription(): string {
 		const paragraphs = this.$(".mw-parser-output > p");
 		const description = paragraphs
 			.filter((_, el) => this.$(el).text().trim().length > 100)
 			.first()
 			.text();
-		if (!description) return;
+		if (!description) return "";
 		return description;
 	}
 
-	private getAppearances(): string[] | undefined {
+	private getAppearances(): string[] {
 		const appearances: string[] = [];
 		const els = this.$("#Appearances").parent().next("ul");
 		if (!els) return undefined;
@@ -63,30 +62,30 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 			if (!appearance) return;
 			appearances.push(appearance);
 		});
-		return isEmptyArray(appearances) ? undefined : appearances;
+		return appearances;
 	}
 
-	private getBorn(): string | undefined {
+	private getBorn(): string {
 		const born = scrapeGeneralInfo(this.$, "born");
-		if (!born) return;
+		if (!born) return "";
 		return born;
 	}
 
-	private getStatus(): CharacterStatus | undefined {
+	private getStatus(): CharacterStatus {
 		const status = scrapeGeneralInfo(this.$, "status");
-		if (!status) return;
+		if (!status) return "Unknown";
 		return status as CharacterStatus;
 	}
 
-	private getPersonality(): string[] | undefined {
+	private getPersonality(): string[] {
 		const personality = scrapeGeneralInfo(this.$, "personality");
-		if (!personality) return;
+		if (!personality) return [];
 		return transformStringIntoArray(personality);
 	}
 
-	private getPortrayedBy(): string[] | undefined {
+	private getPortrayedBy(): string[] {
 		const portrayedBy = scrapeGeneralInfo(this.$, "actors/actress");
-		if (!portrayedBy) return;
+		if (!portrayedBy) return [];
 		return transformStringIntoArray(portrayedBy);
 	}
 }
