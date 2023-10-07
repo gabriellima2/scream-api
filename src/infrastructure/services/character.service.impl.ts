@@ -38,7 +38,20 @@ export class CharacterServiceImpl implements CharacterService {
 			if (!names) throw new EmptyDataException();
 			const promises = names.map(async (name) => {
 				const characterEndpoint = createEndpointURL(this.baseUrl, name);
-				return await this.scrapers.character.execute(characterEndpoint);
+				const scrapedCharacter = await this.scrapers.character.execute(
+					characterEndpoint
+				);
+				const characterEntity = CharacterEntity.create(scrapedCharacter);
+				return {
+					name: characterEntity.name,
+					image: characterEntity.image,
+					description: characterEntity.description,
+					born: characterEntity.born,
+					personality: characterEntity.personality,
+					status: characterEntity.status,
+					portrayed_by: characterEntity.portrayed_by,
+					appearances: characterEntity.appearances,
+				};
 			});
 			const characters = await Promise.all(promises);
 			const insertedCharacters = await this.repository.insert(
@@ -90,9 +103,9 @@ export class CharacterServiceImpl implements CharacterService {
 		const characterFromDB = await this.repository.getByName(name);
 		if (characterFromDB) return characterFromDB;
 		const endpoint = createEndpointURL(this.baseUrl, name);
-		const characterScraped = await this.scrapers.character.execute(endpoint);
-		if (characterScraped.name === name) throw new EmptyDataException();
-		const characterEntity = CharacterEntity.create(characterScraped);
+		const scrapedCharacter = await this.scrapers.character.execute(endpoint);
+		if (scrapedCharacter.name === name) throw new EmptyDataException();
+		const characterEntity = CharacterEntity.create(scrapedCharacter);
 		const character: CharacterData = {
 			name: characterEntity.name,
 			image: characterEntity.image,
