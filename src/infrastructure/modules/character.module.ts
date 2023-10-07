@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
+import { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
 import { CharacterSchema } from "../schemas/character.schema";
 import { CharacterModel } from "../models/character.model";
 
@@ -19,6 +20,11 @@ import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
 import { CharacterControllerImpl } from "../controllers/character.controller";
 import { CharacterServiceImpl } from "../services/character.service.impl";
 
+import { PaginationAdapterImpl } from "../adapters/pagination.adapter.impl";
+import { PaginationAdapter } from "@/adapters/pagination.adapter";
+
+type Characters = Required<CharacterData>;
+
 @Module({
 	imports: [
 		MongooseModule.forFeature([
@@ -32,11 +38,22 @@ import { CharacterServiceImpl } from "../services/character.service.impl";
 			useFactory: (
 				repository: CharacterRepository,
 				scrapers: CharacterScraperGateways,
+				paginate: PaginationAdapter<Characters>,
 				baseUrl: string
 			) => {
-				return new CharacterServiceImpl(repository, scrapers, baseUrl);
+				return new CharacterServiceImpl(
+					repository,
+					scrapers,
+					paginate,
+					baseUrl
+				);
 			},
-			inject: [CharacterRepositoryImpl, "SCRAPERS", "BASEURL"],
+			inject: [
+				CharacterRepositoryImpl,
+				"SCRAPERS",
+				PaginationAdapterImpl,
+				"BASEURL",
+			],
 		},
 		{
 			provide: "SCRAPERS",
@@ -61,6 +78,7 @@ import { CharacterServiceImpl } from "../services/character.service.impl";
 		CharacterRepositoryImpl,
 		HttpGatewayAdapterImpl,
 		CharacterScraperAdapterImpl,
+		PaginationAdapterImpl,
 		CharactersNameScraperAdapterImpl,
 	],
 	exports: [CharacterServiceImpl],

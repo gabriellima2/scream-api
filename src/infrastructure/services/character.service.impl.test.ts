@@ -19,6 +19,9 @@ export const dependencies = {
 		names: { execute: jest.fn() },
 		character: { execute: jest.fn() },
 	},
+	paginate: {
+		execute: jest.fn(),
+	},
 };
 
 const makeSut = async () => {
@@ -30,6 +33,7 @@ const makeSut = async () => {
 			new CharacterServiceImpl(
 				dependencies.repository,
 				dependencies.scrapers,
+				dependencies.paginate,
 				BASE_URL
 			)
 		)
@@ -38,7 +42,7 @@ const makeSut = async () => {
 };
 
 describe("CharacterServiceImpl", () => {
-	const { repository, scrapers } = dependencies;
+	const { repository, scrapers, paginate } = dependencies;
 
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -112,50 +116,20 @@ describe("CharacterServiceImpl", () => {
 			CHARACTER_WITHOUT_ID,
 			CHARACTER_WITHOUT_ID,
 		];
-		const mockDBCharacters = [mockCharacter, mockCharacter, mockCharacter];
-
-		function expectResponseToBeCorrect(items: MockCharacter[], total: number) {
-			expect(total).toBe(items.length);
-		}
 
 		describe("Success", () => {
-			it("should return characters scraped without pagination from the received web address", async () => {
+			it("should return characters correctly", async () => {
 				scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
 				scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
 				repository.create.mockReturnValue(mockCharacter);
+				paginate.execute.mockReturnValue({
+					items: [mockCharacter, mockCharacter, mockCharacter],
+				});
 
 				const sut = await makeSut();
 				const response = await sut.getCharacters();
 
-				expectResponseToBeCorrect(response.items, response.total);
-			});
-			describe("Pagination", () => {
-				it("should return characters scraped with pagination from the received web address", async () => {
-					scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
-					scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
-					repository.create.mockReturnValue(mockCharacter);
-
-					const sut = await makeSut();
-					const response = await sut.getCharacters({
-						page: 1,
-						limit: 2,
-					});
-
-					expectResponseToBeCorrect(response.items, response.total);
-				});
-				it("should return paged characters when only page param has passed", async () => {
-					scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
-					scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
-					repository.create.mockReturnValue(mockCharacter);
-					repository.getAll.mockReturnValue(mockDBCharacters);
-
-					const sut = await makeSut();
-					const response = await sut.getCharacters({
-						page: 1,
-					});
-
-					expectResponseToBeCorrect(response.items, response.total);
-				});
+				expect(response.items).toBeTruthy();
 			});
 		});
 		describe("Errors", () => {
@@ -173,18 +147,6 @@ describe("CharacterServiceImpl", () => {
 				try {
 					const sut = await makeSut();
 					await sut.getCharacters();
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
-			});
-			it("should throw an error when params has invalid values", async () => {
-				scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
-				scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
-				repository.create.mockReturnValue(mockCharacter);
-				repository.getAll.mockReturnValue(mockDBCharacters);
-				try {
-					const sut = await makeSut();
-					await sut.getCharacters({ page: 500 });
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}

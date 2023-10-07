@@ -5,6 +5,7 @@ import {
 	CharacterEntity,
 } from "@/core/domain/entities/character-entity/character.entity";
 import { CharacterService } from "@/core/application/services/character.service";
+import { PaginationAdapter } from "@/adapters/pagination.adapter";
 
 import {
 	GetCharacterByNameInputDTO,
@@ -18,13 +19,13 @@ import { CharacterRepository } from "@/core/domain/repositories/character.reposi
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
 
 import { createEndpointURL } from "../helpers/create-endpoint-url";
-import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 @Injectable()
 export class CharacterServiceImpl implements CharacterService {
 	constructor(
 		private readonly repository: CharacterRepository,
 		private readonly scrapers: CharacterScraperGateways,
+		private readonly paginate: PaginationAdapter<Required<CharacterData>>,
 		private readonly baseUrl: string
 	) {}
 
@@ -39,30 +40,7 @@ export class CharacterServiceImpl implements CharacterService {
 		});
 		const characters = await Promise.all(promises);
 		if (!characters) throw new EmptyDataException();
-		if (params) {
-			const { page, limit } = params;
-			if (isNaN(page) || (limit && isNaN(limit)))
-				throw new InvalidParamsException();
-			const defaultPage = !page ? 1 : page;
-			const defaultLimit = limit === undefined || limit >= 60 ? 60 : limit;
-			const start = (defaultPage - 1) * defaultLimit;
-			const skip = defaultPage * defaultLimit;
-			const pagedCharacters = characters.slice(start, skip);
-			if (!pagedCharacters || isEmptyArray(pagedCharacters))
-				throw new EmptyDataException();
-			return {
-				items: pagedCharacters,
-				total: pagedCharacters.length,
-				currentPage: params.page,
-				totalPages: Math.ceil(characters.length / skip),
-			};
-		}
-		return {
-			items: characters,
-			total: characters.length,
-			currentPage: 1,
-			totalPages: 1,
-		};
+		return this.paginate.execute(characters, params);
 	}
 
 	async getCharacter(
