@@ -30,14 +30,14 @@ describe("CharacterScraperAdapterImpl", () => {
 			const response = sut.execute(invalidHtml);
 
 			expect(response).toMatchObject({
-				name: undefined,
-				image: undefined,
-				description: undefined,
-				appearances: undefined,
-				born: undefined,
-				status: undefined,
-				personality: undefined,
-				portrayed_by: undefined,
+				name: "",
+				image: "",
+				description: "",
+				appearances: [],
+				born: "",
+				status: "Unknown",
+				personality: "",
+				portrayed_by: "",
 			});
 		});
 	});
@@ -53,7 +53,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.name).toBeUndefined();
+				expect(response.name).toBe("");
 			});
 		});
 		describe("GetImage", () => {
@@ -67,7 +67,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.image).toBeUndefined();
+				expect(response.image).toBe("");
 			});
 		});
 		describe("GetDescription", () => {
@@ -81,7 +81,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.description).toBeUndefined();
+				expect(response.description).toBe("");
 			});
 		});
 		describe("GetAppearances", () => {
@@ -95,7 +95,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.appearances).toBeUndefined();
+				expect(response.appearances).toMatchObject([]);
 			});
 		});
 		describe("GetBorn", () => {
@@ -109,7 +109,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.born).toBeUndefined();
+				expect(response.born).toBe("");
 			});
 		});
 		describe("GetPersonality", () => {
@@ -123,7 +123,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.personality).toBeUndefined();
+				expect(response.personality).toMatchObject([]);
 			});
 		});
 		describe("GetStatus", () => {
@@ -137,7 +137,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.status).toBeUndefined();
+				expect(response.status).toBe("Unknown");
 			});
 		});
 		describe("GetPortrayedBy", () => {
@@ -151,7 +151,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.portrayed_by).toBeUndefined();
+				expect(response.portrayed_by).toBe("");
 			});
 		});
 	});

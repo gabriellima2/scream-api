@@ -106,7 +106,7 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 
 	private getBoxOffice(): string {
 		const boxOffice = scrapeGeneralInfo(this.$, "boxoffice");
-		if (!boxOffice) return;
+		if (!boxOffice) return "";
 		return boxOffice;
 	}
 }

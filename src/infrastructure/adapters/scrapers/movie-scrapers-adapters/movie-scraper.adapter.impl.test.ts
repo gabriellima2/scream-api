@@ -34,17 +34,17 @@ describe("MovieScraperAdapterImpl", () => {
 			const response = sut.execute(invalidHtml);
 
 			expect(response).toMatchObject({
-				name: undefined,
-				image: undefined,
-				synopsis: undefined,
-				box_office: undefined,
-				composer: undefined,
-				directors: undefined,
-				producers: undefined,
-				writers: undefined,
-				release_date: undefined,
-				running_time: undefined,
-				characters: undefined,
+				name: "",
+				image: "",
+				synopsis: "",
+				box_office: "",
+				composer: [],
+				directors: [],
+				producers: [],
+				writers: [],
+				release_date: "",
+				running_time: "",
+				characters: [],
 			});
 		});
 	});
@@ -60,7 +60,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.name).toBeUndefined();
+				expect(response.name).toBe("");
 			});
 		});
 		describe("GetImage", () => {
@@ -74,7 +74,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.image).toBeUndefined();
+				expect(response.image).toBe("");
 			});
 		});
 		describe("GetSynopsis", () => {
@@ -88,7 +88,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.synopsis).toBeUndefined();
+				expect(response.synopsis).toBe("");
 			});
 		});
 		describe("GetCharacters", () => {
@@ -102,7 +102,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.characters).toBeUndefined();
+				expect(response.characters).toMatchObject([]);
 			});
 		});
 		describe("GetDirectors", () => {
@@ -116,7 +116,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.directors).toBeUndefined();
+				expect(response.directors).toMatchObject([]);
 			});
 		});
 		describe("GetWriters", () => {
@@ -130,7 +130,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.writers).toBeUndefined();
+				expect(response.writers).toMatchObject([]);
 			});
 		});
 		describe("GetProducers", () => {
@@ -144,7 +144,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.producers).toBeUndefined();
+				expect(response.producers).toMatchObject([]);
 			});
 		});
 
@@ -159,7 +159,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.composer).toBeUndefined();
+				expect(response.composer).toMatchObject([]);
 			});
 		});
 		describe("GetRealeaseDate", () => {
@@ -173,7 +173,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.release_date).toBeUndefined();
+				expect(response.release_date).toBe("");
 			});
 		});
 		describe("GetRunningTime", () => {
@@ -187,7 +187,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.running_time).toBeUndefined();
+				expect(response.running_time).toBe("");
 			});
 		});
 		describe("GetBoxOffice", () => {
@@ -201,7 +201,7 @@ describe("MovieScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.box_office).toBeUndefined();
+				expect(response.box_office).toBe("");
 			});
 		});
 	});
