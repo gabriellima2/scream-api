@@ -3,10 +3,9 @@ import { Test } from "@nestjs/testing";
 import { CharacterServiceImpl } from "./character.service.impl";
 
 import { GetCharactersOutputDTO } from "@/core/domain/dtos/character.dto";
-import { createPathname } from "@/core/domain/functions/create-pathname";
 
 import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
-import { charactersName } from "@/__mocks__/characters-name";
+import { CHARACTERS_NAME } from "@/__mocks__/characters-name";
 
 const BASE_URL = "any_url";
 const NAME_PARAM = "Any_Name";
@@ -154,7 +153,7 @@ describe("CharacterServiceImpl", () => {
 			describe("Without data in DB", () => {
 				beforeEach(() => {
 					scrapers.character.execute.mockReturnValue(charactersWithoutID[0]);
-					scrapers.names.execute.mockReturnValue(charactersName);
+					scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
 					repository.insert.mockReturnValue(characters);
 					repository.create.mockReturnValue(mockCharacter);
 					repository.getAll.mockReturnValue(undefined);
@@ -168,7 +167,7 @@ describe("CharacterServiceImpl", () => {
 
 				function expectToHandleCharactersCreation() {
 					expect(scrapers.character.execute).toHaveBeenCalledWith(
-						`${BASE_URL}/${createPathname(charactersName[0])}`
+						`${BASE_URL}/${CHARACTERS_NAME[0]}`
 					);
 					expect(scrapers.names.execute).toHaveBeenCalledWith(
 						`${BASE_URL}/Category:Characters`

@@ -1,7 +1,7 @@
 import { ScraperGatewayAdapter } from "@/adapters/gateways/scraper-gateway.adapter";
-import { CharacterEntity } from "@/core/domain/entities/character-entity/character.entity";
+import { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
 
 export interface CharacterScraperGateways {
-	character: ScraperGatewayAdapter<CharacterEntity>;
+	character: ScraperGatewayAdapter<CharacterData>;
 	names: ScraperGatewayAdapter<string[]>;
 }
