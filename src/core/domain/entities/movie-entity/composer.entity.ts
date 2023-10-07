@@ -1,3 +1,5 @@
+import { isEmptyArray } from "../../functions/is-empty-array";
+
 export class ComposerEntity {
 	private constructor(private readonly composer: string[]) {}
 	public static create(composer: string[]) {
@@ -8,6 +10,8 @@ export class ComposerEntity {
 		return this.composer;
 	}
 	private static validate(composer: string[]) {
-		return !composer || composer.some((value) => !value);
+		return (
+			!composer || isEmptyArray(composer) || composer.some((value) => !value)
+		);
 	}
 }

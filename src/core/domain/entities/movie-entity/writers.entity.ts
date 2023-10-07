@@ -1,3 +1,5 @@
+import { isEmptyArray } from "../../functions/is-empty-array";
+
 export class WritersEntity {
 	private constructor(private readonly writers: string[]) {}
 	public static create(writers: string[]) {
@@ -8,6 +10,6 @@ export class WritersEntity {
 		return this.writers;
 	}
 	private static validate(writers: string[]) {
-		return !writers || writers.some((value) => !value);
+		return !writers || isEmptyArray(writers) || writers.some((value) => !value);
 	}
 }

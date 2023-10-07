@@ -13,6 +13,7 @@ describe("DirectorsEntity", () => {
 			value: ["Any", undefined],
 		},
 		{ value: undefined },
+		{ value: [] },
 	];
 	test.each(cases)(
 		"should return undefined when passed a invalid value",

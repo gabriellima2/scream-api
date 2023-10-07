@@ -9,14 +9,19 @@ describe("AppearancesEntity", () => {
 
 		expect(appearances.value).toMatchObject(validValues);
 	});
-	it("should return undefined when passed a invalid value", () => {
-		const appearances = AppearancesEntity.create(undefined);
+	const cases = [
+		{
+			value: ["Any", undefined],
+		},
+		{ value: undefined },
+		{ value: [] },
+	];
+	test.each(cases)(
+		"should return undefined when passed a invalid value",
+		async ({ value }) => {
+			const appearances = AppearancesEntity.create(value);
 
-		expect(appearances).toBeUndefined();
-	});
-	it("should return undefined when passed a empty array value", () => {
-		const appearances = AppearancesEntity.create([]);
-
-		expect(appearances).toBeUndefined();
-	});
+			expect(appearances).toBeUndefined();
+		}
+	);
 });

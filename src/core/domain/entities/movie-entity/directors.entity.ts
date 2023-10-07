@@ -1,3 +1,5 @@
+import { isEmptyArray } from "../../functions/is-empty-array";
+
 export class DirectorsEntity {
 	private constructor(private readonly directors: string[]) {}
 	public static create(directors: string[]) {
@@ -8,6 +10,8 @@ export class DirectorsEntity {
 		return this.directors;
 	}
 	private static validate(directors: string[]) {
-		return !directors || directors.some((value) => !value);
+		return (
+			!directors || isEmptyArray(directors) || directors.some((value) => !value)
+		);
 	}
 }
