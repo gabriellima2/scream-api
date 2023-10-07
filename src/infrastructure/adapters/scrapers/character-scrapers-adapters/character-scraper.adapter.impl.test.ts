@@ -36,8 +36,8 @@ describe("CharacterScraperAdapterImpl", () => {
 				appearances: [],
 				born: "",
 				status: "Unknown",
-				personality: "",
-				portrayed_by: "",
+				personality: [],
+				portrayed_by: [],
 			});
 		});
 	});
@@ -151,7 +151,7 @@ describe("CharacterScraperAdapterImpl", () => {
 				const sut = makeSut();
 				const response = sut.execute(invalidHtml);
 
-				expect(response.portrayed_by).toBe("");
+				expect(response.portrayed_by).toMatchObject([]);
 			});
 		});
 	});

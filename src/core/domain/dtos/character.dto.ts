@@ -11,6 +11,3 @@ export type GetCharactersInputDTO = PaginationInputDTO;
 export type GetCharactersOutputDTO = PaginationOutputDTO<
 	Required<CharacterData>[]
 >;
-
-export type InsertCharactersInputDTO = Omit<CharacterData, "id">[];
-export type InsertCharactersOutputDTO = Required<CharacterData>[];

@@ -11,7 +11,6 @@ import {
 	GetCharacterByNameOutputDTO,
 	GetCharactersInputDTO,
 	GetCharactersOutputDTO,
-	InsertCharactersInputDTO,
 } from "@/core/domain/dtos/character.dto";
 import { InvalidParamsException } from "@/core/domain/exceptions/invalid-params.exception";
 import { CharacterScraperGateways } from "@/adapters/gateways/character-scraper-gateways";
@@ -19,6 +18,7 @@ import { CharacterRepository } from "@/core/domain/repositories/character.reposi
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
 
 import { createEndpointURL } from "../helpers/create-endpoint-url";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 @Injectable()
 export class CharacterServiceImpl implements CharacterService {
@@ -31,68 +31,37 @@ export class CharacterServiceImpl implements CharacterService {
 	async getCharacters(
 		params?: GetCharactersInputDTO
 	): Promise<GetCharactersOutputDTO> {
-		const charactersFromDB = await this.repository.getAll();
-		if (!charactersFromDB) {
-			const namesUrl = `${this.baseUrl}/Category:Characters`;
-			const names = await this.scrapers.names.execute(namesUrl);
-			if (!names) throw new EmptyDataException();
-			const promises = names.map(async (name) => {
-				const characterEndpoint = createEndpointURL(this.baseUrl, name);
-				const scrapedCharacter = await this.scrapers.character.execute(
-					characterEndpoint
-				);
-				const characterEntity = CharacterEntity.create(scrapedCharacter);
-				return {
-					name: characterEntity.name,
-					image: characterEntity.image,
-					description: characterEntity.description,
-					born: characterEntity.born,
-					personality: characterEntity.personality,
-					status: characterEntity.status,
-					portrayed_by: characterEntity.portrayed_by,
-					appearances: characterEntity.appearances,
-				};
-			});
-			const characters = await Promise.all(promises);
-			const insertedCharacters = await this.repository.insert(
-				characters as InsertCharactersInputDTO
-			);
-			if (!insertedCharacters) throw new EmptyDataException();
-			const insertedCharactersTotal = insertedCharacters.length;
-			if (!params?.limit) {
-				return {
-					items: insertedCharacters,
-					total: insertedCharactersTotal,
-					currentPage: 1,
-					totalPages: 1,
-				};
-			}
-			const slicedCharacters = insertedCharacters.slice(0, params.limit);
+		const namesUrl = `${this.baseUrl}/Category:Characters`;
+		const names = await this.scrapers.names.execute(namesUrl);
+		if (!names) throw new EmptyDataException();
+		const promises = names.map(async (name) => {
+			return await this.getCharacter(name);
+		});
+		const characters = await Promise.all(promises);
+		if (!characters) throw new EmptyDataException();
+		if (params) {
+			const { page, limit } = params;
+			if (isNaN(page) || (limit && isNaN(limit)))
+				throw new InvalidParamsException();
+			const defaultPage = !page ? 1 : page;
+			const defaultLimit = limit === undefined || limit >= 60 ? 60 : limit;
+			const start = (defaultPage - 1) * defaultLimit;
+			const skip = defaultPage * defaultLimit;
+			const pagedCharacters = characters.slice(start, skip);
+			if (!pagedCharacters || isEmptyArray(pagedCharacters))
+				throw new EmptyDataException();
 			return {
-				items: slicedCharacters,
-				total: slicedCharacters.length,
-				currentPage: 1,
-				totalPages: 1,
+				items: pagedCharacters,
+				total: pagedCharacters.length,
+				currentPage: params.page,
+				totalPages: Math.ceil(characters.length / skip),
 			};
 		}
-		if (!params?.page)
-			return {
-				items: charactersFromDB,
-				total: charactersFromDB.length,
-				currentPage: 1,
-				totalPages: 1,
-			};
-		const limit =
-			params.limit === undefined || params.limit >= 60 ? 60 : params.limit;
-		const pagedCharacters = await this.repository.getAll(
-			params.page && { ...params, limit }
-		);
-		if (!pagedCharacters) throw new EmptyDataException();
 		return {
-			items: pagedCharacters,
-			total: pagedCharacters.length,
-			currentPage: params.page,
-			totalPages: Math.ceil(charactersFromDB.length / limit),
+			items: characters,
+			total: characters.length,
+			currentPage: 1,
+			totalPages: 1,
 		};
 	}
 

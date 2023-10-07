@@ -25,10 +25,12 @@ export class CharacterControllerImpl implements CharacterController {
 		@Query("limit") limit?: string
 	): Promise<CharacterControllerProtocol.GetCharactersResponse> {
 		try {
-			const response = await this.service.getCharacters({
-				page: Number(page),
-				limit: Number(limit),
-			});
+			const response = await this.service.getCharacters(
+				page && {
+					page: Number(page),
+					limit: Number(limit),
+				}
+			);
 			const url = `${API_URL}/characters`;
 			return {
 				total: response.total,

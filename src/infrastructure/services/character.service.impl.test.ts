@@ -2,8 +2,6 @@ import { Test } from "@nestjs/testing";
 
 import { CharacterServiceImpl } from "./character.service.impl";
 
-import { GetCharactersOutputDTO } from "@/core/domain/dtos/character.dto";
-
 import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
 import { CHARACTERS_NAME } from "@/__mocks__/characters-name";
 
@@ -16,7 +14,6 @@ export const dependencies = {
 		getByName: jest.fn(),
 		create: jest.fn(),
 		getAll: jest.fn(),
-		insert: jest.fn(),
 	},
 	scrapers: {
 		names: { execute: jest.fn() },
@@ -42,7 +39,6 @@ const makeSut = async () => {
 
 describe("CharacterServiceImpl", () => {
 	const { repository, scrapers } = dependencies;
-	const characters = [mockCharacter];
 
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -50,13 +46,6 @@ describe("CharacterServiceImpl", () => {
 
 	function expectHasCharacter(data: Required<MockCharacter>) {
 		expect(data).toMatchObject(mockCharacter);
-	}
-	function expectHasCharacters(
-		data: Required<MockCharacter>[],
-		length?: number
-	) {
-		expect(data.length).toBe(length ?? 1);
-		expect(data[0]).toMatchObject(mockCharacter);
 	}
 
 	describe("GetCharacter", () => {
@@ -118,81 +107,54 @@ describe("CharacterServiceImpl", () => {
 		});
 	});
 	describe("GetCharacters", () => {
-		function expectResponseToBeCorrect(response: GetCharactersOutputDTO) {
-			expectHasCharacters(response.items);
-			expect(response.total).toBe(response.items.length);
+		const mockScrapedCharacters = [
+			CHARACTER_WITHOUT_ID,
+			CHARACTER_WITHOUT_ID,
+			CHARACTER_WITHOUT_ID,
+		];
+		const mockDBCharacters = [mockCharacter, mockCharacter, mockCharacter];
+
+		function expectResponseToBeCorrect(items: MockCharacter[], total: number) {
+			expect(total).toBe(items.length);
 		}
+
 		describe("Success", () => {
-			describe("With data in DB", () => {
-				beforeEach(() => {
-					repository.getAll.mockReturnValue(characters);
-				});
-				it("should return the characters without pagination that are saved in the database", async () => {
-					const sut = await makeSut();
-					const response = await sut.getCharacters();
+			it("should return characters scraped without pagination from the received web address", async () => {
+				scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
+				scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
+				repository.create.mockReturnValue(mockCharacter);
 
-					expectHasCharacters(response.items);
-					expect(response.total).toBe(response.items.length);
-					expect(repository.getAll).toHaveBeenCalledTimes(1);
-				});
-				it("should return the characters with pagination that are saved in the database", async () => {
-					const page = 1;
-					const limit = 2;
+				const sut = await makeSut();
+				const response = await sut.getCharacters();
 
-					const sut = await makeSut();
-					const response = await sut.getCharacters({
-						page,
-						limit,
-					});
-
-					expectResponseToBeCorrect(response);
-					expect(repository.getAll).toHaveBeenCalledTimes(2);
-					expect(repository.getAll).toHaveBeenCalledWith({ page, limit });
-				});
+				expectResponseToBeCorrect(response.items, response.total);
 			});
-			describe("Without data in DB", () => {
-				beforeEach(() => {
-					scrapers.character.execute.mockReturnValue(charactersWithoutID[0]);
+			describe("Pagination", () => {
+				it("should return characters scraped with pagination from the received web address", async () => {
 					scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
-					repository.insert.mockReturnValue(characters);
+					scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
 					repository.create.mockReturnValue(mockCharacter);
-					repository.getAll.mockReturnValue(undefined);
-				});
 
-				const charactersWithoutID = [
-					CHARACTER_WITHOUT_ID,
-					CHARACTER_WITHOUT_ID,
-					CHARACTER_WITHOUT_ID,
-				];
-
-				function expectToHandleCharactersCreation() {
-					expect(scrapers.character.execute).toHaveBeenCalledWith(
-						`${BASE_URL}/${CHARACTERS_NAME[0]}`
-					);
-					expect(scrapers.names.execute).toHaveBeenCalledWith(
-						`${BASE_URL}/Category:Characters`
-					);
-					expect(scrapers.names.execute).toHaveBeenCalledTimes(1);
-					expect(repository.insert).toHaveBeenCalledWith(charactersWithoutID);
-					expect(repository.insert).toHaveBeenCalledTimes(1);
-				}
-
-				it("should return characters scraped without pagination from the received web address when there is no data in the db", async () => {
-					const sut = await makeSut();
-					const response = await sut.getCharacters();
-
-					expectResponseToBeCorrect(response);
-					expectToHandleCharactersCreation();
-				});
-				it("should return characters scraped with pagination from the received web address when there is no data in the db", async () => {
 					const sut = await makeSut();
 					const response = await sut.getCharacters({
 						page: 1,
 						limit: 2,
 					});
 
-					expectHasCharacters([response.items[0], response.items[1]], 2);
-					expectToHandleCharactersCreation();
+					expectResponseToBeCorrect(response.items, response.total);
+				});
+				it("should return paged characters when only page param has passed", async () => {
+					scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
+					scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
+					repository.create.mockReturnValue(mockCharacter);
+					repository.getAll.mockReturnValue(mockDBCharacters);
+
+					const sut = await makeSut();
+					const response = await sut.getCharacters({
+						page: 1,
+					});
+
+					expectResponseToBeCorrect(response.items, response.total);
 				});
 			});
 		});
@@ -206,10 +168,8 @@ describe("CharacterServiceImpl", () => {
 					expect(err).toBeInstanceOf(Error);
 				}
 			});
-			it("should throw an error when insert-many return is empty", async () => {
-				scrapers.names.execute.mockReturnValue(undefined);
-				repository.insert.mockReturnValue(undefined);
-				repository.getAll.mockReturnValue(undefined);
+			it("should throw an error when characters-scraper return is empty", async () => {
+				scrapers.character.execute.mockReturnValue(undefined);
 				try {
 					const sut = await makeSut();
 					await sut.getCharacters();
@@ -217,12 +177,14 @@ describe("CharacterServiceImpl", () => {
 					expect(err).toBeInstanceOf(Error);
 				}
 			});
-			it("should throw an error when get-with-pagination return is empty", async () => {
-				repository.getAll.mockReturnValueOnce(characters);
-				repository.getAll.mockReturnValueOnce(undefined);
+			it("should throw an error when params has invalid values", async () => {
+				scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
+				scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
+				repository.create.mockReturnValue(mockCharacter);
+				repository.getAll.mockReturnValue(mockDBCharacters);
 				try {
 					const sut = await makeSut();
-					await sut.getCharacters();
+					await sut.getCharacters({ page: 500 });
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}
