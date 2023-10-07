@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
-import { ObjectIsEmpty } from "@/core/domain/functions/object-is-empty";
+import { isEmptyObject } from "@/core/domain/functions/is-empty-object";
 
 import { ScraperGatewayAdapter } from "@/adapters/gateways/scraper-gateway.adapter";
 import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
@@ -20,7 +20,7 @@ export class ScraperGatewayAdapterImpl<T extends object>
 		const html = await this.http.getHtml(url);
 		if (!html) throw new EmptyDataException();
 		const data = this.scraper.execute(html);
-		if (ObjectIsEmpty(data)) throw new EmptyDataException();
+		if (isEmptyObject(data)) throw new EmptyDataException();
 		return data;
 	}
 }

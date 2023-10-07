@@ -4,17 +4,10 @@ import { Injectable } from "@nestjs/common";
 import { MovieScraperAdapter } from "@/adapters/scrapers/movie-scrapers-adapters/movie-scraper.adapter";
 import { MovieScraperProtocols } from "@/core/domain/protocols/scrapers/movie-scrapers.protocol";
 
-import { formatCharacterName } from "@/core/domain/functions/formatters/format-character-name";
-import { removeDollarAbbr } from "@/core/domain/functions/formatters/remove-dollar-abbr";
-import { createListFromString } from "@/core/domain/functions/create-list-from-string";
-import { formatMovieName } from "@/core/domain/functions/formatters/format-movie-name";
-import { removeBreakLine } from "@/core/domain/functions/formatters/remove-break-line";
-import { createPathname } from "@/core/domain/functions/create-pathname";
-import { createApiUrl } from "@/core/domain/functions/create-api-url";
-import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
+import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
-import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
 
 @Injectable()
 export class MovieScraperAdapterImpl implements MovieScraperAdapter {
@@ -50,7 +43,7 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 			.first()
 			.text();
 		if (!name) return;
-		return formatMovieName(name);
+		return name;
 	}
 
 	private getSynopsis(): string | undefined {
@@ -67,16 +60,11 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 			.add(this.$("#Main_characters").parent().nextUntil("h2"));
 		if (!container) return;
 		container.each((_, el) => {
-			const characterName = this.$("ul > li > a", el).eq(1).text();
-			if (!characterName) return;
-			const formattedCharacterName = formatCharacterName(characterName);
-			const characterApiUrl = createApiUrl(
-				"characters",
-				createPathname(formattedCharacterName)
-			);
-			characters.push(characterApiUrl);
+			const character = this.$("ul > li > a", el).eq(1).text();
+			if (!character) return;
+			characters.push(character);
 		});
-		return arrayIsEmpty(characters) ? undefined : characters;
+		return isEmptyArray(characters) ? undefined : characters;
 	}
 
 	private getDirectors(): string[] | undefined {

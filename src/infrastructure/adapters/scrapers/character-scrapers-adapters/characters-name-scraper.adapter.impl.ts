@@ -22,7 +22,7 @@ export class CharactersNameScraperAdapterImpl
 			$("ul > li", el).each((_, item) => {
 				const name = NameEntity.create(
 					$(".category-page__member-link", item).text()
-				).value;
+				)?.value;
 				if (!name) return;
 				names.push(name);
 			});

@@ -1,9 +1,9 @@
-import { MovieEntity } from "../entities/movie.entity";
+import { MovieData } from "../entities/movie-entity/movie.entity";
 
-export type CreateMovieInputDTO = Omit<MovieEntity, "id">;
-export type CreateMovieOutputDTO = MovieEntity | null;
+export type CreateMovieInputDTO = Omit<MovieData, "id">;
+export type CreateMovieOutputDTO = Required<MovieData> | null;
 
 export type GetMovieByNameInputDTO = string;
-export type GetMovieByNameOutputDTO = MovieEntity | null;
+export type GetMovieByNameOutputDTO = Required<MovieData> | null;
 
-export type GetMoviesOutputDTO = MovieEntity[];
+export type GetMoviesOutputDTO = Required<MovieData>[];

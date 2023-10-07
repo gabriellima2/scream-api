@@ -1,7 +1,6 @@
 import { MovieScraperAdapterImpl } from "./movie-scraper.adapter.impl";
 
-import { MovieEntity } from "@/core/domain/entities/movie.entity";
-import { createApiUrl } from "@/core/domain/functions/create-api-url";
+import { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
 import { invalidHtml } from "@/__mocks__/invalid-html";
 import { movieHtml } from "@/__mocks__/movie-html";
@@ -9,7 +8,7 @@ import { movieHtml } from "@/__mocks__/movie-html";
 const makeSut = () => new MovieScraperAdapterImpl();
 
 describe("MovieScraperAdapterImpl", () => {
-	const MOVIE: Omit<MovieEntity, "id"> = {
+	const MOVIE: Omit<MovieData, "id"> = {
 		name: "any_name",
 		image: "any_src",
 		synopsis: "any_synopsis",
@@ -20,7 +19,7 @@ describe("MovieScraperAdapterImpl", () => {
 		writers: ["any_value"],
 		release_date: "any_value",
 		running_time: "any_value",
-		characters: [createApiUrl("characters", "Any_Character")],
+		characters: ["any_character"],
 	};
 
 	describe("Public Methods", () => {

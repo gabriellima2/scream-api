@@ -35,10 +35,10 @@ describe("MovieServiceImpl", () => {
 		jest.resetAllMocks();
 	});
 
-	function expectHasMovie(data: MockMovie) {
+	function expectHasMovie(data: Required<MockMovie>) {
 		expect(data).toMatchObject(mockMovie);
 	}
-	function expectHasMovies(data: MockMovie[]) {
+	function expectHasMovies(data: Required<MockMovie>[]) {
 		expect(data.length).toBe(1);
 		expect(data[0]).toMatchObject(mockMovie);
 	}

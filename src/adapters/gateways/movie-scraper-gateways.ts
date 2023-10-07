@@ -1,7 +1,7 @@
 import { ScraperGatewayAdapter } from "@/adapters/gateways/scraper-gateway.adapter";
-import { MovieEntity } from "@/core/domain/entities/movie.entity";
+import { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
 export interface MovieScraperGateways {
-	movie: ScraperGatewayAdapter<MovieEntity>;
+	movie: ScraperGatewayAdapter<MovieData>;
 	names: ScraperGatewayAdapter<string[]>;
 }

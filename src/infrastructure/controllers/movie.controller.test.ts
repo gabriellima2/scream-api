@@ -4,7 +4,7 @@ import { MovieControllerImpl } from "./movie.controller";
 import { MovieServiceImpl } from "../services/movie.service.impl";
 
 import { BaseException } from "@/core/domain/exceptions/base.exception";
-import { MovieEntity } from "@/core/domain/entities/movie.entity";
+import { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
 import { dependencies } from "../services/movie.service.impl.test";
 import { type MockMovie, mockMovie } from "@/__mocks__/mock-movie";
@@ -32,7 +32,7 @@ const makeSut = async () => {
 
 describe("MovieControllerImpl", () => {
 	function expectReturnedDataCorrectly(
-		data: MovieEntity | MovieEntity[],
+		data: MovieData | MovieData[],
 		mock: MockMovie | MockMovie[]
 	) {
 		expect(data).toMatchObject(mock);
@@ -45,7 +45,7 @@ describe("MovieControllerImpl", () => {
 	describe("GetMovie", () => {
 		describe("Success", () => {
 			it("should return the data correctly", async () => {
-				spyGetMovie.mockResolvedValue(mockMovie as MovieEntity);
+				spyGetMovie.mockResolvedValue(mockMovie);
 				const sut = await makeSut();
 
 				const data = await sut.getMovie(mockMovie.name);
@@ -71,7 +71,7 @@ describe("MovieControllerImpl", () => {
 		describe("Success", () => {
 			it("should return the data correctly", async () => {
 				const movies = [mockMovie];
-				spyGetMovies.mockResolvedValue(movies as MovieEntity[]);
+				spyGetMovies.mockResolvedValue(movies);
 				const sut = await makeSut();
 
 				const data = await sut.getMovies();

@@ -21,7 +21,6 @@ export class MovieControllerImpl implements MovieController {
 	async getMovies(): Promise<MovieControllerProtocol.GetMoviesResponse> {
 		try {
 			const response = await this.service.getMovies();
-			console.log(response);
 			return response;
 		} catch (err) {
 			const error = handleError(err);

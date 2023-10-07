@@ -10,9 +10,8 @@ import {
 	GetMoviesOutputDTO,
 } from "@/core/domain/dtos/movie.dto";
 import { MovieRepository } from "@/core/domain/repositories/movie.repository";
-import { MovieEntity } from "@/core/domain/entities/movie.entity";
 
-import { arrayIsEmpty } from "@/core/domain/functions/array-is-empty";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
 import { MovieModel } from "../models/movie.model";
 
 @Injectable()
@@ -20,13 +19,13 @@ export class MovieRepositoryImpl implements MovieRepository {
 	constructor(@InjectModel(MovieModel.name) private model: Model<MovieModel>) {}
 	async getAll(): Promise<GetMoviesOutputDTO> {
 		const movies = await this.model.find().lean().sort("name").exec();
-		if (!movies || arrayIsEmpty(movies)) return null;
+		if (!movies || isEmptyArray(movies)) return null;
 		return movies as GetMoviesOutputDTO;
 	}
 	async create(data: CreateMovieInputDTO): Promise<CreateMovieOutputDTO> {
 		const movie = await new this.model(data).save();
 		if (!movie) return null;
-		return Object.freeze<MovieEntity>({
+		return Object.freeze({
 			id: movie._id,
 			name: movie.name,
 			characters: movie.characters,
@@ -46,7 +45,7 @@ export class MovieRepositoryImpl implements MovieRepository {
 	): Promise<GetMovieByNameOutputDTO> {
 		const movie = await this.model.findOne({ name });
 		if (!movie) return null;
-		return Object.freeze<MovieEntity>({
+		return Object.freeze({
 			id: movie._id,
 			name: movie.name,
 			characters: movie.characters,

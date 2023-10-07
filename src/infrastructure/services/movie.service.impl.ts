@@ -12,7 +12,8 @@ import { InvalidParamsException } from "@/core/domain/exceptions/invalid-params.
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
 import { MovieScraperGateways } from "@/adapters/gateways/movie-scraper-gateways";
 import { MovieRepository } from "@/core/domain/repositories/movie.repository";
-import { createPathname } from "@/core/domain/functions/create-pathname";
+
+import { createEndpointURL } from "../helpers/create-endpoint-url";
 
 @Injectable()
 export class MovieServiceImpl implements MovieService {
@@ -41,8 +42,8 @@ export class MovieServiceImpl implements MovieService {
 		if (!name) throw new InvalidParamsException();
 		const movieFromDB = await this.repository.getByName(name);
 		if (movieFromDB) return movieFromDB;
-		const url = `${this.baseUrl}/${createPathname(name)}`;
-		const movie = await this.scrapers.movie.execute(url);
+		const endpoint = createEndpointURL(this.baseUrl, name);
+		const movie = await this.scrapers.movie.execute(endpoint);
 		if (!movie) throw new EmptyDataException();
 		const createdMovie = await this.repository.create(
 			movie as CreateMovieInputDTO

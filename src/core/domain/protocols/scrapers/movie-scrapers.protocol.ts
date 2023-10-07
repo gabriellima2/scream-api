@@ -1,8 +1,8 @@
-import { MovieEntity } from "../../entities/movie.entity";
+import { MovieData } from "../../entities/movie-entity/movie.entity";
 import { NameEntity } from "../../entities/name.entity";
 
 export namespace MovieScraperProtocols {
-	export type Response = Partial<Omit<MovieEntity, "id">>;
+	export type Response = Partial<Omit<MovieData, "id">>;
 }
 
 export namespace MoviesNameScraperProtocols {

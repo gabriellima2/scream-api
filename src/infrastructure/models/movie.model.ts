@@ -1,10 +1,10 @@
 import { Document } from "mongoose";
 import { Prop, Schema } from "@nestjs/mongoose";
 
-import { MovieEntity } from "@/core/domain/entities/movie.entity";
+import { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
 @Schema({ collection: "movies" })
-export class MovieModel extends Document implements Omit<MovieEntity, "id"> {
+export class MovieModel extends Document implements Omit<MovieData, "id"> {
 	@Prop({ type: String, required: true })
 	name: string;
 	@Prop({
