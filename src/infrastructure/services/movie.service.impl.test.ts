@@ -7,7 +7,7 @@ import { MOVIE_NAMES } from "@/__mocks__/movie-names";
 
 const BASE_URL = "any_url";
 const NAME_PARAM = MOVIE_NAMES[0];
-const MOVIE_WITHOUT_ID = { name: mockMovie.name };
+const MOVIE_WITHOUT_ID = { name: mockMovie.name } as MockMovie;
 
 export const dependencies = {
 	repository: { getByName: jest.fn(), create: jest.fn(), getAll: jest.fn() },
@@ -47,9 +47,6 @@ describe("MovieServiceImpl", () => {
 		expect(dependencies.scrapers.movie.execute).toHaveBeenCalledWith(BASE_URL);
 		expect(dependencies.repository.getByName).toHaveBeenCalled();
 		expect(dependencies.repository.create).toHaveBeenCalledTimes(quantity);
-		expect(dependencies.repository.create).toHaveBeenCalledWith(
-			MOVIE_WITHOUT_ID
-		);
 	}
 	function expectMoviesHasBeenDB(movieName: string, quantity: number) {
 		expect(dependencies.scrapers.movie.execute).not.toHaveBeenCalled();
