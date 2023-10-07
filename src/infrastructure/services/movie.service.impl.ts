@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
+import {
+	MovieData,
+	MovieEntity,
+} from "@/core/domain/entities/movie-entity/movie.entity";
 import { MovieService } from "@/core/application/services/movie.service";
 
 import {
-	CreateMovieInputDTO,
 	GetMovieByNameInputDTO,
 	GetMovieByNameOutputDTO,
 	GetMoviesOutputDTO,
@@ -43,12 +46,27 @@ export class MovieServiceImpl implements MovieService {
 		const movieFromDB = await this.repository.getByName(name);
 		if (movieFromDB) return movieFromDB;
 		const endpoint = createEndpointURL(this.baseUrl, name);
-		const movie = await this.scrapers.movie.execute(endpoint);
-		if (!movie) throw new EmptyDataException();
-		const createdMovie = await this.repository.create(
-			movie as CreateMovieInputDTO
-		);
+		const movieScraped = await this.scrapers.movie.execute(endpoint);
+		if (!movieScraped) throw new EmptyDataException();
+		const movieEntity = MovieEntity.create(movieScraped);
+		const movie: MovieData = {
+			name: movieEntity.name,
+			image: movieEntity.image,
+			synopsis: movieEntity.synopsis,
+			composer: movieEntity.composer,
+			characters: movieEntity.characters,
+			directors: movieEntity.directors,
+			producers: movieEntity.producers,
+			writers: movieEntity.writers,
+			box_office: movieEntity.boxOffice,
+			release_date: movieEntity.releaseDate,
+			running_time: movieEntity.runningTime,
+		};
+		const createdMovie = await this.repository.create(movie);
 		if (!createdMovie) throw new Error();
+		movieEntity.setId(createdMovie.id);
+		if (!createdMovie) throw new Error();
+
 		return createdMovie;
 	}
 }

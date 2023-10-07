@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
+import {
+	CharacterData,
+	CharacterEntity,
+} from "@/core/domain/entities/character-entity/character.entity";
 import { CharacterService } from "@/core/application/services/character.service";
-
-import { CharacterEntity } from "@/core/domain/entities/character-entity/character.entity";
 
 import {
 	GetCharacterByNameInputDTO,
@@ -91,7 +93,7 @@ export class CharacterServiceImpl implements CharacterService {
 		const characterScraped = await this.scrapers.character.execute(endpoint);
 		if (characterScraped.name === name) throw new EmptyDataException();
 		const characterEntity = CharacterEntity.create(characterScraped);
-		const character = {
+		const character: CharacterData = {
 			name: characterEntity.name,
 			image: characterEntity.image,
 			description: characterEntity.description,
