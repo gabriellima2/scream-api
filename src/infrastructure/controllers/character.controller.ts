@@ -11,8 +11,8 @@ import { CharacterControllerProtocol } from "@/core/domain/protocols/controllers
 import { CharacterController } from "@/core/application/controllers/character.controller";
 import { CharacterServiceImpl } from "../services/character.service.impl";
 
+import { createPaginationUrl } from "../helpers/create-pagination-url";
 import { handleError } from "@/core/domain/functions/handle-error";
-import { API_URL } from "@/core/domain/constants/api-url";
 
 @Controller()
 export class CharacterControllerImpl implements CharacterController {
@@ -31,18 +31,17 @@ export class CharacterControllerImpl implements CharacterController {
 					limit: Number(limit),
 				}
 			);
-			const url = `${API_URL}/characters`;
+			const { next, last } = createPaginationUrl("characters", {
+				page: response.currentPage,
+				limit: response.total,
+			});
+			const hasNextPage = response.currentPage < response.totalPages;
+			const hasLastPage = response.currentPage > 1;
 			return {
 				total: response.total,
 				items: response.items,
-				next:
-					response.currentPage < response.totalPages
-						? url + `?page=${response.currentPage + 1}&limit=${response.total}`
-						: undefined,
-				last:
-					response.currentPage > 1
-						? url + `?page=${response.currentPage - 1}&limit=${response.total}`
-						: undefined,
+				next: hasNextPage ? next : undefined,
+				last: hasLastPage ? last : undefined,
 			};
 		} catch (err) {
 			const error = handleError(err);

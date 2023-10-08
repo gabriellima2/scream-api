@@ -62,7 +62,7 @@ describe("CharacterControllerImpl", () => {
 				expectReturnedDataCorrectly(data, mockCharacter);
 			});
 		});
-		describe("Fail", () => {
+		describe("Error", () => {
 			it("should handle exceptions correctly", async () => {
 				spyGetCharacter.mockRejectedValue(
 					new BaseException(mockError.message, 500)
@@ -135,7 +135,7 @@ describe("CharacterControllerImpl", () => {
 				expect(response.last).toBe(page !== 1 ? last : undefined);
 			});
 		});
-		describe("Fail", () => {
+		describe("Error", () => {
 			it("should handle exceptions correctly", async () => {
 				spyGetCharacters.mockRejectedValue(
 					new BaseException(mockError.message, 500)
