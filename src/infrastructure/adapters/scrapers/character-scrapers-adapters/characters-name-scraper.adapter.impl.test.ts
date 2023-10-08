@@ -1,7 +1,7 @@
 import { CharactersNameScraperAdapterImpl } from "./characters-name-scraper.adapter.impl";
 
-import { charactersNameHtml } from "@/__mocks__/characters-name-html";
-import { invalidHtml } from "@/__mocks__/invalid-html";
+import { charactersNameHtml } from "@/__mocks__/html/characters-name-html";
+import { invalidHtml } from "@/__mocks__/html/invalid-html";
 
 const makeSut = () => new CharactersNameScraperAdapterImpl();
 

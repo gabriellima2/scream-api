@@ -2,13 +2,10 @@ import { Test } from "@nestjs/testing";
 
 import { CharacterServiceImpl } from "./character.service.impl";
 
+import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
 import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
-import { CHARACTERS_NAME } from "@/__mocks__/characters-name";
 
 const BASE_URL = "any_url";
-const NAME_PARAM = "Any_Name";
-const CHARACTER_WITHOUT_ID = { name: mockCharacter.name } as MockCharacter;
-
 export const dependencies = {
 	repository: {
 		getByName: jest.fn(),
@@ -42,17 +39,20 @@ const makeSut = async () => {
 };
 
 describe("CharacterServiceImpl", () => {
+	const NAME_PARAM = "Any_Name";
+	const CHARACTERS_NAME = ["Any_Name", "Another_Name"];
+	const CHARACTER_WITHOUT_ID = { name: mockCharacter.name } as MockCharacter;
 	const { repository, scrapers, paginate } = dependencies;
 
 	beforeEach(() => {
 		jest.resetAllMocks();
 	});
 
-	function expectHasCharacter(data: Required<MockCharacter>) {
-		expect(data).toMatchObject(mockCharacter);
-	}
-
 	describe("GetCharacter", () => {
+		function expectHasCharacter(data: Required<MockCharacter>) {
+			expect(data).toMatchObject(mockCharacter);
+		}
+
 		describe("Success", () => {
 			it("should return the character that are saved in the database", async () => {
 				repository.getByName.mockReturnValue(mockCharacter);
@@ -87,7 +87,7 @@ describe("CharacterServiceImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacter("");
 				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 			it("should throw an error when character-scraper return is empty", async () => {
@@ -96,7 +96,7 @@ describe("CharacterServiceImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacter(NAME_PARAM);
 				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 			it("should throw an error when creating a character in db", async () => {
@@ -105,7 +105,7 @@ describe("CharacterServiceImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacter(NAME_PARAM);
 				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 		});
@@ -139,7 +139,7 @@ describe("CharacterServiceImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacters();
 				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 			it("should throw an error when characters-scraper return is empty", async () => {
@@ -148,7 +148,7 @@ describe("CharacterServiceImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacters();
 				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 		});

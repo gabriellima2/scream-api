@@ -3,7 +3,7 @@ import { ScraperGatewayAdapterImpl } from "./scraper-gateway.adapter.impl";
 import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
 import { BaseScraperAdapter } from "@/adapters/scrapers/base-scraper.adapter";
 
-import { characterHtml } from "@/__mocks__/character-html";
+import { characterHtml } from "@/__mocks__/html/character-html";
 
 type ExpectedScrapedData = { name: string };
 type Dependencies = {

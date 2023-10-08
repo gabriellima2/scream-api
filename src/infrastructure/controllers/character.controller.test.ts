@@ -7,10 +7,12 @@ import { CharacterServiceImpl } from "../services/character.service.impl";
 import { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
 import { BaseException } from "@/core/domain/exceptions/base.exception";
 
-import { mockCharacter, type MockCharacter } from "@/__mocks__/mock-character";
 import { dependencies } from "../services/character.service.impl.test";
-import { mockError } from "@/__mocks__/mock-error";
 import { API_URL } from "@/core/domain/constants/api-url";
+
+import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
+import { mockCharacter, type MockCharacter } from "@/__mocks__/mock-character";
+import { mockError } from "@/__mocks__/mock-error";
 
 const spyGetCharacter = jest.spyOn(
 	CharacterServiceImpl.prototype,
@@ -46,10 +48,6 @@ describe("CharacterControllerImpl", () => {
 	) {
 		expect(data).toMatchObject(mock);
 	}
-	function expectExceptionsToBeHandledCorrectly(err: Error) {
-		expect(err).toBeInstanceOf(Error);
-		expect(err.message).toBe(mockError.message);
-	}
 
 	describe("GetCharacter", () => {
 		describe("Success", () => {
@@ -71,7 +69,7 @@ describe("CharacterControllerImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacter("");
 				} catch (err) {
-					expectExceptionsToBeHandledCorrectly(err);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 		});
@@ -144,7 +142,7 @@ describe("CharacterControllerImpl", () => {
 					const sut = await makeSut();
 					await sut.getCharacters();
 				} catch (err) {
-					expectExceptionsToBeHandledCorrectly(err);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 		});

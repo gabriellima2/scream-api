@@ -2,8 +2,8 @@ import { MovieScraperAdapterImpl } from "./movie-scraper.adapter.impl";
 
 import { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
-import { invalidHtml } from "@/__mocks__/invalid-html";
-import { movieHtml } from "@/__mocks__/movie-html";
+import { invalidHtml } from "@/__mocks__/html/invalid-html";
+import { movieHtml } from "@/__mocks__/html/movie-html";
 
 const makeSut = () => new MovieScraperAdapterImpl();
 

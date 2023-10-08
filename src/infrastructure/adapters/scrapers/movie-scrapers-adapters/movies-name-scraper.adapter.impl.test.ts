@@ -1,7 +1,7 @@
 import { MoviesNameScraperAdapterImpl } from "./movies-name-scraper.adapter.impl";
 
-import { moviesNameHtml } from "@/__mocks__/movies-name-html";
-import { invalidHtml } from "@/__mocks__/invalid-html";
+import { moviesNameHtml } from "@/__mocks__/html/movies-name-html";
+import { invalidHtml } from "@/__mocks__/html/invalid-html";
 
 const makeSut = () => new MoviesNameScraperAdapterImpl();
 

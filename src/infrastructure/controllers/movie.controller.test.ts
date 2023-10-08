@@ -7,6 +7,8 @@ import { BaseException } from "@/core/domain/exceptions/base.exception";
 import { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
 import { dependencies } from "../services/movie.service.impl.test";
+
+import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
 import { type MockMovie, mockMovie } from "@/__mocks__/mock-movie";
 import { mockError } from "@/__mocks__/mock-error";
 
@@ -37,10 +39,6 @@ describe("MovieControllerImpl", () => {
 	) {
 		expect(data).toMatchObject(mock);
 	}
-	function expectExceptionsToBeHandledCorrectly(err: Error) {
-		expect(err).toBeInstanceOf(Error);
-		expect(err.message).toBe(mockError.message);
-	}
 
 	describe("GetMovie", () => {
 		describe("Success", () => {
@@ -62,7 +60,7 @@ describe("MovieControllerImpl", () => {
 					const sut = await makeSut();
 					await sut.getMovie("");
 				} catch (err) {
-					expectExceptionsToBeHandledCorrectly(err);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 		});
@@ -88,7 +86,7 @@ describe("MovieControllerImpl", () => {
 					const sut = await makeSut();
 					await sut.getMovies();
 				} catch (err) {
-					expectExceptionsToBeHandledCorrectly(err);
+					expectExceptionsToBeHandled(err);
 				}
 			});
 		});
