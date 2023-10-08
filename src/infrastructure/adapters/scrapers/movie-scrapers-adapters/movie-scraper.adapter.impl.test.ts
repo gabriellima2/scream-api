@@ -8,7 +8,7 @@ import { movieHtml } from "@/__mocks__/html/movie-html";
 const makeSut = () => new MovieScraperAdapterImpl();
 
 describe("MovieScraperAdapterImpl", () => {
-	const MOVIE: Omit<MovieData, "id"> = {
+	const VALID_MOVIE: Omit<MovieData, "id"> = {
 		name: "any_name",
 		image: "any_src",
 		synopsis: "any_synopsis",
@@ -21,187 +21,136 @@ describe("MovieScraperAdapterImpl", () => {
 		running_time: "any_value",
 		characters: ["any_character"],
 	};
+	const MOVIE_WITH_EMPTY_ATTRS: Omit<MovieData, "id"> = {
+		name: "",
+		image: "",
+		synopsis: "",
+		box_office: "",
+		composer: [],
+		directors: [],
+		producers: [],
+		writers: [],
+		release_date: "",
+		running_time: "",
+		characters: [],
+	};
 
-	describe("Public Methods", () => {
-		it("should return correctly with all movie data", () => {
+	describe("Execute method", () => {
+		const cases = [
+			{
+				description: "should return correctly with all movie data",
+				html: movieHtml.all,
+				expected: VALID_MOVIE,
+			},
+			{
+				description: "should return correctly when movie data is not found",
+				html: invalidHtml,
+				expected: MOVIE_WITH_EMPTY_ATTRS,
+			},
+		];
+		test.each(cases)("%s", ({ html, expected }) => {
 			const sut = makeSut();
-			const response = sut.execute(movieHtml.all);
+			const response = sut.execute(html);
 
-			expect(response).toMatchObject(MOVIE);
-		});
-		it("should return correctly when movie data is not found", () => {
-			const sut = makeSut();
-			const response = sut.execute(invalidHtml);
-
-			expect(response).toMatchObject({
-				name: "",
-				image: "",
-				synopsis: "",
-				box_office: "",
-				composer: [],
-				directors: [],
-				producers: [],
-				writers: [],
-				release_date: "",
-				running_time: "",
-				characters: [],
-			});
+			expect(response).toMatchObject(expected);
 		});
 	});
-	describe("Private Methods", () => {
-		describe("GetName", () => {
-			it("should return movie name", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyName);
+	describe("Scraper methods", () => {
+		const cases = [
+			{
+				name: "name",
+				options: [
+					{ html: movieHtml.onlyName, expected: VALID_MOVIE.name },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "image",
+				options: [
+					{ html: movieHtml.onlyImage, expected: VALID_MOVIE.image },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "synopsis",
+				options: [
+					{ html: movieHtml.onlySynopsis, expected: VALID_MOVIE.synopsis },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "characters",
+				options: [
+					{ html: movieHtml.onlyCharacters, expected: VALID_MOVIE.characters },
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "directors",
+				options: [
+					{ html: movieHtml.onlyDirectors, expected: VALID_MOVIE.directors },
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "writers",
+				options: [
+					{ html: movieHtml.onlyWriters, expected: VALID_MOVIE.writers },
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "producers",
+				options: [
+					{ html: movieHtml.onlyProducers, expected: VALID_MOVIE.producers },
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "composer",
+				options: [
+					{ html: movieHtml.onlyComposer, expected: VALID_MOVIE.composer },
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "release_date",
+				options: [
+					{
+						html: movieHtml.onlyReleaseDate,
+						expected: VALID_MOVIE.release_date,
+					},
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "running_time",
+				options: [
+					{
+						html: movieHtml.onlyRunningTime,
+						expected: VALID_MOVIE.running_time,
+					},
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "box_office",
+				options: [
+					{ html: movieHtml.onlyBoxOffice, expected: VALID_MOVIE.box_office },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+		];
+		test.each(cases)("should return correct %s", ({ name, options }) => {
+			const sut = makeSut();
+			options.forEach((option) => {
+				const response = sut.execute(option.html);
 
-				expect(response.name).toBe(MOVIE.name);
-			});
-			it("should return undefined if movie name is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.name).toBe("");
-			});
-		});
-		describe("GetImage", () => {
-			it("should return movie image", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyImage);
-
-				expect(response.image).toBe(MOVIE.image);
-			});
-			it("should return undefined if movie image is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.image).toBe("");
-			});
-		});
-		describe("GetSynopsis", () => {
-			it("should return movie synopsis", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlySynopsis);
-
-				expect(response.synopsis).toBe(MOVIE.synopsis);
-			});
-			it("should return undefined if movie synopsis is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.synopsis).toBe("");
-			});
-		});
-		describe("GetCharacters", () => {
-			it("should return movie characters", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyCharacters);
-
-				expect(response.characters).toMatchObject(MOVIE.characters);
-			});
-			it("should return undefined if movie characters is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.characters).toMatchObject([]);
-			});
-		});
-		describe("GetDirectors", () => {
-			it("should return movie directors", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyDirectors);
-
-				expect(response.directors).toMatchObject(MOVIE.directors);
-			});
-			it("should return undefined if movie directors is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.directors).toMatchObject([]);
-			});
-		});
-		describe("GetWriters", () => {
-			it("should return movie writers", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyWriters);
-
-				expect(response.writers).toMatchObject(MOVIE.writers);
-			});
-			it("should return undefined if movie writers is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.writers).toMatchObject([]);
-			});
-		});
-		describe("GetProducers", () => {
-			it("should return movie producers", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyProducers);
-
-				expect(response.producers).toMatchObject(MOVIE.producers);
-			});
-			it("should return undefined if movie producers is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.producers).toMatchObject([]);
-			});
-		});
-
-		describe("GetComposer", () => {
-			it("should return movie composer", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyComposer);
-
-				expect(response.composer).toMatchObject(MOVIE.composer);
-			});
-			it("should return undefined if movie composer is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.composer).toMatchObject([]);
-			});
-		});
-		describe("GetRealeaseDate", () => {
-			it("should return movie release_date", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyReleaseDate);
-
-				expect(response.release_date).toBe(MOVIE.release_date);
-			});
-			it("should return undefined if movie release_date is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.release_date).toBe("");
-			});
-		});
-		describe("GetRunningTime", () => {
-			it("should return movie running_time", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyRunningTime);
-
-				expect(response.running_time).toBe(MOVIE.running_time);
-			});
-			it("should return undefined if movie running_time is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.running_time).toBe("");
-			});
-		});
-		describe("GetBoxOffice", () => {
-			it("should return movie box_office", () => {
-				const sut = makeSut();
-				const response = sut.execute(movieHtml.onlyBoxOffice);
-
-				expect(response.box_office).toBe(MOVIE.box_office);
-			});
-			it("should return undefined if movie box_office is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.box_office).toBe("");
+				if (typeof option.expected === "object") {
+					expect(response[name]).toMatchObject(option.expected);
+				} else {
+					expect(response[name]).toBe(option.expected);
+				}
 			});
 		});
 	});
