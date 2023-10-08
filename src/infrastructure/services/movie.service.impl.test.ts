@@ -78,28 +78,29 @@ describe("MovieServiceImpl", () => {
 			});
 		});
 		describe("Errors", () => {
-			it("should throw an error when movie name param are empty", async () => {
+			const cases = [
+				{
+					description: "should throw an error when movie name param are empty",
+					param: "",
+				},
+				{
+					description:
+						"should throw an error when movie-scraper return is empty",
+					param: NAME_PARAM,
+					mockValues: () => scrapers.movie.execute.mockReturnValue(undefined),
+				},
+				{
+					description:
+						"should throw an error when has error when creating a movie in db",
+					param: NAME_PARAM,
+					mockValues: () => repository.create.mockReturnValue(null),
+				},
+			];
+			test.each(cases)("%s", async ({ param, mockValues }) => {
+				mockValues && mockValues();
 				try {
 					const sut = await makeSut();
-					await sut.getMovie("");
-				} catch (err) {
-					expectExceptionsToBeHandled(err);
-				}
-			});
-			it("should throw an error when movie-scraper return is empty", async () => {
-				scrapers.movie.execute.mockReturnValue(undefined);
-				try {
-					const sut = await makeSut();
-					await sut.getMovie(NAME_PARAM);
-				} catch (err) {
-					expectExceptionsToBeHandled(err);
-				}
-			});
-			it("should throw an error when has error when creating a movie in db", async () => {
-				repository.create.mockReturnValue(null);
-				try {
-					const sut = await makeSut();
-					await sut.getMovie(NAME_PARAM);
+					await sut.getMovie(param);
 				} catch (err) {
 					expectExceptionsToBeHandled(err);
 				}
