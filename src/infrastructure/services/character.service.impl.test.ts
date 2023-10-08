@@ -82,28 +82,30 @@ describe("CharacterServiceImpl", () => {
 			});
 		});
 		describe("Errors", () => {
-			it("should throw an error when character name param are empty", async () => {
+			const cases = [
+				{
+					description:
+						"should throw an error when character name param are empty",
+					param: "",
+				},
+				{
+					description:
+						"should throw an error when character-scraper return is empty",
+					param: NAME_PARAM,
+					mockValues: () =>
+						scrapers.character.execute.mockReturnValue(undefined),
+				},
+				{
+					description: "should throw an error when creating a character in db",
+					param: NAME_PARAM,
+					mockValues: () => repository.create.mockReturnValue(null),
+				},
+			];
+			test.each(cases)("%s", async ({ param, mockValues }) => {
+				mockValues && mockValues();
 				try {
 					const sut = await makeSut();
-					await sut.getCharacter("");
-				} catch (err) {
-					expectExceptionsToBeHandled(err);
-				}
-			});
-			it("should throw an error when character-scraper return is empty", async () => {
-				scrapers.character.execute.mockReturnValue(undefined);
-				try {
-					const sut = await makeSut();
-					await sut.getCharacter(NAME_PARAM);
-				} catch (err) {
-					expectExceptionsToBeHandled(err);
-				}
-			});
-			it("should throw an error when creating a character in db", async () => {
-				repository.create.mockReturnValue(null);
-				try {
-					const sut = await makeSut();
-					await sut.getCharacter(NAME_PARAM);
+					await sut.getCharacter(param);
 				} catch (err) {
 					expectExceptionsToBeHandled(err);
 				}
@@ -133,17 +135,21 @@ describe("CharacterServiceImpl", () => {
 			});
 		});
 		describe("Errors", () => {
-			it("should throw an error when name-scraper return is empty", async () => {
-				scrapers.names.execute.mockReturnValue(undefined);
-				try {
-					const sut = await makeSut();
-					await sut.getCharacters();
-				} catch (err) {
-					expectExceptionsToBeHandled(err);
-				}
-			});
-			it("should throw an error when characters-scraper return is empty", async () => {
-				scrapers.character.execute.mockReturnValue(undefined);
+			const cases = [
+				{
+					description:
+						"should throw an error when name-scraper return is empty",
+					mockValues: () => scrapers.names.execute.mockReturnValue(undefined),
+				},
+				{
+					description:
+						"should throw an error when characters-scraper return is empty",
+					mockValues: () =>
+						scrapers.character.execute.mockReturnValue(undefined),
+				},
+			];
+			test.each(cases)("%s", async ({ mockValues }) => {
+				mockValues && mockValues();
 				try {
 					const sut = await makeSut();
 					await sut.getCharacters();
