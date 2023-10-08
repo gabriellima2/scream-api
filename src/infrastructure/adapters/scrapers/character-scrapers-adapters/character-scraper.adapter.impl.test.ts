@@ -1,12 +1,14 @@
 import { CharacterScraperAdapterImpl } from "./character-scraper.adapter.impl";
 
+import { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
+
 import { characterHtml } from "@/__mocks__/html/character-html";
 import { invalidHtml } from "@/__mocks__/html/invalid-html";
 
 const makeSut = () => new CharacterScraperAdapterImpl();
 
 describe("CharacterScraperAdapterImpl", () => {
-	const CHARACTER = {
+	const VALID_CHARACTER: Omit<CharacterData, "id"> = {
 		name: "any_name",
 		image: "any_src",
 		description:
@@ -17,141 +19,121 @@ describe("CharacterScraperAdapterImpl", () => {
 		personality: ["any_value"],
 		portrayed_by: ["any_value"],
 	};
+	const CHARACTER_WITH_EMPTY_ATTRS: Omit<CharacterData, "id"> = {
+		name: "",
+		image: "",
+		description: "",
+		appearances: [],
+		born: "",
+		status: "Unknown",
+		personality: [],
+		portrayed_by: [],
+	};
 
-	describe("Public Methods", () => {
-		it("should return correctly with all character data", () => {
-			const sut = makeSut();
-			const response = sut.execute(characterHtml.all);
+	describe("Execute method", () => {
+		describe("Execute method", () => {
+			const cases = [
+				{
+					description: "should return correctly with all character data",
+					html: characterHtml.all,
+					expected: VALID_CHARACTER,
+				},
+				{
+					description:
+						"should return correctly when character data is not found",
+					html: invalidHtml,
+					expected: CHARACTER_WITH_EMPTY_ATTRS,
+				},
+			];
+			test.each(cases)("%s", ({ html, expected }) => {
+				const sut = makeSut();
+				const response = sut.execute(html);
 
-			expect(response).toMatchObject(CHARACTER);
-		});
-		it("should return correctly when character data is not found", () => {
-			const sut = makeSut();
-			const response = sut.execute(invalidHtml);
-
-			expect(response).toMatchObject({
-				name: "",
-				image: "",
-				description: "",
-				appearances: [],
-				born: "",
-				status: "Unknown",
-				personality: [],
-				portrayed_by: [],
+				expect(response).toMatchObject(expected);
 			});
 		});
 	});
-	describe("Private Methods", () => {
-		describe("GetName", () => {
-			it("should return character name", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyName);
+	describe("Scraper methods", () => {
+		const cases = [
+			{
+				name: "name",
+				options: [
+					{ html: characterHtml.onlyName, expected: VALID_CHARACTER.name },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "image",
+				options: [
+					{ html: characterHtml.onlyImage, expected: VALID_CHARACTER.image },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "description",
+				options: [
+					{
+						html: characterHtml.onlyDescription,
+						expected: VALID_CHARACTER.description,
+					},
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "appearances",
+				options: [
+					{
+						html: characterHtml.onlyAppearances,
+						expected: VALID_CHARACTER.appearances,
+					},
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "born",
+				options: [
+					{ html: characterHtml.onlyBorn, expected: VALID_CHARACTER.born },
+					{ html: invalidHtml, expected: "" },
+				],
+			},
+			{
+				name: "personality",
+				options: [
+					{
+						html: characterHtml.onlyPersonality,
+						expected: VALID_CHARACTER.personality,
+					},
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+			{
+				name: "status",
+				options: [
+					{ html: characterHtml.onlyStatus, expected: VALID_CHARACTER.status },
+					{ html: invalidHtml, expected: "Unknown" },
+				],
+			},
+			{
+				name: "portrayed_by",
+				options: [
+					{
+						html: characterHtml.onlyPortrayedBy,
+						expected: VALID_CHARACTER.portrayed_by,
+					},
+					{ html: invalidHtml, expected: [] },
+				],
+			},
+		];
+		test.each(cases)("should return correctly %s", ({ name, options }) => {
+			const sut = makeSut();
+			options.forEach((option) => {
+				const response = sut.execute(option.html);
 
-				expect(response.name).toBe(CHARACTER.name);
-			});
-			it("should return undefined if character name is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.name).toBe("");
-			});
-		});
-		describe("GetImage", () => {
-			it("should return character image", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyImage);
-
-				expect(response.image).toBe(CHARACTER.image);
-			});
-			it("should return undefined if character image is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.image).toBe("");
-			});
-		});
-		describe("GetDescription", () => {
-			it("should return character description", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyDescription);
-
-				expect(response.description).toBe(CHARACTER.description);
-			});
-			it("should return undefined if character description is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.description).toBe("");
-			});
-		});
-		describe("GetAppearances", () => {
-			it("should return character appearances", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyAppearances);
-
-				expect(response.appearances).toMatchObject(CHARACTER.appearances);
-			});
-			it("should return undefined if character appearances is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.appearances).toMatchObject([]);
-			});
-		});
-		describe("GetBorn", () => {
-			it("should return character born", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyBorn);
-
-				expect(response.born).toBe(CHARACTER.born);
-			});
-			it("should return undefined if character born is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.born).toBe("");
-			});
-		});
-		describe("GetPersonality", () => {
-			it("should return character personality", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyPersonality);
-
-				expect(response.personality).toMatchObject(CHARACTER.personality);
-			});
-			it("should return undefined if character appearances is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.personality).toMatchObject([]);
-			});
-		});
-		describe("GetStatus", () => {
-			it("should return character status", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyStatus);
-
-				expect(response.status).toBe(CHARACTER.status);
-			});
-			it("should return undefined if character status is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.status).toBe("Unknown");
-			});
-		});
-		describe("GetPortrayedBy", () => {
-			it("should return character portrayed_by", () => {
-				const sut = makeSut();
-				const response = sut.execute(characterHtml.onlyPortrayedBy);
-
-				expect(response.portrayed_by).toMatchObject(CHARACTER.portrayed_by);
-			});
-			it("should return undefined if character portrayed_by is not found", () => {
-				const sut = makeSut();
-				const response = sut.execute(invalidHtml);
-
-				expect(response.portrayed_by).toMatchObject([]);
+				if (typeof option.expected === "object") {
+					expect(response[name]).toMatchObject(option.expected);
+				} else {
+					expect(response[name]).toBe(option.expected);
+				}
 			});
 		});
 	});
