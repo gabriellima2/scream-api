@@ -10,7 +10,7 @@ import { MovieControllerProtocol } from "@/core/domain/protocols/controllers/mov
 import { MovieController } from "@/core/application/controllers/movie.controller";
 import { MovieServiceImpl } from "../services/movie.service.impl";
 
-import { handleError } from "@/core/domain/functions/handle-error";
+import { handleException } from "@/core/domain/functions/handle-exception";
 
 @Controller()
 export class MovieControllerImpl implements MovieController {
@@ -23,7 +23,7 @@ export class MovieControllerImpl implements MovieController {
 			const response = await this.service.getMovies();
 			return response;
 		} catch (err) {
-			const error = handleError(err);
+			const error = handleException(err);
 			throw new HttpException({ message: error.message }, error.statusCode);
 		}
 	}
@@ -37,7 +37,7 @@ export class MovieControllerImpl implements MovieController {
 			const response = await this.service.getMovie(name);
 			return response;
 		} catch (err) {
-			const error = handleError(err);
+			const error = handleException(err);
 			throw new HttpException({ message: error.message }, error.statusCode);
 		}
 	}

@@ -11,8 +11,8 @@ import { CharacterControllerProtocol } from "@/core/domain/protocols/controllers
 import { CharacterController } from "@/core/application/controllers/character.controller";
 import { CharacterServiceImpl } from "../services/character.service.impl";
 
+import { handleException } from "@/core/domain/functions/handle-exception";
 import { createPaginationUrl } from "../helpers/create-pagination-url";
-import { handleError } from "@/core/domain/functions/handle-error";
 
 @Controller()
 export class CharacterControllerImpl implements CharacterController {
@@ -44,7 +44,7 @@ export class CharacterControllerImpl implements CharacterController {
 				last: hasLastPage ? last : undefined,
 			};
 		} catch (err) {
-			const error = handleError(err);
+			const error = handleException(err);
 			throw new HttpException({ message: error.message }, error.statusCode);
 		}
 	}
@@ -58,7 +58,7 @@ export class CharacterControllerImpl implements CharacterController {
 			const response = await this.service.getCharacter(name);
 			return response;
 		} catch (err) {
-			const error = handleError(err);
+			const error = handleException(err);
 			throw new HttpException({ message: error.message }, error.statusCode);
 		}
 	}
