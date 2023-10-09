@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 
-import { CharacterControllerImpl } from "./character.controller";
+import { CharacterControllerImpl } from "./character.controller.impl";
 
 import { CharacterServiceImpl } from "../services/character.service.impl";
 

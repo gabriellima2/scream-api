@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 
-import { MovieControllerImpl } from "./movie.controller";
+import { MovieControllerImpl } from "./movie.controller.impl";
 import { MovieServiceImpl } from "../services/movie.service.impl";
 
 import { BaseException } from "@/core/domain/exceptions/base.exception";

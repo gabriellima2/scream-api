@@ -17,7 +17,7 @@ import { CharacterScraperGateways } from "@/adapters/gateways/character-scraper-
 import { HttpGatewayAdapterImpl } from "../adapters/gateways/http-gateway.adapter.impl";
 import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
 
-import { CharacterControllerImpl } from "../controllers/character.controller";
+import { CharacterControllerImpl } from "../controllers/character.controller.impl";
 import { CharacterServiceImpl } from "../services/character.service.impl";
 
 import { PaginationAdapterImpl } from "../adapters/pagination.adapter.impl";

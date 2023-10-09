@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { MovieControllerImpl } from "../controllers/movie.controller";
+import { MovieControllerImpl } from "../controllers/movie.controller.impl";
 import { MovieServiceImpl } from "../services/movie.service.impl";
 
 import { MovieRepository } from "@/core/domain/repositories/movie.repository";
