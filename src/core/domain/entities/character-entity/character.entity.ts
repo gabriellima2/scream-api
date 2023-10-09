@@ -52,6 +52,10 @@ export class CharacterEntity {
 			appearances,
 		});
 	}
+	private getValue(key: string) {
+		if (!this.props[key]) return;
+		return this.props[key].value;
+	}
 	public setId(id: string) {
 		this.props.id = id;
 	}
@@ -62,31 +66,24 @@ export class CharacterEntity {
 		return this.props.image;
 	}
 	get name() {
-		if (!this.props.name) return;
-		return this.props.name.value;
+		return this.getValue("name");
 	}
 	get description() {
-		if (!this.props.description) return;
-		return this.props.description.value;
+		return this.getValue("description");
 	}
 	get born() {
-		if (!this.props.born) return;
-		return this.props.born.value;
+		return this.getValue("born");
 	}
 	get personality() {
-		if (!this.props.personality) return;
-		return this.props.personality.value;
+		return this.getValue("personality");
 	}
 	get status() {
-		if (!this.props.status) return;
-		return this.props.status.value;
+		return this.getValue("status");
 	}
 	get portrayed_by() {
-		if (!this.props.portrayed_by) return;
-		return this.props.portrayed_by.value;
+		return this.getValue("portrayed_by");
 	}
 	get appearances() {
-		if (!this.props.appearances) return;
-		return this.props.appearances.value;
+		return this.getValue("appearances");
 	}
 }
