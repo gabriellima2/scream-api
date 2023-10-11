@@ -19,6 +19,11 @@ import { CharacterRepository } from "@/core/domain/repositories/character.reposi
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
 
 import { createEndpointURL } from "../helpers/create-endpoint-url";
+import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
+import { isEmptyObject } from "@/core/domain/functions/is-empty-object";
+
+let cachedNames: string[];
+let cachedCharacters: { [key: string]: GetCharacterByNameOutputDTO } = {};
 
 @Injectable()
 export class CharacterServiceImpl implements CharacterService {
@@ -33,8 +38,14 @@ export class CharacterServiceImpl implements CharacterService {
 		params?: GetCharactersInputDTO
 	): Promise<GetCharactersOutputDTO> {
 		const namesUrl = `${this.baseUrl}/Category:Characters`;
-		const names = await this.scrapers.names.execute(namesUrl);
+		const hasNamesCache = !!cachedNames && !isEmptyArray(cachedNames);
+		const names = hasNamesCache
+			? cachedNames
+			: await this.scrapers.names.execute(namesUrl);
 		if (!names) throw new EmptyDataException();
+		if (!hasNamesCache) {
+			cachedNames = names;
+		}
 		const promises = names.map(async (name) => {
 			return await this.getCharacter(name);
 		});
@@ -47,8 +58,20 @@ export class CharacterServiceImpl implements CharacterService {
 		name: GetCharacterByNameInputDTO
 	): Promise<GetCharacterByNameOutputDTO> {
 		if (!name) throw new InvalidParamsException();
+		const cachedCharacter = cachedCharacters[name.toLowerCase()];
+		const hasCachedCharacter =
+			!!cachedCharacter && !isEmptyObject(cachedCharacter);
+		if (hasCachedCharacter) return cachedCharacter;
 		const characterFromDB = await this.repository.getByName(name);
-		if (characterFromDB) return characterFromDB;
+		if (characterFromDB) {
+			if (!hasCachedCharacter) {
+				cachedCharacters = {
+					...cachedCharacters,
+					[name.toLowerCase()]: characterFromDB,
+				};
+			}
+			return characterFromDB;
+		}
 		const endpoint = createEndpointURL(this.baseUrl, name);
 		const scrapedCharacter = await this.scrapers.character.execute(endpoint);
 		if (scrapedCharacter.name === name) throw new EmptyDataException();
@@ -66,6 +89,13 @@ export class CharacterServiceImpl implements CharacterService {
 		const createdCharacter = await this.repository.create(character);
 		if (!createdCharacter) throw new Error();
 		characterEntity.setId(createdCharacter.id);
-		return { ...character, id: characterEntity.id };
+		const characterWithID = { ...character, id: characterEntity.id };
+		if (!hasCachedCharacter) {
+			cachedCharacters = {
+				...cachedCharacters,
+				[name.toLowerCase()]: characterWithID,
+			};
+		}
+		return characterWithID;
 	}
 }

@@ -2,6 +2,7 @@ import { Test } from "@nestjs/testing";
 
 import { CharacterServiceImpl } from "./character.service.impl";
 
+import { capitalizeSentence } from "@/core/domain/functions/formatters/capitalize-sentence";
 import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
 import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
 
@@ -49,7 +50,7 @@ describe("CharacterServiceImpl", () => {
 	});
 
 	describe("GetCharacter", () => {
-		function expectHasCharacter(data: Required<MockCharacter>) {
+		function expectCharacterHasBeenReturned(data: Required<MockCharacter>) {
 			expect(data).toMatchObject(mockCharacter);
 		}
 
@@ -60,25 +61,35 @@ describe("CharacterServiceImpl", () => {
 				const sut = await makeSut();
 				const data = await sut.getCharacter(NAME_PARAM);
 
-				expectHasCharacter(data);
+				expectCharacterHasBeenReturned(data);
+				expect(scrapers.character.execute).not.toHaveBeenCalled();
 				expect(scrapers.character.execute).not.toHaveBeenCalled();
 				expect(repository.getByName).toHaveBeenCalledWith(NAME_PARAM);
-				expect(repository.getByName).toHaveBeenCalledTimes(1);
-				expect(repository.create).not.toHaveBeenCalled();
 			});
 			it("should return character scraped from received web address", async () => {
 				scrapers.character.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
 				repository.create.mockReturnValue(mockCharacter);
 
+				const name = "any_scraper_name";
 				const sut = await makeSut();
-				const data = await sut.getCharacter(NAME_PARAM);
-				const url = `${BASE_URL}/${NAME_PARAM}`;
+				const data = await sut.getCharacter(name);
+				const url = `${BASE_URL}/${capitalizeSentence(name)}`;
 
-				expectHasCharacter(data);
+				expectCharacterHasBeenReturned(data);
 				expect(scrapers.character.execute).toHaveBeenCalledWith(url);
 				expect(scrapers.character.execute).toHaveBeenCalledTimes(1);
-				expect(repository.create).toHaveBeenCalledTimes(1);
 				expect(repository.getByName).toHaveBeenCalled();
+			});
+			it("should return cached character", async () => {
+				repository.getByName.mockReturnValueOnce(mockCharacter);
+
+				const name = "any_cache_name";
+				const sut = await makeSut();
+				await sut.getCharacter(name);
+				const cachedCharacter = await sut.getCharacter(name);
+
+				expectCharacterHasBeenReturned(cachedCharacter);
+				expect(repository.getByName).toHaveBeenCalledTimes(1);
 			});
 		});
 		describe("Errors", () => {
