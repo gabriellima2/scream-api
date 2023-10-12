@@ -3,8 +3,13 @@ import { NameEntity } from "./name.entity";
 describe("NameEntity", () => {
 	describe("Success", () => {
 		const cases = [
-			{ unformatted: "  any_value\n", result: "any_value" },
-			{ unformatted: "any another value", result: "any value" },
+			{ unformatted: "  any_value\n", result: "Any_Value" },
+			// eslint-disable-next-line quotes
+			{ unformatted: 'any "another" value', result: "Any Value" },
+			{ unformatted: "any with value", result: "Any with Value" },
+			{ unformatted: "any & value", result: "Any & Value" },
+			{ unformatted: "any in value", result: "Any In Value" },
+			{ unformatted: "any 'value", result: "Any 'value" },
 		];
 		test.each(cases)(
 			"should format the name when passed an valid value",

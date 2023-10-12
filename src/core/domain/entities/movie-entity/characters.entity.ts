@@ -1,9 +1,8 @@
 import { NameEntity } from "../character-entity/name.entity";
 
-import { capitalizeSentence } from "../../functions/formatters/capitalize-sentence";
 import { isEmptyArray } from "../../functions/is-empty-array";
 
-import { BLANK_SPACES, INVALID_CHARS } from "../../helpers/regex";
+import { BLANK_SPACES } from "../../helpers/regex";
 import { API_URL } from "../../constants/api-url";
 
 export class CharactersEntity {
@@ -24,12 +23,9 @@ export class CharactersEntity {
 	}
 	private static format(characters: string[]) {
 		return characters.map((name) => {
-			const formatted = capitalizeSentence(
-				NameEntity.create(name)
-					.value.trim()
-					.replace(BLANK_SPACES, "_")
-					.replace(INVALID_CHARS, "")
-			);
+			const formatted = NameEntity.create(name)
+				.value.trim()
+				.replace(BLANK_SPACES, "_");
 			return `${API_URL}/characters/${formatted}`;
 		});
 	}

@@ -4,5 +4,5 @@ export type MockCharacter = Required<CharacterData>;
 
 export const mockCharacter = {
 	id: "1",
-	name: "any_name",
+	name: "Any_Name",
 } as MockCharacter;

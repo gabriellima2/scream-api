@@ -2,7 +2,6 @@ import { Test } from "@nestjs/testing";
 
 import { CharacterServiceImpl } from "./character.service.impl";
 
-import { capitalizeSentence } from "@/core/domain/functions/formatters/capitalize-sentence";
 import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
 import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
 
@@ -73,7 +72,7 @@ describe("CharacterServiceImpl", () => {
 				const name = "any_scraper_name";
 				const sut = await makeSut();
 				const data = await sut.getCharacter(name);
-				const url = `${BASE_URL}/${capitalizeSentence(name)}`;
+				const url = `${BASE_URL}/${name}`;
 
 				expectCharacterHasBeenReturned(data);
 				expect(scrapers.character.execute).toHaveBeenCalledWith(url);
