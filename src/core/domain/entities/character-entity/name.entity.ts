@@ -20,7 +20,6 @@ export class NameEntity {
 			.replace(NEW_LINE_AND_TAB, "")
 			.replace(QUOTES, " ")
 			.trim();
-		console.log(nameWithoutInvalidChars);
 		const moreThanTwoWords = /^(\S+)\s+(?:.*\s)?(\S+)$/;
 		const match = nameWithoutInvalidChars.match(moreThanTwoWords);
 		if (
