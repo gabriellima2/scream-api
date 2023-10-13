@@ -31,26 +31,23 @@ describe("CharacterScraperAdapterImpl", () => {
 	};
 
 	describe("Execute method", () => {
-		describe("Execute method", () => {
-			const cases = [
-				{
-					description: "should return correctly with all character data",
-					html: characterHtml.all,
-					expected: VALID_CHARACTER,
-				},
-				{
-					description:
-						"should return correctly when character data is not found",
-					html: invalidHtml,
-					expected: CHARACTER_WITH_EMPTY_ATTRS,
-				},
-			];
-			test.each(cases)("%s", ({ html, expected }) => {
-				const sut = makeSut();
-				const response = sut.execute(html);
+		const cases = [
+			{
+				description: "should return correctly with all character data",
+				html: characterHtml.all,
+				expected: VALID_CHARACTER,
+			},
+			{
+				description: "should return correctly when character data is not found",
+				html: invalidHtml,
+				expected: CHARACTER_WITH_EMPTY_ATTRS,
+			},
+		];
+		test.each(cases)("%s", ({ html, expected }) => {
+			const sut = makeSut();
+			const response = sut.execute(html);
 
-				expect(response).toMatchObject(expected);
-			});
+			expect(response).toMatchObject(expected);
 		});
 	});
 	describe("Scraper methods", () => {

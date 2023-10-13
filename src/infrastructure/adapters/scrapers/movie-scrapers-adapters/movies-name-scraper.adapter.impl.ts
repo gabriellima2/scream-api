@@ -1,23 +1,31 @@
-import { CheerioAPI, load } from "cheerio";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { CheerioAPI } from "cheerio";
 
 import { MoviesNameScraperAdapter } from "@/adapters/scrapers/movie-scrapers-adapters/movies-name-scraper.adapter";
 import { MoviesNameScraperProtocols } from "@/core/domain/protocols/scrapers/movie-scrapers.protocol";
 
 import { NameEntity } from "@/core/domain/entities/movie-entity/name.entity";
+
 import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
+import { Load } from "@/infrastructure/decorators/load.decorator";
 
 export class MoviesNameScraperAdapterImpl implements MoviesNameScraperAdapter {
-	execute(html: string): MoviesNameScraperProtocols.Response {
-		const $ = load(html);
-		return this.getNames($);
+	private readonly $: CheerioAPI;
+	constructor() {
+		this.$;
 	}
 
-	private getNames($: CheerioAPI): string[] | undefined {
+	@Load
+	execute(html: string): MoviesNameScraperProtocols.Response {
+		return this.getNames();
+	}
+
+	private getNames(): string[] | undefined {
 		const names = [];
-		const els = $(".mw-parser-output > ul").first();
+		const els = this.$(".mw-parser-output > ul").first();
 		if (!els) return undefined;
-		$("li", els).each((_, el) => {
-			const name = NameEntity.create($("i > a", el).text()).value;
+		this.$("li", els).each((_, el) => {
+			const name = NameEntity.create(this.$("i > a", el).text()).value;
 			if (!name) return;
 			names.push(name);
 		});

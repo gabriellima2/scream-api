@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CheerioAPI, load } from "cheerio";
 import { Injectable } from "@nestjs/common";
 
@@ -5,8 +6,8 @@ import { MovieScraperAdapter } from "@/adapters/scrapers/movie-scrapers-adapters
 import { MovieScraperProtocols } from "@/core/domain/protocols/scrapers/movie-scrapers.protocol";
 
 import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
-
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
+import { Load } from "@/infrastructure/decorators/load.decorator";
 
 @Injectable()
 export class MovieScraperAdapterImpl implements MovieScraperAdapter {
@@ -15,8 +16,8 @@ export class MovieScraperAdapterImpl implements MovieScraperAdapter {
 		this.$;
 	}
 
+	@Load
 	execute(html: string): MovieScraperProtocols.Response {
-		this.$ = load(html);
 		return {
 			name: this.getName(),
 			image: this.getImage(),

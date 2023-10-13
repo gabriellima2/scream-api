@@ -1,27 +1,35 @@
-import { CheerioAPI, load } from "cheerio";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { CheerioAPI } from "cheerio";
 
 import { CharactersNameScraperAdapter } from "@/adapters/scrapers/character-scrapers-adapters/characters-name-scraper.adapter";
 import { CharactersNameScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
+
 import { NameEntity } from "@/core/domain/entities/character-entity/name.entity";
 
 import { isEmptyArray } from "@/core/domain/functions/is-empty-array";
+import { Load } from "@/infrastructure/decorators/load.decorator";
 
 export class CharactersNameScraperAdapterImpl
 	implements CharactersNameScraperAdapter
 {
-	execute(html: string): CharactersNameScraperProtocols.Response {
-		const $ = load(html);
-		return this.getNames($);
+	private readonly $: CheerioAPI;
+	constructor() {
+		this.$;
 	}
 
-	private getNames($: CheerioAPI): string[] | undefined {
+	@Load
+	execute(html: string): CharactersNameScraperProtocols.Response {
+		return this.getNames();
+	}
+
+	private getNames(): string[] | undefined {
 		const names: string[] = [];
-		const els = $(".category-page__members");
+		const els = this.$(".category-page__members");
 		if (!els) return undefined;
 		els.each((_, el) => {
-			$("ul > li", el).each((_, item) => {
+			this.$("ul > li", el).each((_, item) => {
 				const name = NameEntity.create(
-					$(".category-page__member-link", item).text()
+					this.$(".category-page__member-link", item).text()
 				)?.value;
 				if (!name) return;
 				names.push(name);

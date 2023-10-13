@@ -1,12 +1,14 @@
-import { CheerioAPI, load } from "cheerio";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { CheerioAPI } from "cheerio";
 
 import { CharacterScraperAdapter } from "@/adapters/scrapers/character-scrapers-adapters/character-scraper.adapter";
 import { CharacterScraperProtocols } from "@/core/domain/protocols/scrapers/character-scrapers.protocol";
 
 import { CharacterStatus } from "@/core/domain/entities/character-entity/status.entity";
-import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
 
+import { transformStringIntoArray } from "@/core/domain/functions/transform-string-into-array";
 import { scrapeGeneralInfo } from "@/infrastructure/helpers/scrape-general-info";
+import { Load } from "@/infrastructure/decorators/load.decorator";
 
 export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 	private $: CheerioAPI;
@@ -14,8 +16,8 @@ export class CharacterScraperAdapterImpl implements CharacterScraperAdapter {
 		this.$;
 	}
 
+	@Load
 	execute(html: string): CharacterScraperProtocols.Response {
-		this.$ = load(html);
 		return {
 			name: this.getName(),
 			image: this.getImage(),
