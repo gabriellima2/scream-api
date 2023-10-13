@@ -63,7 +63,7 @@ describe("MovieServiceImpl", () => {
 				const data = await sut.getMovie(NAME_PARAM);
 
 				expectHasMovie(data);
-				expectMoviesHasBeenDB(NAME_PARAM, 1);
+				expectMoviesHasBeenDB("Any Name", 1);
 			});
 			it("should return movie scraped from received web address", async () => {
 				scrapers.movie.execute.mockReturnValue(MOVIE_WITHOUT_ID);

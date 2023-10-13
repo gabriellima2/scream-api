@@ -69,7 +69,7 @@ describe("CharacterServiceImpl", () => {
 				scrapers.character.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
 				repository.create.mockReturnValue(mockCharacter);
 
-				const name = "any_scraper_name";
+				const name = "Any_Scraper_Name";
 				const sut = await makeSut();
 				const data = await sut.getCharacter(name);
 				const url = `${BASE_URL}/${name}`;

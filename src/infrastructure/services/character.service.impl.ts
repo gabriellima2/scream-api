@@ -4,6 +4,7 @@ import {
 	CharacterData,
 	CharacterEntity,
 } from "@/core/domain/entities/character-entity/character.entity";
+import { NameEntity } from "@/core/domain/entities/character-entity/name.entity";
 import { CharacterService } from "@/core/application/services/character.service";
 import { PaginationAdapter } from "@/adapters/pagination.adapter";
 
@@ -58,23 +59,23 @@ export class CharacterServiceImpl implements CharacterService {
 		name: GetCharacterByNameInputDTO
 	): Promise<GetCharacterByNameOutputDTO> {
 		if (!name) throw new InvalidParamsException();
-		const cachedCharacter = cachedCharacters[name.toLowerCase()];
+		const formattedName = NameEntity.create(name).value;
+		const cachedCharacter = cachedCharacters[formattedName.toLowerCase()];
 		const hasCachedCharacter =
 			!!cachedCharacter && !isEmptyObject(cachedCharacter);
 		if (hasCachedCharacter) return cachedCharacter;
-		const characterFromDB = await this.repository.getByName(name);
+		const characterFromDB = await this.repository.getByName(formattedName);
 		if (characterFromDB) {
 			if (!hasCachedCharacter) {
 				cachedCharacters = {
 					...cachedCharacters,
-					[name.toLowerCase()]: characterFromDB,
+					[formattedName.toLowerCase()]: characterFromDB,
 				};
 			}
 			return characterFromDB;
 		}
-		const endpoint = createEndpointURL(this.baseUrl, name);
+		const endpoint = createEndpointURL(this.baseUrl, formattedName);
 		const scrapedCharacter = await this.scrapers.character.execute(endpoint);
-		if (scrapedCharacter.name === name) throw new EmptyDataException();
 		const characterEntity = CharacterEntity.create(scrapedCharacter);
 		const character: CharacterData = {
 			name: characterEntity.name,
@@ -93,7 +94,7 @@ export class CharacterServiceImpl implements CharacterService {
 		if (!hasCachedCharacter) {
 			cachedCharacters = {
 				...cachedCharacters,
-				[name.toLowerCase()]: characterWithID,
+				[formattedName.toLowerCase()]: characterWithID,
 			};
 		}
 		return characterWithID;

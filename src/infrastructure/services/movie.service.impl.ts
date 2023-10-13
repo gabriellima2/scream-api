@@ -4,6 +4,7 @@ import {
 	MovieData,
 	MovieEntity,
 } from "@/core/domain/entities/movie-entity/movie.entity";
+import { NameEntity } from "@/core/domain/entities/movie-entity/name.entity";
 import { MovieService } from "@/core/application/services/movie.service";
 
 import {
@@ -43,9 +44,10 @@ export class MovieServiceImpl implements MovieService {
 		name: GetMovieByNameInputDTO
 	): Promise<GetMovieByNameOutputDTO> {
 		if (!name) throw new InvalidParamsException();
-		const movieFromDB = await this.repository.getByName(name);
+		const formattedName = NameEntity.create(name).value;
+		const movieFromDB = await this.repository.getByName(formattedName);
 		if (movieFromDB) return movieFromDB;
-		const endpoint = createEndpointURL(this.baseUrl, name);
+		const endpoint = createEndpointURL(this.baseUrl, formattedName);
 		const movieScraped = await this.scrapers.movie.execute(endpoint);
 		if (!movieScraped) throw new EmptyDataException();
 		const movieEntity = MovieEntity.create(movieScraped);
@@ -65,8 +67,6 @@ export class MovieServiceImpl implements MovieService {
 		const createdMovie = await this.repository.create(movie);
 		if (!createdMovie) throw new Error();
 		movieEntity.setId(createdMovie.id);
-		if (!createdMovie) throw new Error();
-
 		return createdMovie;
 	}
 }
