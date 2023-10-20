@@ -57,7 +57,9 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
-		"modulePathIgnorePatterns": ["/dist/"],
+    "modulePathIgnorePatterns": [
+      "/dist/"
+    ],
     "moduleFileExtensions": [
       "js",
       "json",

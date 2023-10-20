@@ -19,8 +19,8 @@ import { MovieModule } from "./infrastructure/modules/movie.module";
 				uri: config.get<string>("MONGO_URI"),
 				dbName: config.get<string>("DB_NAME"),
 				auth: {
-					username: config.get<string>("DB_ROOT_USERNAME"),
-					password: config.get<string>("DB_ROOT_PASSWORD"),
+					username: config.get<string>("DB_USER"),
+					password: config.get<string>("DB_PASSWORD"),
 				},
 			}),
 		}),
