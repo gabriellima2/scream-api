@@ -48,8 +48,8 @@ export class CharacterServiceImpl implements CharacterService {
 		if (!hasNamesCache) {
 			cachedNames = names;
 		}
-		const promises = names.map(async (name) => {
-			return await this.getCharacter(name);
+		const promises = names.map((name) => {
+			return this.getCharacter(name);
 		});
 		const characters = await Promise.all(promises);
 		if (!characters) throw new EmptyDataException();

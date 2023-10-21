@@ -34,8 +34,9 @@ export class MovieServiceImpl implements MovieService {
 		const url = `${this.baseUrl}/Category:Film`;
 		const names = await this.scrapers.names.execute(url);
 		if (!names) throw new EmptyDataException();
-		const promises = names.map(async (name) => {
-			return await this.getMovie(name);
+		if (names.length === moviesFromDB.length) return moviesFromDB;
+		const promises = names.map((name) => {
+			return this.getMovie(name);
 		});
 		const movies = await Promise.all(promises);
 		return [...new Set(movies)];
