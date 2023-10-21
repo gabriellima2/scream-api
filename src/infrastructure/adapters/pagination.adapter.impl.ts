@@ -37,7 +37,7 @@ export class PaginationAdapterImpl<T> implements PaginationAdapter<T> {
 			items: pagedData,
 			total: pagedData.length,
 			currentPage: params.page,
-			totalPages: Math.ceil(pagedData.length / skip),
+			totalPages: Math.ceil(data.length / skip),
 		};
 	}
 }
