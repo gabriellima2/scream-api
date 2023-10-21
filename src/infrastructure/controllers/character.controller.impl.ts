@@ -6,6 +6,7 @@ import {
 	Param,
 	Query,
 } from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { CharacterControllerProtocol } from "@/core/domain/protocols/controllers/character-controller.protocol";
 import { CharacterController } from "@/core/application/controllers/character.controller";
@@ -13,13 +14,24 @@ import { CharacterServiceImpl } from "../services/character.service.impl";
 
 import { handleException } from "@/core/domain/functions/handle-exception";
 import { createPaginationUrl } from "../helpers/create-pagination-url";
+import { HttpStatusCode } from "@/core/domain/helpers/http-status-code";
 
+import {
+	getCharacterResponse,
+	getCharactersResponse,
+} from "../swagger/response/character.response";
+
+@ApiTags("characters")
 @Controller()
 export class CharacterControllerImpl implements CharacterController {
 	constructor(private readonly service: CharacterServiceImpl) {}
 
 	@Get("/characters")
-	@HttpCode(200)
+	@HttpCode(HttpStatusCode.ok)
+	@ApiOperation({ summary: "Get all characters" })
+	@ApiResponse(getCharactersResponse.notFound)
+	@ApiResponse(getCharactersResponse.serverError)
+	@ApiResponse(getCharactersResponse.success)
 	async getCharacters(
 		@Query("page") page?: string,
 		@Query("limit") limit?: string
@@ -50,7 +62,11 @@ export class CharacterControllerImpl implements CharacterController {
 	}
 
 	@Get("/characters/:name")
-	@HttpCode(200)
+	@HttpCode(HttpStatusCode.ok)
+	@ApiOperation({ summary: "Get character by name" })
+	@ApiResponse(getCharacterResponse.notFound)
+	@ApiResponse(getCharacterResponse.serverError)
+	@ApiResponse(getCharacterResponse.success)
 	async getCharacter(
 		@Param("name") name: string
 	): Promise<CharacterControllerProtocol.GetCharacterResponse> {

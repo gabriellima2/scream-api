@@ -12,7 +12,9 @@ export const helmetConfig: Readonly<HelmetOptions> = {
 	contentSecurityPolicy: {
 		directives: {
 			defaultSrc: ["'self'", "'static.wikia.nocookie.net'"],
-			scriptSrc: ["'self'"],
+			styleSrc: ["'self'", "'unsafe-inline'"],
+			imgSrc: ["'self'", "data:", "validator.swagger.io"],
+			scriptSrc: ["'self'", "https: 'unsafe-inline'"],
 		},
 	},
 };
