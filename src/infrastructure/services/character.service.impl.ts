@@ -17,6 +17,7 @@ import {
 import { InvalidParamsException } from "@/core/domain/exceptions/invalid-params.exception";
 import { CharacterScraperGateways } from "@/adapters/gateways/character-scraper-gateways";
 import { CharacterRepository } from "@/core/domain/repositories/character.repository";
+import { UnexpectedException } from "@/core/domain/exceptions/unexpected.exception";
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
 
 import { createEndpointURL } from "../helpers/create-endpoint-url";
@@ -88,7 +89,7 @@ export class CharacterServiceImpl implements CharacterService {
 			appearances: characterEntity.appearances,
 		};
 		const createdCharacter = await this.repository.create(character);
-		if (!createdCharacter) throw new Error();
+		if (!createdCharacter) throw new UnexpectedException();
 		characterEntity.setId(createdCharacter.id);
 		const characterWithID = { ...character, id: characterEntity.id };
 		if (!hasCachedCharacter) {

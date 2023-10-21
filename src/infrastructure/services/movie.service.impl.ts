@@ -13,6 +13,7 @@ import {
 	GetMoviesOutputDTO,
 } from "@/core/domain/dtos/movie.dto";
 import { InvalidParamsException } from "@/core/domain/exceptions/invalid-params.exception";
+import { UnexpectedException } from "@/core/domain/exceptions/unexpected.exception";
 import { EmptyDataException } from "@/core/domain/exceptions/empty-data.exception";
 import { MovieScraperGateways } from "@/adapters/gateways/movie-scraper-gateways";
 import { MovieRepository } from "@/core/domain/repositories/movie.repository";
@@ -65,7 +66,7 @@ export class MovieServiceImpl implements MovieService {
 			running_time: movieEntity.runningTime,
 		};
 		const createdMovie = await this.repository.create(movie);
-		if (!createdMovie) throw new Error();
+		if (!createdMovie) throw new UnexpectedException();
 		movieEntity.setId(createdMovie.id);
 		return createdMovie;
 	}
