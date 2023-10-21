@@ -27,8 +27,6 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.13",
     "cheerio": "^1.0.0-rc.12",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
     "express-rate-limit": "^7.1.1",
     "helmet": "^7.0.0",
     "mongoose": "^7.4.3",
