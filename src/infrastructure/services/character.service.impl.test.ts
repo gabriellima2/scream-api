@@ -100,6 +100,11 @@ describe("CharacterServiceImpl", () => {
 				},
 				{
 					description:
+						"should throw an error when character name is longer than 60 chars",
+					param: "Lorem_ipsum_dolor_sit_amet_consectetur_adipiscing",
+				},
+				{
+					description:
 						"should throw an error when character-scraper return is empty",
 					param: NAME_PARAM,
 					mockValues: () =>

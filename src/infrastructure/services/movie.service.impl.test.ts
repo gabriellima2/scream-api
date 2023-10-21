@@ -85,6 +85,11 @@ describe("MovieServiceImpl", () => {
 				},
 				{
 					description:
+						"should throw an error when movie name is longer than 10 chars",
+					param: "Lorem_ipsum_dolor",
+				},
+				{
+					description:
 						"should throw an error when movie-scraper return is empty",
 					param: NAME_PARAM,
 					mockValues: () => scrapers.movie.execute.mockReturnValue(undefined),

@@ -43,7 +43,7 @@ export class MovieServiceImpl implements MovieService {
 	async getMovie(
 		name: GetMovieByNameInputDTO
 	): Promise<GetMovieByNameOutputDTO> {
-		if (!name) throw new InvalidParamsException();
+		if (!name && (name || name.length > 10)) throw new InvalidParamsException();
 		const formattedName = NameEntity.create(name).value;
 		const movieFromDB = await this.repository.getByName(formattedName);
 		if (movieFromDB) return movieFromDB;

@@ -58,7 +58,7 @@ export class CharacterServiceImpl implements CharacterService {
 	async getCharacter(
 		name: GetCharacterByNameInputDTO
 	): Promise<GetCharacterByNameOutputDTO> {
-		if (!name) throw new InvalidParamsException();
+		if (!name || (name && name.length > 60)) throw new InvalidParamsException();
 		const formattedName = NameEntity.create(name).value;
 		const cachedCharacter = cachedCharacters[formattedName.toLowerCase()];
 		const hasCachedCharacter =

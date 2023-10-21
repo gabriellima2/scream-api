@@ -19,6 +19,11 @@ export class NameEntity {
 		const formattedName = capitalizeSentence(
 			name.replace(NEW_LINE_AND_TAB, "").replace("_", " ")
 		);
+		if (formattedName === "Scream 1") {
+			const newName = "Scream";
+			prevName = newName;
+			return newName;
+		}
 		if (prevName === "Scream 4" && formattedName === "Scream") {
 			const newName = "Scream 5";
 			prevName = newName;

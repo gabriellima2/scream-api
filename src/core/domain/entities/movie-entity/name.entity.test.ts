@@ -10,6 +10,10 @@ describe("NameEntity function", () => {
 			const name = NameEntity.create("Scream VI");
 			expect(name.value).toBe("Scream 6");
 		});
+		it("should remove char '1'", () => {
+			const name = NameEntity.create("Scream 1");
+			expect(name.value).toBe("Scream");
+		});
 		it("should add 5 when the current movie sequence is 5", () => {
 			NameEntity.create("Scream 4");
 			const name = NameEntity.create("Scream");
