@@ -29,8 +29,8 @@ export class MovieServiceImpl implements MovieService {
 	) {}
 
 	async getMovies(): Promise<GetMoviesOutputDTO> {
-		const moviesFromDB = await this.repository.getAll();
-		if (moviesFromDB) return moviesFromDB;
+		const db = await this.repository.getAll();
+		if (db) return db;
 		const url = `${this.baseUrl}/Category:Film`;
 		const names = await this.scrapers.names.execute(url);
 		if (!names) throw new EmptyDataException();

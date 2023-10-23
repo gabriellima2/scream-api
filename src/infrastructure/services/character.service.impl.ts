@@ -39,6 +39,8 @@ export class CharacterServiceImpl implements CharacterService {
 	async getCharacters(
 		params?: GetCharactersInputDTO
 	): Promise<GetCharactersOutputDTO> {
+		const db = await this.repository.getAll();
+		if (db) return this.paginate.execute(db, params);
 		const namesUrl = `${this.baseUrl}/Category:Characters`;
 		const hasNamesCache = !!cachedNames && !isEmptyArray(cachedNames);
 		const names = hasNamesCache

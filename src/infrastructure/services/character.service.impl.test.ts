@@ -135,13 +135,21 @@ describe("CharacterServiceImpl", () => {
 		];
 
 		describe("Success", () => {
-			it("should return characters correctly", async () => {
+			const items = [mockCharacter, mockCharacter, mockCharacter];
+			it("should return characters correctly when not has data in db", async () => {
 				scrapers.names.execute.mockReturnValue(CHARACTERS_NAME);
 				scrapers.character.execute.mockReturnValue(mockScrapedCharacters);
 				repository.create.mockReturnValue(mockCharacter);
-				paginate.execute.mockReturnValue({
-					items: [mockCharacter, mockCharacter, mockCharacter],
-				});
+				paginate.execute.mockReturnValue({ items });
+
+				const sut = await makeSut();
+				const response = await sut.getCharacters();
+
+				expect(response.items).toBeTruthy();
+			});
+			it("should return characters correctly when has data in db", async () => {
+				repository.getAll.mockReturnValue(items);
+				paginate.execute.mockReturnValue({ items });
 
 				const sut = await makeSut();
 				const response = await sut.getCharacters();
