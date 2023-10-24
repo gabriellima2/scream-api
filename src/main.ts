@@ -9,6 +9,7 @@ import { rateLimitConfig } from "./infrastructure/configs/rate-limit.config";
 import { swaggerConfig } from "./infrastructure/configs/swagger.config";
 import { helmetConfig } from "./infrastructure/configs/helmet.config";
 import { corsConfig } from "./infrastructure/configs/cors.config";
+import { dbConfig } from "./infrastructure/configs/db.config";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -19,6 +20,8 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, swaggerConfig);
 	SwaggerModule.setup("docs", app, document);
 
+	await dbConfig.connect();
 	await app.listen(3000);
+	await dbConfig.populate();
 }
 bootstrap();
