@@ -1,9 +1,11 @@
-import { Model } from "mongoose";
+import { model } from "mongoose";
 
 import { CharacterRepositoryImpl } from "@/infrastructure/repositories/character.repository.impl";
+import { CharacterSchema } from "@/infrastructure/schemas/character.schema";
 import { CharacterModel } from "@/infrastructure/models/character.model";
 
 export const makeCharacterRepositoryImpl = () => {
-	const model = new Model<CharacterModel>();
-	return new CharacterRepositoryImpl(model);
+	return new CharacterRepositoryImpl(
+		model(CharacterModel.name, CharacterSchema)
+	);
 };
