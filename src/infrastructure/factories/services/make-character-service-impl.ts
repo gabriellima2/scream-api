@@ -5,6 +5,7 @@ import { makeCharacterScraperAdapterImpl } from "../adapters/scrapers/make-chara
 import { makeScraperGatewayAdapterImpl } from "../adapters/gateways/make-scraper-gateway-adapter-impl";
 import { makeCharacterRepositoryImpl } from "../repositories/make-character-repository-impl";
 import { makePaginationAdapterImpl } from "../adapters/make-pagination-adapter-impl";
+import { makeCacheAdapterImpl } from "../adapters/make-cache-adapter-impl";
 
 import { SOURCE_WEBSITE } from "@/infrastructure/constants/source-website";
 import type { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
@@ -19,10 +20,10 @@ export const makeCharacterServiceImpl = () => {
 		),
 	};
 	const paginate = makePaginationAdapterImpl<Required<CharacterData>>();
-	return new CharacterServiceImpl(
-		repository,
-		scrapers,
+	const cache = makeCacheAdapterImpl<Required<CharacterData>>();
+	return new CharacterServiceImpl(repository, scrapers, {
+		baseUrl: SOURCE_WEBSITE.CHARACTER,
 		paginate,
-		SOURCE_WEBSITE.CHARACTER
-	);
+		cache,
+	});
 };

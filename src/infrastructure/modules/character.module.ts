@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
 import { CharacterSchema } from "../schemas/character.schema";
 import { CharacterModel } from "../models/character.model";
 
@@ -16,14 +15,19 @@ import { ScraperGatewayAdapterImpl } from "../adapters/gateways/scraper-gateway.
 import { CharacterScraperGateways } from "@/adapters/gateways/character-scraper-gateways";
 import { HttpGatewayAdapterImpl } from "../adapters/gateways/http-gateway.adapter.impl";
 import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
+import { PaginationAdapterImpl } from "../adapters/pagination.adapter.impl";
+import { CacheAdapterImpl } from "../adapters/cache.adapter.impl";
+import { PaginationAdapter } from "@/adapters/pagination.adapter";
+import { CacheAdapter } from "@/adapters/cache.adapter";
 
 import { CharacterControllerImpl } from "../controllers/character.controller.impl";
-import { CharacterServiceImpl } from "../services/character.service.impl";
+import {
+	CharacterServiceImpl,
+	CharacterServiceOptions,
+} from "../services/character.service.impl";
 
-import { PaginationAdapterImpl } from "../adapters/pagination.adapter.impl";
-import { PaginationAdapter } from "@/adapters/pagination.adapter";
-
-type Characters = Required<CharacterData>;
+import { SOURCE_WEBSITE } from "../constants/source-website";
+import type { CharacterData } from "@/core/domain/entities/character-entity/character.entity";
 
 @Module({
 	imports: [
@@ -38,32 +42,21 @@ type Characters = Required<CharacterData>;
 			useFactory: (
 				repository: CharacterRepository,
 				scrapers: CharacterScraperGateways,
-				paginate: PaginationAdapter<Characters>,
-				baseUrl: string
+				options: CharacterServiceOptions
 			) => {
-				return new CharacterServiceImpl(
-					repository,
-					scrapers,
-					paginate,
-					baseUrl
-				);
+				return new CharacterServiceImpl(repository, scrapers, options);
 			},
-			inject: [
-				CharacterRepositoryImpl,
-				"SCRAPERS",
-				PaginationAdapterImpl,
-				"BASEURL",
-			],
+			inject: [CharacterRepositoryImpl, "SCRAPERS", "OPTIONS"],
 		},
 		{
 			provide: "SCRAPERS",
 			useFactory: (
 				http: HttpGatewayAdapter,
-				characterScraperAdapter: CharacterScraperAdapter,
-				nameScraperAdapter: CharactersNameScraperAdapter
+				characterScraper: CharacterScraperAdapter,
+				nameScraper: CharactersNameScraperAdapter
 			) => ({
-				character: new ScraperGatewayAdapterImpl(http, characterScraperAdapter),
-				names: new ScraperGatewayAdapterImpl(http, nameScraperAdapter),
+				character: new ScraperGatewayAdapterImpl(http, characterScraper),
+				names: new ScraperGatewayAdapterImpl(http, nameScraper),
 			}),
 			inject: [
 				HttpGatewayAdapterImpl,
@@ -72,13 +65,24 @@ type Characters = Required<CharacterData>;
 			],
 		},
 		{
-			provide: "BASEURL",
-			useValue: "https://scream.fandom.com/wiki",
+			provide: "OPTIONS",
+			useFactory: (
+				baseUrl: string,
+				paginate: PaginationAdapter<Required<CharacterData>>,
+				cache: CacheAdapter<Required<CharacterData>>
+			) => ({
+				baseUrl,
+				paginate,
+				cache,
+			}),
+			inject: ["BASEURL", PaginationAdapterImpl, CacheAdapterImpl],
 		},
+		{ provide: "BASEURL", useValue: SOURCE_WEBSITE.CHARACTER },
 		CharacterRepositoryImpl,
 		HttpGatewayAdapterImpl,
 		CharacterScraperAdapterImpl,
 		PaginationAdapterImpl,
+		CacheAdapterImpl,
 		CharactersNameScraperAdapterImpl,
 	],
 	exports: [CharacterServiceImpl],

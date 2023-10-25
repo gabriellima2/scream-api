@@ -33,8 +33,7 @@ const makeSut = async () => {
 			new CharacterServiceImpl(
 				dependencies.repository,
 				dependencies.scrapers,
-				dependencies.paginate,
-				"any_url"
+				dependencies.options
 			)
 		)
 		.compile();

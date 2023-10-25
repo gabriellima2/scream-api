@@ -5,7 +5,6 @@ import { CharacterServiceImpl } from "./character.service.impl";
 import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
 import { mockCharacter, MockCharacter } from "@/__mocks__/mock-character";
 
-const BASE_URL = "any_url";
 export const dependencies = {
 	repository: {
 		getByName: jest.fn(),
@@ -16,8 +15,17 @@ export const dependencies = {
 		names: { execute: jest.fn() },
 		character: { execute: jest.fn() },
 	},
-	paginate: {
-		execute: jest.fn(),
+	options: {
+		paginate: {
+			execute: jest.fn(),
+		},
+		cache: {
+			get: jest.fn(),
+			insert: jest.fn(),
+			remove: jest.fn(),
+			clear: jest.fn(),
+		},
+		baseUrl: "any_url",
 	},
 };
 
@@ -30,8 +38,7 @@ const makeSut = async () => {
 			new CharacterServiceImpl(
 				dependencies.repository,
 				dependencies.scrapers,
-				dependencies.paginate,
-				BASE_URL
+				dependencies.options
 			)
 		)
 		.compile();
@@ -42,7 +49,11 @@ describe("CharacterServiceImpl", () => {
 	const NAME_PARAM = "Any_Name";
 	const CHARACTERS_NAME = ["Any_Name", "Another_Name"];
 	const CHARACTER_WITHOUT_ID = { name: mockCharacter.name } as MockCharacter;
-	const { repository, scrapers, paginate } = dependencies;
+	const {
+		repository,
+		scrapers,
+		options: { paginate, cache, baseUrl },
+	} = dependencies;
 
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -51,6 +62,10 @@ describe("CharacterServiceImpl", () => {
 	describe("GetCharacter", () => {
 		function expectCharacterHasBeenReturned(data: Required<MockCharacter>) {
 			expect(data).toMatchObject(mockCharacter);
+		}
+		function expectCacheAdapterHasBeenRun() {
+			expect(cache.get).toHaveBeenCalledTimes(1);
+			expect(cache.insert).toHaveBeenCalledTimes(1);
 		}
 
 		describe("Success", () => {
@@ -64,6 +79,7 @@ describe("CharacterServiceImpl", () => {
 				expect(scrapers.character.execute).not.toHaveBeenCalled();
 				expect(scrapers.character.execute).not.toHaveBeenCalled();
 				expect(repository.getByName).toHaveBeenCalledWith(NAME_PARAM);
+				expectCacheAdapterHasBeenRun();
 			});
 			it("should return character scraped from received web address", async () => {
 				scrapers.character.execute.mockReturnValue(CHARACTER_WITHOUT_ID);
@@ -72,23 +88,24 @@ describe("CharacterServiceImpl", () => {
 				const name = "Any_Scraper_Name";
 				const sut = await makeSut();
 				const data = await sut.getCharacter(name);
-				const url = `${BASE_URL}/${name}`;
+				const url = `${baseUrl}/${name}`;
 
 				expectCharacterHasBeenReturned(data);
 				expect(scrapers.character.execute).toHaveBeenCalledWith(url);
 				expect(scrapers.character.execute).toHaveBeenCalledTimes(1);
 				expect(repository.getByName).toHaveBeenCalled();
+				expectCacheAdapterHasBeenRun();
 			});
 			it("should return cached character", async () => {
-				repository.getByName.mockReturnValueOnce(mockCharacter);
+				cache.get.mockReturnValue(mockCharacter);
 
 				const name = "any_cache_name";
 				const sut = await makeSut();
-				await sut.getCharacter(name);
-				const cachedCharacter = await sut.getCharacter(name);
+				const data = await sut.getCharacter(name);
 
-				expectCharacterHasBeenReturned(cachedCharacter);
-				expect(repository.getByName).toHaveBeenCalledTimes(1);
+				expectCharacterHasBeenReturned(data);
+				expect(cache.get).toHaveBeenCalledWith(name);
+				expect(repository.getByName).not.toHaveBeenCalled();
 			});
 		});
 		describe("Errors", () => {
