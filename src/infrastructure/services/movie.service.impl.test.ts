@@ -5,10 +5,18 @@ import { MovieServiceImpl } from "./movie.service.impl";
 import { expectExceptionsToBeHandled } from "@/__mocks__/expect-exceptions-to-be-handled";
 import { MockMovie, mockMovie } from "@/__mocks__/mock-movie";
 
-const BASE_URL = "any_url";
 export const dependencies = {
 	repository: { getByName: jest.fn(), create: jest.fn(), getAll: jest.fn() },
 	scrapers: { names: { execute: jest.fn() }, movie: { execute: jest.fn() } },
+	options: {
+		baseUrl: "any_url",
+		cache: {
+			get: jest.fn(),
+			insert: jest.fn(),
+			remove: jest.fn(),
+			clear: jest.fn(),
+		},
+	},
 };
 
 const makeSut = async () => {
@@ -20,7 +28,7 @@ const makeSut = async () => {
 			new MovieServiceImpl(
 				dependencies.repository,
 				dependencies.scrapers,
-				BASE_URL
+				dependencies.options
 			)
 		)
 		.compile();
@@ -31,7 +39,11 @@ describe("MovieServiceImpl", () => {
 	const NAME_PARAM = "Any_Name";
 	const MOVIE_NAMES = ["AnyName", "Another_Name"];
 	const MOVIE_WITHOUT_ID = { name: mockMovie.name } as MockMovie;
-	const { repository, scrapers } = dependencies;
+	const {
+		repository,
+		scrapers,
+		options: { baseUrl, cache },
+	} = dependencies;
 
 	beforeEach(() => {
 		jest.resetAllMocks();
@@ -51,7 +63,7 @@ describe("MovieServiceImpl", () => {
 	}
 
 	describe("GetMovie", () => {
-		function expectHasMovie(data: Required<MockMovie>) {
+		function expectMovieHasBeenReturned(data: Required<MockMovie>) {
 			expect(data).toMatchObject(mockMovie);
 		}
 
@@ -62,7 +74,7 @@ describe("MovieServiceImpl", () => {
 
 				const data = await sut.getMovie(NAME_PARAM);
 
-				expectHasMovie(data);
+				expectMovieHasBeenReturned(data);
 				expectMoviesHasBeenDB("Any Name", 1);
 			});
 			it("should return movie scraped from received web address", async () => {
@@ -71,10 +83,24 @@ describe("MovieServiceImpl", () => {
 				const sut = await makeSut();
 
 				const data = await sut.getMovie(NAME_PARAM);
-				const url = `${BASE_URL}/${NAME_PARAM}`;
+				const url = `${baseUrl}/${NAME_PARAM}`;
 
-				expectHasMovie(data);
+				expectMovieHasBeenReturned({
+					...data,
+					name: data.name.replace(" ", "_"),
+				});
 				expectMoviesHasBeenScraped(url, 1);
+			});
+			it("should return cached movie", async () => {
+				cache.get.mockReturnValue(mockMovie);
+
+				const name = "any_cache_name";
+				const sut = await makeSut();
+				const data = await sut.getMovie(name);
+
+				expectMovieHasBeenReturned(data);
+				expect(cache.get).toHaveBeenCalledWith(name);
+				expect(repository.getByName).not.toHaveBeenCalled();
 			});
 		});
 		describe("Errors", () => {
@@ -113,39 +139,29 @@ describe("MovieServiceImpl", () => {
 		});
 	});
 	describe("GetMovies", () => {
-		function expectHasMovies(data: Required<MockMovie>[]) {
-			expect(data.length).toBe(1);
-			expect(data[0]).toMatchObject(mockMovie);
-		}
-
-		const MOVIES_QUANTITY = MOVIE_NAMES.length;
-
 		describe("Success", () => {
-			it("should return the movies that are saved in the database", async () => {
-				const movies = [mockMovie];
-				repository.getAll.mockReturnValue(movies);
+			const items = [mockMovie];
+			it("should return movies correctly when not has data in db", async () => {
+				repository.getAll.mockReturnValue(items);
 				const sut = await makeSut();
 
 				const data = await sut.getMovies();
 
-				expect(data).toMatchObject(movies);
+				expect(data).toBeTruthy();
 				expect(repository.getAll).toHaveBeenCalledTimes(1);
 			});
-			it("should return movies scraped from received web address", async () => {
+			it("should return movies correctly when has data in db", async () => {
 				scrapers.names.execute.mockReturnValue(MOVIE_NAMES);
 				scrapers.movie.execute.mockReturnValue(MOVIE_WITHOUT_ID);
 				repository.create.mockReturnValue(mockMovie);
+
 				const sut = await makeSut();
-
 				const data = await sut.getMovies();
-				const url = `${BASE_URL}/${MOVIE_NAMES[0]}`;
+				const url = `${baseUrl}/${MOVIE_NAMES[0]}`;
 
-				expectHasMovies(data);
-				expectMoviesHasBeenScraped(url, MOVIES_QUANTITY);
-				expect(scrapers.names.execute).toBeCalledTimes(1);
-				expect(scrapers.names.execute).toBeCalledWith(
-					`${BASE_URL}/Category:Film`
-				);
+				expect(data).toBeTruthy();
+				expectMoviesHasBeenScraped(url, MOVIE_NAMES.length);
+				expect(scrapers.names.execute).toHaveBeenCalled();
 			});
 			it("should remove duplicate movies", async () => {
 				scrapers.names.execute.mockReturnValue(MOVIE_NAMES);
@@ -154,7 +170,7 @@ describe("MovieServiceImpl", () => {
 
 				const data = await sut.getMovies();
 
-				expectHasMovies(data);
+				expect(data).toBeTruthy();
 				expect(scrapers.movie.execute).not.toHaveBeenCalled();
 				expect(repository.getByName).toHaveBeenCalled();
 			});

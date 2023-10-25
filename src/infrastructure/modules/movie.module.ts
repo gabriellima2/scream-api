@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { MovieControllerImpl } from "../controllers/movie.controller.impl";
-import { MovieServiceImpl } from "../services/movie.service.impl";
+import { MovieSchema } from "../schemas/movie.schema";
+import { MovieModel } from "../models/movie.model";
 
 import { MovieRepository } from "@/core/domain/repositories/movie.repository";
 import { MovieRepositoryImpl } from "../repositories/movie.repository.impl";
@@ -15,9 +15,17 @@ import { ScraperGatewayAdapterImpl } from "../adapters/gateways/scraper-gateway.
 import { HttpGatewayAdapterImpl } from "../adapters/gateways/http-gateway.adapter.impl";
 import { MovieScraperGateways } from "@/adapters/gateways/movie-scraper-gateways";
 import { HttpGatewayAdapter } from "@/adapters/gateways/http-gateway.adapter";
+import { CacheAdapterImpl } from "../adapters/cache.adapter.impl";
+import { CacheAdapter } from "@/adapters/cache.adapter";
 
-import { MovieSchema } from "../schemas/movie.schema";
-import { MovieModel } from "../models/movie.model";
+import { MovieControllerImpl } from "../controllers/movie.controller.impl";
+import {
+	MovieServiceImpl,
+	MovieServiceOptions,
+} from "../services/movie.service.impl";
+
+import { SOURCE_WEBSITE } from "../constants/source-website";
+import type { MovieData } from "@/core/domain/entities/movie-entity/movie.entity";
 
 @Module({
 	imports: [
@@ -30,11 +38,11 @@ import { MovieModel } from "../models/movie.model";
 			useFactory: (
 				repository: MovieRepository,
 				scrapers: MovieScraperGateways,
-				baseUrl: string
+				options: MovieServiceOptions
 			) => {
-				return new MovieServiceImpl(repository, scrapers, baseUrl);
+				return new MovieServiceImpl(repository, scrapers, options);
 			},
-			inject: [MovieRepositoryImpl, "SCRAPERS", "BASEURL"],
+			inject: [MovieRepositoryImpl, "SCRAPERS", "OPTIONS"],
 		},
 		{
 			provide: "SCRAPERS",
@@ -53,12 +61,21 @@ import { MovieModel } from "../models/movie.model";
 			],
 		},
 		{
-			provide: "BASEURL",
-			useValue: "https://scream.fandom.com/wiki",
+			provide: "OPTIONS",
+			useFactory: (
+				baseUrl: string,
+				cache: CacheAdapter<Required<MovieData>>
+			) => ({
+				baseUrl,
+				cache,
+			}),
+			inject: ["BASEURL", CacheAdapterImpl],
 		},
+		{ provide: "BASEURL", useValue: SOURCE_WEBSITE.MOVIE },
 		MovieRepositoryImpl,
 		HttpGatewayAdapterImpl,
 		MovieScraperAdapterImpl,
+		CacheAdapterImpl,
 		MoviesNameScraperAdapterImpl,
 	],
 	exports: [MovieServiceImpl],

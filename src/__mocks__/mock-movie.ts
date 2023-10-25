@@ -4,5 +4,5 @@ export type MockMovie = Required<MovieData>;
 
 export const mockMovie = {
 	id: "1",
-	name: "any_name",
+	name: "Any_Name",
 } as MockMovie;

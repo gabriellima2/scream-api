@@ -25,7 +25,7 @@ const makeSut = async () => {
 			new MovieServiceImpl(
 				dependencies.repository,
 				dependencies.scrapers,
-				"any_url"
+				dependencies.options
 			)
 		)
 		.compile();

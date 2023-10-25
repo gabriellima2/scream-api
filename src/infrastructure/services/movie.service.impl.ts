@@ -6,6 +6,7 @@ import {
 } from "@/core/domain/entities/movie-entity/movie.entity";
 import { NameEntity } from "@/core/domain/entities/movie-entity/name.entity";
 import { MovieService } from "@/core/application/services/movie.service";
+import { CacheAdapter } from "@/adapters/cache.adapter";
 
 import {
 	GetMovieByNameInputDTO,
@@ -19,19 +20,25 @@ import { MovieScraperGateways } from "@/adapters/gateways/movie-scraper-gateways
 import { MovieRepository } from "@/core/domain/repositories/movie.repository";
 
 import { createEndpointURL } from "../helpers/create-endpoint-url";
+import { isEmptyObject } from "@/core/domain/functions/is-empty-object";
+
+export interface MovieServiceOptions {
+	readonly baseUrl: string;
+	readonly cache: CacheAdapter<GetMovieByNameOutputDTO>;
+}
 
 @Injectable()
 export class MovieServiceImpl implements MovieService {
 	constructor(
 		private readonly repository: MovieRepository,
 		private readonly scrapers: MovieScraperGateways,
-		private readonly baseUrl: string
+		private readonly options: MovieServiceOptions
 	) {}
 
 	async getMovies(): Promise<GetMoviesOutputDTO> {
 		const db = await this.repository.getAll();
 		if (db) return db;
-		const url = `${this.baseUrl}/Category:Film`;
+		const url = `${this.options.baseUrl}/Category:Film`;
 		const names = await this.scrapers.names.execute(url);
 		if (!names) throw new EmptyDataException();
 		const promises = names.map((name) => {
@@ -46,9 +53,17 @@ export class MovieServiceImpl implements MovieService {
 	): Promise<GetMovieByNameOutputDTO> {
 		if (!name && (name || name.length > 10)) throw new InvalidParamsException();
 		const formattedName = NameEntity.create(name).value;
-		const movieFromDB = await this.repository.getByName(formattedName);
-		if (movieFromDB) return movieFromDB;
-		const endpoint = createEndpointURL(this.baseUrl, formattedName);
+		const cachedMovie = this.options.cache.get(name);
+		const hasCachedMovie = !!cachedMovie && !isEmptyObject(cachedMovie);
+		if (hasCachedMovie) return cachedMovie;
+		const db = await this.repository.getByName(formattedName);
+		if (db) {
+			if (!hasCachedMovie) {
+				this.options.cache.insert(name, db);
+			}
+			return db;
+		}
+		const endpoint = createEndpointURL(this.options.baseUrl, formattedName);
 		const movieScraped = await this.scrapers.movie.execute(endpoint);
 		if (!movieScraped) throw new EmptyDataException();
 		const movieEntity = MovieEntity.create(movieScraped);
@@ -68,6 +83,10 @@ export class MovieServiceImpl implements MovieService {
 		const createdMovie = await this.repository.create(movie);
 		if (!createdMovie) throw new UnexpectedException();
 		movieEntity.setId(createdMovie.id);
-		return createdMovie;
+		const movieWithId = { ...movie, id: movieEntity.id };
+		if (!hasCachedMovie) {
+			this.options.cache.insert(name, movieWithId);
+		}
+		return movieWithId;
 	}
 }
