@@ -1,73 +1,257 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Scream API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API Rest dedicada à clássica franquia de filmes de terror slasher, Scream. Ela serve como uma fonte de dados e informações sobre a série, proporcionando aos fãs e desenvolvedores uma maneira conveniente de acessar e interagir com o conteúdo relacionado a franquia.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Através de um Web Scraper realizado no [Site Fandom](https://scream.fandom.com/wiki/Scream_Wiki), consegui obter os dados necessários para os filmes e personagens.
 
-## Description
+## Tecnologias
+- [NestJS](https://nestjs.com/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Mongoose](https://mongoosejs.com/)
+- [Cheerio](https://github.com/cheeriojs/cheerio)
+- [Swagger](https://swagger.io/)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Configuração
 
-## Installation
+Você precisa ter o [Git](https://git-scm.com/) e algum gerenciador de pacotes([NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm/) | [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)) instalados. Além disso, para rodar a aplicação é necessário que você tenha o [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) em sua máquina.
+
+### Preparando o ambiente
 
 ```bash
-$ yarn install
+1. Clone o repositório:
+$ git clone https://github.com/gabriellima2/scream-api.git
+
+2. Acesse a pasta e instale as dependências via terminal:
+$ yarn / npm i
 ```
 
-## Running the app
+#### Defina as variáveis de ambiente
+```bash
+1. Renomeie o arquivo
+	.env.example -> .env
+
+2. Substitua os <valores>
+	DB_ROOT_USERNAME=<root-username>
+	DB_ROOT_PASSWORD=<root-password>
+	DB_NAME=<database-name>
+	DB_PORT=<database-port>
+	DB_USER=<username>
+	DB_PASSWORD=<password>
+	MONGO_URI=mongodb://<username>:<password>@mongo:<database-port>/<database-name>
+```
+
+### Rodando a aplicação
 
 ```bash
-# development
-$ yarn run start
+1. Inicie a aplicação em modo de desenvolvimento:
+$ docker-compose up
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+2. O servidor será aberto em http://localhost:3000
 ```
 
-## Test
+## Endpoints
 
-```bash
-# unit tests
-$ yarn run test
+Para mais detalhes, você pode acessar a documentação criada com [Swagger](https://swagger.io/) em `http://localhost:3000/docs`.
 
-# e2e tests
-$ yarn run test:e2e
+### Movies
 
-# test coverage
-$ yarn run test:cov
+#### Request
+
+`GET /movies/`
+
+    curl -i -H 'Accept: application/json' http://localhost:3000/movies
+
+#### Response
+
+    HTTP/1.1 200 OK
+    Date: Fri, 27 Out 2023 17:00:20 GMT
+    Status: 200 OK
+    Connection: close
+    RateLimit-Limit: 30
+    RateLimit-Remaining: 29
+    Content-Type: application/json
+
+```js
+	[
+		{
+			"_id": "653c12cd64f902c0aaabbba5",
+			"name": "Scream",
+			"image": "https://static.wikia.nocookie.net/scream/images/d/d4/Scream_xlg.jpg",
+			"synopsis": "A year after Sidney's mom is murdered...",
+			"directors": [
+				"Wes Craven"
+			],
+			"writers": [
+				"Kevin Williamson"
+			],
+			"producers": [
+				"Cathy Konrad",
+				"Cary Woods",
+				"Marianne Maddalena"
+			],
+			"composer": [
+				"Marco Beltrami"
+			],
+			"release_date": "December 20, 1996",
+			"running_time": "111 minutes",
+			"box_office": "$173,046,663",
+			"characters": [
+				"http://localhost:3000/characters/Sidney_Prescott",
+				"http://localhost:3000/characters/Gale_Weathers",
+				//...
+			],
+		},
+		//...
+	],
 ```
 
-## Support
+##
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+#### Request
 
-## Stay in touch
+`GET /movies/:name`
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+    curl -i -H 'Accept: application/json' http://localhost:3000/movies/scream_2
 
-## License
+#### Response
 
-Nest is [MIT licensed](LICENSE).
+    HTTP/1.1 200 OK
+    Date: Fri, 27 Out 2023 17:01:38 GMT
+    Status: 200 OK
+    Connection: close
+    RateLimit-Limit: 30
+    RateLimit-Remaining: 28
+    Content-Type: application/json
+
+```js
+	{
+		"_id": "653c12cd64f902c0aaabbba5",
+		"name": "Scream",
+		"image": "https://static.wikia.nocookie.net/scream/images/d/d4/Scream_xlg.jpg",
+		"synopsis": "A year after Sidney's mom is murdered...",
+		"directors": [
+			"Wes Craven"
+		],
+		"writers": [
+			"Kevin Williamson"
+		],
+		"producers": [
+			"Cathy Konrad",
+			"Cary Woods",
+			"Marianne Maddalena"
+		],
+		"composer": [
+			"Marco Beltrami"
+		],
+		"release_date": "December 20, 1996",
+		"running_time": "111 minutes",
+		"box_office": "$173,046,663",
+		"characters": [
+			"http://localhost:3000/characters/Sidney_Prescott",
+			"http://localhost:3000/characters/Gale_Weathers",
+			// ...
+		],
+	},
+```
+
+### Characters
+
+#### Request
+
+`GET /characters/`
+
+		curl -i -H 'Accept: application/json' http://localhost:3000/characters
+
+`Com Paginação`
+
+		curl -G -i -H 'Accept: application/json' -d "page=1&limit=10" http://localhost:3000/characters
+
+#### Response
+
+    HTTP/1.1 200 OK
+    Date: Fri, 27 Out 2023 17:09:15 GMT
+    Status: 200 OK
+    Connection: close
+    RateLimit-Limit: 30
+    RateLimit-Remaining: 28
+    Content-Type: application/json
+
+```js
+	{
+		"total": 10,
+		"next": "http://localhost:3000/characters?page=2&limit=10",
+		"last": undefined,
+		"items": [
+			// ...
+			{
+				"id": "653c1933a96530d435fdb1a0",
+				"name": "Stu Macher",
+				"image": "https://static.wikia.nocookie.net/scream/images/f/fc/Stu-Profile.jpg",
+				"description": "Stuart \"Stu\" Macher is the secondary antagonist of Scream (1996 film)...",
+				"born": "1978",
+				"personality": [
+					"Eccentric",
+					"Psychotic (self-identifying)"
+				],
+				"status": "Deceased",
+				"portrayed_by": [
+					"Matthew Lillard"
+				],
+				"appearances": [
+					"http://localhost:3000/movies/Scream",
+					"http://localhost:3000/movies/Scream_3",
+					"http://localhost:3000/movies/Scream_VI"
+				],
+			},
+			// ...
+		]
+	},
+```
+
+##
+
+#### Request
+
+`GET /characters/:name`
+
+    curl -i -H 'Accept: application/json' http://localhost:3000/characters/stu_macher
+
+#### Response
+
+    HTTP/1.1 200 OK
+    Date: Fri, 27 Out 2023 17:14:29 GMT
+    Status: 200 OK
+    Connection: close
+    RateLimit-Limit: 30
+    RateLimit-Remaining: 27
+    Content-Type: application/json
+
+```js
+	{
+		"id": "653c1933a96530d435fdb1a0",
+		"name": "Stu Macher",
+		"image": "https://static.wikia.nocookie.net/scream/images/f/fc/Stu-Profile.jpg",
+		"description": "Stuart \"Stu\" Macher is the secondary antagonist of Scream (1996 film)...",
+		"born": "1978",
+		"personality": [
+			"Eccentric",
+			"Psychotic (self-identifying)"
+		],
+		"status": "Deceased",
+		"portrayed_by": [
+			"Matthew Lillard"
+		],
+		"appearances": [
+			"http://localhost:3000/movies/Scream",
+			"http://localhost:3000/movies/Scream_3",
+			// ...
+		],
+	},
+```
+
+
+<p align="center">Data scraped from <a href="https://scream.fandom.com/wiki/Scream_Wiki">Fandom</a></p>
+<p align="center">Made with 💙 by <a href="https://www.linkedin.com/in/gabriel-lima-860612236">Gabriel Lima</a></p>
+
+<p align="center">All rights reserved</p>
+
